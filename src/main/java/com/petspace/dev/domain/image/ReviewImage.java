@@ -1,6 +1,6 @@
 package com.petspace.dev.domain.image;
 
-import com.petspace.backend.domain.Review;
+import com.petspace.dev.domain.Review;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,5 +32,6 @@ public class ReviewImage {
     @JoinColumn(name = "review_id")
     private Review review;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String reviewImageUrl;
 }
