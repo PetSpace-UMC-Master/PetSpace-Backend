@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,6 +35,11 @@ public class RoomAvailable {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @Column(nullable = false)
     private LocalDateTime availableDay;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 45, nullable = false)
+    @ColumnDefault("'ACTIVE'")
+    private Status status;
 }
