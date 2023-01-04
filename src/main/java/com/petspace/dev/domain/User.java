@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,17 +38,35 @@ public class User extends BaseTimeEntity{
     @OneToMany(mappedBy = "user")
     List<Favorite> favorites = new ArrayList<>();
 
+    @Column(length = 45)
     private String username;
-    private String nickname;
-    private String birth;
-    private String email;
-    private String password;
-    private String status;
 
+    @Column(length = 45)
+    private String nickname;
+
+    @Column(length = 45)
+    private String birth;
+
+    @Column(length = 45, nullable = false)
+    private String email;
+
+    private String password;
+
+    @ColumnDefault("1")
     private boolean privacyAgreement;
+
     private boolean marketingAgreement;
+
+    @ColumnDefault("0")
     private boolean hostPermission;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 10, nullable = false)
+    @ColumnDefault("'NONE'")
     private OauthProvider oauthProvider;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 45, nullable = false)
+    @ColumnDefault("'ACTIVE'")
+    private Status status;
 }
