@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,12 +43,23 @@ public class Reservation extends BaseTimeEntity{
     @OneToOne(mappedBy = "reservation")
     private Review review;
 
+    @Column(nullable = false)
     private String reservationCode;
-    private int totalPrice;
-    private int totalQuest;
 
+    @Column(nullable = false)
+    private int totalPrice;
+
+    @Column(nullable = false)
+    private int totalGuest;
+
+    @Column(nullable = false)
     private LocalDateTime startDate;
+
+    @Column(nullable = false)
     private LocalDateTime endDate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 45, nullable = false)
+    @ColumnDefault(value = "'ACTIVE'")
+    private Status status;
 }
