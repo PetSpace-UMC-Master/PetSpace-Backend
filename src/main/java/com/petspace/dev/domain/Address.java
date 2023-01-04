@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
@@ -15,11 +16,18 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Address {
 
-    // TODO 괜찮은 변수명으로 바꿔야돼요!
-    private String address1; // 시
-    private String address2; // 구/읍/면
-    private String address3; // 동/리
+    // region : 서울만 예외처리 필요
+    // e.g. 서울특별시(region) 서울시(region)
+    @Column(length = 10, nullable = false)
+    private String region;
 
+    @Column(length = 10, nullable = false)
+    private String city;
+
+    @Column(length = 45, nullable = false)
+    private String addressDetail;
+
+    // TODO MAP API에 모든 숙박 정보를 가지고 있는 경우, nullable = false 제한
     private String latitude; // 위도
     private String longitude; // 경도
 }
