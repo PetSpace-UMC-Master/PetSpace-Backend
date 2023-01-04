@@ -1,15 +1,18 @@
 package com.petspace.dev.domain;
 
-import com.petspace.backend.domain.image.RoomImage;
+import com.petspace.dev.domain.image.RoomImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -55,16 +58,30 @@ public class Room extends BaseTimeEntity{
     @Embedded
     private Address address;
 
+    @Column(length = 45, nullable = false)
     private String roomName;
 
+    @Column(nullable = false)
     private int price;
+
+    @Column(nullable = false)
     private int maxGuest;
+
+    @Column(nullable = false)
     private int maxPet;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    // TODO Default 처리 여부
+    @Column(nullable = false)
     private LocalDateTime checkinTime;
+
+    @Column(nullable = false)
     private LocalDateTime checkoutTime;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 45, nullable = false)
+    @ColumnDefault("'ACTIVE'")
+    private Status status;
 }
