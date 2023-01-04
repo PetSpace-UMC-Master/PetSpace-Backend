@@ -1,6 +1,6 @@
 package com.petspace.dev.domain.image;
 
-import com.petspace.backend.domain.Room;
+import com.petspace.dev.domain.Room;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,5 +32,6 @@ public class RoomImage {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String roomImageUrl;
 }
