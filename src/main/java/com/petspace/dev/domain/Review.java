@@ -1,14 +1,17 @@
 package com.petspace.dev.domain;
 
-import com.petspace.backend.domain.image.ReviewImage;
+import com.petspace.dev.domain.image.ReviewImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,7 +41,14 @@ public class Review extends BaseTimeEntity{
     @OneToMany(mappedBy = "review")
     private List<ReviewImage> reviewImages = new ArrayList<>();
 
+    @Column(nullable = false)
     private int score;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 45, nullable = false)
+    @ColumnDefault("'ACTIVE'")
+    private Status status;
 }
