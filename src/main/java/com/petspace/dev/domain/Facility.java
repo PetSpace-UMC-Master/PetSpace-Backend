@@ -29,6 +29,9 @@ public class Facility {
     @OneToMany(mappedBy = "facility")
     private List<RoomFacility> roomFacilities;
 
+    @Column(length = 45, nullable = false)
     private String facilityName;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String facilityImageUrl;
 }
