@@ -1,10 +1,6 @@
 package com.petspace.dev.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,8 +15,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity{
 
@@ -62,4 +56,20 @@ public class User extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    @Builder
+    public User(String username, String nickname, String birth, String email, String password
+            , boolean privacyAgreement, boolean marketingAgreement, boolean hostPermission
+            , OauthProvider oauthProvider, Status status) {
+        this.username = username;
+        this.nickname = nickname;
+        this.birth = birth;
+        this.email = email;
+        this.password = password;
+        this.privacyAgreement = privacyAgreement;
+        this.marketingAgreement = marketingAgreement;
+        this.hostPermission = hostPermission;
+        this.oauthProvider = oauthProvider;
+        this.status = status;
+    }
 }
