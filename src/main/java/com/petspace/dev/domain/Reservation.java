@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,6 +59,5 @@ public class Reservation extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
-    @ColumnDefault(value = "'ACTIVE'")
     private Status status;
 }

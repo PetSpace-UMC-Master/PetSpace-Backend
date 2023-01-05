@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,21 +51,15 @@ public class User extends BaseTimeEntity{
 
     private String password;
 
-    @ColumnDefault("1")
     private boolean privacyAgreement;
-
     private boolean marketingAgreement;
-
-    @ColumnDefault("0")
     private boolean hostPermission;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
-    @ColumnDefault("'NONE'")
     private OauthProvider oauthProvider;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
-    @ColumnDefault("'ACTIVE'")
     private Status status;
 }

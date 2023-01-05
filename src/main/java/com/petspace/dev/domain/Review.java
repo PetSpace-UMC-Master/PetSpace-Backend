@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,6 +48,5 @@ public class Review extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
-    @ColumnDefault("'ACTIVE'")
     private Status status;
 }
