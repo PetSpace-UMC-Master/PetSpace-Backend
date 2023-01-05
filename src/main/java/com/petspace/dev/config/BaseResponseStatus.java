@@ -28,6 +28,7 @@ public enum BaseResponseStatus {
     POST_USER_EMPTY_EMAIL(false, 2011, "이메일을 입력해주세요."),
     POST_USER_INVALID_EMAIL(false, 2012, "이메일 형식을 확인해주세요."),
     POST_USER_EXISTS_EMAIL(false,2013,"중복된 이메일입니다."),
+    POST_USER_EXISTS_NICKNAME(false, 2014, "중복된 사용자 이름입니다."),
 
     /**
      * 3000 : Response 오류

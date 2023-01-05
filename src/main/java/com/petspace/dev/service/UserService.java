@@ -20,8 +20,11 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     public UserRegisterResponseDto register(UserRegisterRequestDto userRegisterRequestDto) throws BaseException {
-        if(isEmailExist(userRegisterRequestDto.getEmail())) {
+        if (isEmailExist(userRegisterRequestDto.getEmail())) {
             throw new BaseException(BaseResponseStatus.POST_USER_EXISTS_EMAIL);
+        }
+        if (isNicknameExist(userRegisterRequestDto.getNickname())) {
+            throw new BaseException(BaseResponseStatus.POST_USER_EXISTS_NICKNAME);
         }
         User user = userRepository.save(userRegisterRequestDto.toEntity());
         return new UserRegisterResponseDto(user.getId());
@@ -36,5 +39,16 @@ public class UserService {
     private boolean isEmailExist(String email) {
         Optional<User> byEmail = userRepository.findByEmail(email);
         return !byEmail.isEmpty();
+    }
+
+    /**
+     * 닉네임 중복 확인
+     *
+     * @param nickname
+     * @return true | false
+     */
+    private boolean isNicknameExist(String nickname) {
+        Optional<User> byNickname = userRepository.findByNickname(nickname);
+        return !byNickname.isEmpty();
     }
 }
