@@ -28,7 +28,12 @@ public enum BaseResponseStatus {
     POST_USER_EMPTY_EMAIL(false, 2011, "이메일을 입력해주세요."),
     POST_USER_INVALID_EMAIL(false, 2012, "이메일 형식을 확인해주세요."),
     POST_USER_EXISTS_EMAIL(false,2013,"중복된 이메일입니다."),
-    POST_USER_EXISTS_NICKNAME(false, 2014, "중복된 사용자 이름입니다."),
+    POST_USER_EMPTY_NICKNAME(false, 2014, "닉네임을 입력해주세요."),
+    POST_USER_EXISTS_NICKNAME(false,2015,"중복된 닉네임입니다."),
+    POST_USER_EMPTY_USERNAME(false, 2016, "사용자 이름을 입력해주세요."),
+    POST_USER_EMPTY_BIRTH(false, 2017, "생년월일을 입력해주세요."),
+    POST_USER_EMPTY_PASSWORD(false, 2018, "비밀번호을 입력해주세요."),
+    POST_USER_EMPTY_MARKETING_AGREEMENT(false, 2019, "마케팅 이용 동의 여부를 입력해주세요."),
 
     /**
      * 3000 : Response 오류

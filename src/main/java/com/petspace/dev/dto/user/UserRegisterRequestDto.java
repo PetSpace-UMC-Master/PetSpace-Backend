@@ -7,17 +7,26 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
 public class UserRegisterRequestDto {
 
+    @NotBlank
     private String username;
+    @NotBlank
     private String nickname;
+    @NotBlank
     private String birth;
+    @NotBlank(message = "EMPTY_EMAIL")
+    @Email(message = "INVALID_EMAIL")
     private String email;
+    @NotBlank
     private String password;
+    @NotNull
     private boolean marketingAgreement;
 
     //default value
