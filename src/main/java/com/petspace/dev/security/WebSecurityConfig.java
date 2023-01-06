@@ -45,7 +45,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // 회원 관리 처리 API 전부를 login 없이 허용
                 .antMatchers("/app/signin/**").permitAll()
                 .antMatchers("/hello").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint() // oauth2 로그인 성공 후 가져올 때 설정들
+                .userService(customOauth2UserService);
 //                .and()
 //                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 //                .and()
