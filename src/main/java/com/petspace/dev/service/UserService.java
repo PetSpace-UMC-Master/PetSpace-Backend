@@ -1,8 +1,9 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.config.BaseException;
+import com.petspace.dev.config.BaseResponse;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.ResponseDto;
-import com.petspace.dev.exception.CustomErrorException;
 import com.petspace.dev.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_EXISTS_EMAIL;
 
 @Service
 @Component
@@ -27,22 +30,23 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseDto signup(User user){
+    public Object signup(User user) throws BaseException {
         String password = passwordEncoder.encode(user.getPassword());
 
         // 비밀번호 암호화
         user.setPassword(password);
 
-        validateDuplicateUser(user);
+        // 이메일 중복 확인
+        List<User> findByEmails = userRepository.findByEmail(user.getEmail());
+        if (!findByEmails.isEmpty()) {
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
+
         userRepository.save(user);
         return new ResponseDto("success", "회원가입에 성공하였습니다", "");
     }
 
-    private void validateDuplicateUser(User user) {
-        List<User> findByEmails = userRepository.findByEmail(user.getEmail());
-        if (!findByEmails.isEmpty()) {
-            throw new CustomErrorException("회원가입에 실패하였습니다.");
-        }
-    }
+
+
 
 }
