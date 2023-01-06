@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,5 +59,28 @@ public class UserRepositoryTest {
         assertThat(user.isHostPermission()).isFalse();
         assertThat(user.getOauthProvider()).isEqualTo(oauthProvider);
         assertThat(user.getStatus()).isEqualTo(status);
+    }
+
+    @Test
+    public void BaseTimeEntity_등록() {
+        //given
+        LocalDateTime now = LocalDateTime.of(2023,01,06,10,0,0);
+        userRepository.save(User.builder().username("username").nickname("nickname").birth("birth").email("email@naver.com").password("password")
+                .privacyAgreement(true).marketingAgreement(false).hostPermission(false)
+                .oauthProvider(OauthProvider.NONE).status(Status.ACTIVE).build());
+
+        //when
+        List<User> users = userRepository.findAll();
+
+        //then
+        User user = users.get(0);
+
+        System.out.println(">>>>>>>>>>> createDate=" + user.getCreatedAt()
+                + ", modeifeidDate=" + user.getUpdatedAt());
+
+
+        assertThat(user.getCreatedAt()).isAfter(now);
+        assertThat(user.getUpdatedAt()).isAfter(now);
+
     }
 }
