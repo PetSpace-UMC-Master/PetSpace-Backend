@@ -8,9 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequestDto {
+    private String username;
     private String nickname;
+    private String birth;
     private String email;
+    private String password;
+    private boolean privacyAgreement;
+    private boolean marketingAgreement;
+    private boolean hostPermission;
+    private String oauthProvider;
     private String status;
-
 
 }
