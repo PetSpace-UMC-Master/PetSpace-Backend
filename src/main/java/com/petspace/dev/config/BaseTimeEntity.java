@@ -1,4 +1,4 @@
-package com.petspace.dev.domain;
+package com.petspace.dev.config;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

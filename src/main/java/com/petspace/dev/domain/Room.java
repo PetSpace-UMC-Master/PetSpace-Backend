@@ -1,5 +1,6 @@
 package com.petspace.dev.domain;
 
+import com.petspace.dev.config.BaseTimeEntity;
 import com.petspace.dev.domain.image.RoomImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Room extends BaseTimeEntity{
+public class Room extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package com.petspace.dev.domain;
 
+import com.petspace.dev.config.BaseTimeEntity;
 import com.petspace.dev.domain.image.ReviewImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review extends BaseTimeEntity{
+public class Review extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
