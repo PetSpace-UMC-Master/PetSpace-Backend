@@ -3,6 +3,7 @@ package com.petspace.dev.config.oauth;
 import com.petspace.dev.config.oauth.dto.OAuthTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +60,20 @@ public class OAuthService {
         formData.add("client_id", provider.getClientId());
         log.info("redirectUri={}", provider.getRedirectUri());
         return formData;
+    }
+
+    /**
+     * token을 토대로 회원정보 요청
+     */
+    private Map<String, Object> getUserAttributes(ClientRegistration provider, OAuthTokenResponse tokenResponse) {
+        log.info("userInfoUri = {}", provider.getProviderDetails().getUserInfoEndpoint().getUri());
+        return WebClient.create()
+                .get()
+                .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
+                .headers(header ->
+                        header.setBearerAuth(tokenResponse.getAccessToken()))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .block();
     }
 }
