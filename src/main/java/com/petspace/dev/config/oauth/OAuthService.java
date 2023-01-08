@@ -1,12 +1,18 @@
 package com.petspace.dev.config.oauth;
 
+import com.petspace.dev.config.oauth.dto.OAuthTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +26,25 @@ public class OAuthService {
     public void login(String providerName, String code) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
+    }
+
+    /**
+     *  token 생성
+     */
+    private OAuthTokenResponse getToken(ClientRegistration provider, String code) {
+        log.info("provider TokenUri={}", provider.getProviderDetails().getTokenUri());
+        return WebClient.create()
+                .post()
+                .uri(provider.getProviderDetails().getTokenUri())
+                .headers(header -> {
+                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+                    log.info("header={}", header);
+                })
+                .bodyValue(tokenRequest(provider, code))
+                .retrieve()
+                .bodyToMono(OAuthTokenResponse.class)
+                .block();
     }
 
     /**
