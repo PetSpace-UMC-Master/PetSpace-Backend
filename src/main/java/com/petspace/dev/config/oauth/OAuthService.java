@@ -1,0 +1,37 @@
+package com.petspace.dev.config.oauth;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class OAuthService {
+
+    private static final String BEARER_TYPE = "Bearer";
+
+    private final InMemoryClientRegistrationRepository inMemoryRepository;
+
+    public void login(String providerName, String code) {
+        ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
+        log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
+    }
+
+    /**
+     * token 발급 요청
+     */
+    private MultiValueMap<String, String> tokenRequest(ClientRegistration provider, String code) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("code", code);
+        formData.add("grant_type", "authorization_code");
+        formData.add("redirect_uri", provider.getRedirectUri());
+        formData.add("client_id", provider.getClientId());
+        log.info("redirectUri={}", provider.getRedirectUri());
+        return formData;
+    }
+}
