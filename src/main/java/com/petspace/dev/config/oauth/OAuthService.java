@@ -2,7 +2,9 @@ package com.petspace.dev.config.oauth;
 
 import com.petspace.dev.config.oauth.dto.OAuthAttributes;
 import com.petspace.dev.config.oauth.dto.OAuthTokenResponse;
+import com.petspace.dev.config.oauth.jwt.JwtProvider;
 import com.petspace.dev.domain.User;
+import com.petspace.dev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -10,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,12 +29,22 @@ public class OAuthService {
     private static final String BEARER_TYPE = "Bearer";
 
     private final InMemoryClientRegistrationRepository inMemoryRepository;
+    private final UserRepository userRepository;
+    private final JwtProvider jwtProvider;
 
+    @Transactional
     public void login(String providerName, String code) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, code);
         log.info("user nickname={}, email={}, oauthProvider={}", user.getNickname(), user.getEmail(), user.getOauthProvider());
+        userRepository.save(user);
+
+        String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getId()));
+        String refreshToken = jwtProvider.createRefreshToken();
+
+        log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
+        // 이제 이렇게 발급 받은 토큰을 서버(Redis)단에서 저장하고, 프론트단으로 넘겨주면됨
     }
 
     /**
