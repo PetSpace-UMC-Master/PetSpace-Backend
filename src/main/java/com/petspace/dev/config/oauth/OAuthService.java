@@ -1,6 +1,8 @@
 package com.petspace.dev.config.oauth;
 
+import com.petspace.dev.config.oauth.dto.OAuthAttributes;
 import com.petspace.dev.config.oauth.dto.OAuthTokenResponse;
+import com.petspace.dev.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,6 +30,17 @@ public class OAuthService {
     public void login(String providerName, String code) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
+    }
+
+    /**
+     * 회원정보를 토대로 회원 추출
+     */
+    private User getUserProfile(ClientRegistration provider, String code) {
+        OAuthTokenResponse token = getToken(provider, code);
+        Map<String, Object> userAttributes = getUserAttributes(provider, token);
+        User extract = OAuthAttributes.extract(provider.getClientName(), userAttributes);
+        log.info("user=[{}][{}][{}]", extract.getEmail(), extract.getNickname(), extract.getOauthProvider());
+        return extract;
     }
 
     /**
