@@ -30,6 +30,8 @@ public class OAuthService {
     public void login(String providerName, String code) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
+        User user = getUserProfile(provider, code);
+        log.info("user nickname={}, email={}, oauthProvider={}", user.getNickname(), user.getEmail(), user.getOauthProvider());
     }
 
     /**
