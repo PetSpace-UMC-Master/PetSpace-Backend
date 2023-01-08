@@ -1,6 +1,7 @@
 package com.petspace.dev.config.oauth.dto;
 
 import com.petspace.dev.config.oauth.provider.KakaoUserInfo;
+import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 
 import java.util.Arrays;
@@ -14,6 +15,9 @@ public enum OAuthAttributes {
                     .nickname(kakaoUserInfo.getNickName())
                     .email(kakaoUserInfo.getEmail())
                     .oauthProvider(kakaoUserInfo.getProvider())
+                    .privacyAgreement(true)
+                    .hostPermission(false)
+                    .status(Status.ACTIVE)
                     .build();
         }
     };
