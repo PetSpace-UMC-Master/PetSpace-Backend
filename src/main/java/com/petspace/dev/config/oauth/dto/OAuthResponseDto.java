@@ -7,19 +7,20 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class OAuthTokenResponse {
+public class OAuthResponseDto {
+
+    private String email;
 
     @JsonProperty("access_token")
     private String accessToken;
-    private String scope;
 
-    @JsonProperty("token_type")
-    private String tokenType;
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 
     @Builder
-    public OAuthTokenResponse(String accessToken, String scope, String tokenType) {
+    public OAuthResponseDto(String email, String accessToken, String refreshToken) {
+        this.email = email;
         this.accessToken = accessToken;
-        this.scope = scope;
-        this.tokenType = tokenType;
+        this.refreshToken = refreshToken;
     }
 }
