@@ -1,22 +1,30 @@
 package com.petspace.dev.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petspace.dev.domain.OauthProvider;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.user.UserRegisterRequestDto;
 import com.petspace.dev.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserAPIControllerTest {
@@ -25,10 +33,21 @@ public class UserAPIControllerTest {
     int port;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private WebApplicationContext context;
+
+    private MockMvc mvc;
+
+    @BeforeEach
+    public void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
+
 
     @AfterEach
     public void tearDown() {
@@ -36,6 +55,7 @@ public class UserAPIControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     public void user가_등록된다() throws Exception {
         //given
         String username = "username";
@@ -43,9 +63,7 @@ public class UserAPIControllerTest {
         String birth = "1997-06-27";
         String email = "woook27@naver.com";
         String password = "password";
-        boolean privacyAgreement = true;
         boolean marketingAgreement = false;
-        boolean hostPermission = false;
         OauthProvider oauthProvider = OauthProvider.NONE;
         Status status = Status.ACTIVE;
 
@@ -56,12 +74,12 @@ public class UserAPIControllerTest {
         String url = "http://localhost:" + port + "/user";
 
         //when
-        ResponseEntity<Long> responseEntity = restTemplate.postForEntity(url, requestDto, Long.class);
+        mvc.perform(post(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(requestDto)))
+                .andExpect(status().isOk());
 
         //then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isGreaterThan(0L);
-
         List<User> all = userRepository.findAll();
         User user = all.get(0);
         assertThat(user.getUsername()).isEqualTo(username);

@@ -25,11 +25,21 @@ dependencies {
 
 	// 쿼리 파라미터 확인
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'
-	compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//mustache
+	implementation 'org.springframework.boot:spring-boot-starter-mustache'
+
+	//Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	//Spring Security Test
+	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
