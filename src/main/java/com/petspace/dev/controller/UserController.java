@@ -24,6 +24,22 @@ public class UserController {
     @PostMapping
     public BaseResponse<PostSignUpRes> signUpUser(@RequestBody PostSignUpReq postSignUpReq){
 
+        /**
+         * Validation -> Not Null Not Empty Not Blank @Validated 참고
+         */
+        // Email 형식이 Empty 한지
+        if(postSignUpReq.getEmail().isEmpty()){
+            // BaseResponseStatus type 으로 생성하여 fail 을 의미한다.
+            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
+        }
+        // Password 형식이 Empty 한지
+        if(postSignUpReq.getPassword().isEmpty()){
+            return new BaseResponse<>(POST_USERS_EMPTY_PASSWORD);
+        }
+        // Email 정규표현. xxxx@xxxx.xxx 와 같은 형식인지.
+        if(!isRegexEmail(postSignUpReq.getEmail())){
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
 
         /**
          * 회원 가입 (Service 에서 내부적으로 기존회원 체크 후 Exception 처리)
