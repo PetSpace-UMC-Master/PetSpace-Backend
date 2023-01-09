@@ -1,4 +1,4 @@
-package com.petspace.dev.config.oauth.jwt;
+package com.petspace.dev.util.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -28,9 +28,7 @@ public class JwtProvider {
     private String secretKey;
 
     public String createAccessToken(String payload) {
-        log.info("createToken In accessToken = {}", accessTokenValidityInMilliSeconds);
-        log.info("createToken In secretKey = {}", secretKey);
-        return createToken(payload,refreshTokenValidityInMilliSeconds);
+        return createToken(payload,accessTokenValidityInMilliSeconds);
     }
 
     public String createRefreshToken() {
@@ -42,8 +40,8 @@ public class JwtProvider {
 
     public String createToken(String payload, long expireLength) {
         Claims claims = Jwts.claims().setSubject(payload);
-        log.info("claims = {}", claims);
         Date now = new Date();
+        log.info("now = {}, expireLength = {}", now, expireLength);
         Date validity = new Date(now.getTime() + expireLength);
         log.info("validity = {}", validity);
         return Jwts.builder()
