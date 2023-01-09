@@ -58,10 +58,13 @@ public class User extends BaseTimeEntity {
     @Column(length = 45, nullable = false)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Builder
     public User(String username, String nickname, String birth, String email, String password
             , boolean privacyAgreement, boolean marketingAgreement, boolean hostPermission
-            , OauthProvider oauthProvider, Status status) {
+            , OauthProvider oauthProvider, Status status, Role role) {
         this.username = username;
         this.nickname = nickname;
         this.birth = birth;
@@ -72,5 +75,16 @@ public class User extends BaseTimeEntity {
         this.hostPermission = hostPermission;
         this.oauthProvider = oauthProvider;
         this.status = status;
+        this.role = role;
+    }
+
+    public User update(String username) {
+        this.username = username;
+
+        return this;
+    }
+
+    public String getRoleKey() {
+        return role.getKey();
     }
 }

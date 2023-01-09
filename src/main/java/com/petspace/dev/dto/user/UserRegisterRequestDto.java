@@ -1,6 +1,7 @@
 package com.petspace.dev.dto.user;
 
 import com.petspace.dev.domain.OauthProvider;
+import com.petspace.dev.domain.Role;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class UserRegisterRequestDto {
     private String nickname;
     @NotBlank
     private String birth;
+
     @NotBlank(message = "EMPTY_EMAIL")
     @Email(message = "INVALID_EMAIL")
     private String email;
@@ -34,6 +36,7 @@ public class UserRegisterRequestDto {
     private boolean hostPermission;
     private OauthProvider oauthProvider;
     private Status status;
+    private Role role;
 
     @Builder
     public UserRegisterRequestDto(String username, String nickname, String birth, String email,
@@ -50,6 +53,7 @@ public class UserRegisterRequestDto {
         hostPermission = false;
         oauthProvider = OauthProvider.NONE;
         status = Status.ACTIVE;
+        role = Role.USER;
     }
 
     public User toEntity() {
@@ -58,6 +62,7 @@ public class UserRegisterRequestDto {
         hostPermission = false;
         oauthProvider = OauthProvider.NONE;
         status = Status.ACTIVE;
+        role = Role.USER;
 
         return User.builder().username(username).nickname(nickname).birth(birth).email(email).password(password)
                 .privacyAgreement(privacyAgreement).marketingAgreement(marketingAgreement).hostPermission(hostPermission)
