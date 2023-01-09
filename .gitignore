@@ -28,6 +28,14 @@ out/
 
 **/src/main/resources/application.yml
 **/src/test/resources/application.yml
+**/src/main/resources/application-oauth.yml
+**/src/test/resources/application-oauth.yml
+
+### mustache ###
+src/main/resources/templates/
+src/main/resources/static/js/app/
+src/main/java/com/petspace/dev/controller/IndexController.java
+src/test/java/com/petspace/dev/controller/IndexControllerTest.java
 
 
 ### NetBeans ###
