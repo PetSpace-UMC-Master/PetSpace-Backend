@@ -2,7 +2,8 @@ package com.petspace.dev.config.oauth;
 
 import com.petspace.dev.config.oauth.dto.OAuthAttributes;
 import com.petspace.dev.config.oauth.dto.OAuthTokenResponse;
-import com.petspace.dev.config.oauth.jwt.JwtProvider;
+import com.petspace.dev.config.oauth.dto.UserOAuthResponseDto;
+import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class OAuthService {
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public void login(String providerName, String code) {
+    public UserOAuthResponseDto login(String providerName, String code) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, code);
@@ -44,7 +45,12 @@ public class OAuthService {
         String refreshToken = jwtProvider.createRefreshToken();
 
         log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
-        // 이제 이렇게 발급 받은 토큰을 서버(Redis)단에서 저장하고, 프론트단으로 넘겨주면됨
+
+        return UserOAuthResponseDto.builder()
+                .email(user.getEmail())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     /**
