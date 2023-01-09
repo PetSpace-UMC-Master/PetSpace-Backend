@@ -1,7 +1,9 @@
 package com.petspace.dev.service;
 
 import com.petspace.dev.config.BaseException;
-import com.petspace.dev.config.BaseResponse;
+import com.petspace.dev.domain.HostPermission;
+import com.petspace.dev.domain.OauthProvider;
+import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.ResponseDto;
 import com.petspace.dev.repository.UserRepository;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Optional;
 
 import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_EXISTS_EMAIL;
 
@@ -35,9 +37,13 @@ public class UserService {
 
         // 비밀번호 암호화
         user.setPassword(password);
+        user.setHostPermission(HostPermission.GUEST);
+        user.setOauthProvider(OauthProvider.NONE);
+        user.setPrivacyAgreement(user.isPrivacyAgreement());
+        user.setStatus(Status.ACTIVE);
 
         // 이메일 중복 확인
-        List<User> findByEmails = userRepository.findByEmail(user.getEmail());
+        Optional<User> findByEmails = userRepository.findByEmail(user.getEmail());
         if (!findByEmails.isEmpty()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }

@@ -4,8 +4,11 @@ import com.petspace.dev.config.BaseException;
 import com.petspace.dev.config.BaseResponse;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.petspace.dev.config.BaseResponseStatus.*;

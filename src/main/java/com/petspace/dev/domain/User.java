@@ -18,9 +18,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity{
+public class User extends BaseTimeEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -47,9 +48,15 @@ public class User extends BaseTimeEntity{
 
     private String password;
 
+    @Column(length = 2000)
+    private String imgUrl;
+
     private boolean privacyAgreement;
     private boolean marketingAgreement;
-    private boolean hostPermission;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 45, nullable = false)
+    private HostPermission hostPermission;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
@@ -59,5 +66,27 @@ public class User extends BaseTimeEntity{
     @Column(length = 45, nullable = false)
     private Status status;
 
+    @Builder
+    public User(String nickname, String birth, String email, String imgUrl,
+                OauthProvider oauthProvider, Status status, HostPermission hostPermission) {
+        this.nickname = nickname;
+        this.birth = birth;
+        this.imgUrl = imgUrl;
+        this.email = email;
+        this.oauthProvider = oauthProvider;
+        this.status = status;
+        this.hostPermission = hostPermission;
+    }
+
+    public User update(String nickname, String imgUrl) {
+        this.nickname = nickname;
+        this.imgUrl = imgUrl;
+
+        return this;
+    }
+
+    public String getPermissionKey() {
+        return this.hostPermission.getKey();
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.petspace.dev.security;
 
+import com.petspace.dev.service.UserOAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 //    private final JwtTokenProvider jwtTokenProvider;
+    private final UserOAuth2Service userOAuth2Service;
 
     @Bean
     public BCryptPasswordEncoder encoderPassword() {
@@ -47,9 +49,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/hello").permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .logout()
+                .logoutSuccessUrl("/")
+                .and()
                 .oauth2Login()
                 .userInfoEndpoint() // oauth2 로그인 성공 후 가져올 때 설정들
-                .userService(customOauth2UserService);
+                .userService(userOAuth2Service);
 //                .and()
 //                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 //                .and()
