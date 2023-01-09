@@ -1,12 +1,18 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.config.BaseException;
+import com.petspace.dev.config.BaseResponseStatus;
 import com.petspace.dev.domain.User;
+import com.petspace.dev.dto.PostSignUpReq;
+import com.petspace.dev.dto.PostSignUpRes;
 import com.petspace.dev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.petspace.dev.config.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,18 +24,17 @@ public class UserService {
      * 회원가입
      */
     @Transactional
-    public Long signUp(User user){
+    public PostSignUpRes signUp(User user) throws BaseException {
         validateDuplicateUser(user);
         userRepository.save(user);
-        return user.getId();
+        // TODO welcome 빼고, 어느 정보들 넘겨줄지 논의
+        return new PostSignUpRes(user.getId(), user.getNickname()+" 님 반갑습니다.");
     }
 
-    // TODO 로그인 기능시 수정해서 사용 가능할 듯
-    private void validateDuplicateUser(User user){
+    private void validateDuplicateUser(User user) throws BaseException {
         List<User> findUsers = userRepository.findByEmail(user.getEmail());
-
         if(!findUsers.isEmpty()){
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
     }
 
