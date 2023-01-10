@@ -32,17 +32,16 @@ public class UserController {
 //    @ApiOperation(value = "회원가입 API", notes = "회원가입form에서 정보를 받아 DB에 저장합니다")
     public Object signUp(@RequestBody SessionUserDto userDto) throws BaseException {
 
-        if (!isRegexEmail(userDto.getEmail())) {
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
-
         if (userDto.getEmail() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
         }
-
+        if (!isRegexEmail(userDto.getEmail())) {
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+        }
         if (userDto.getNickname() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_NICKNAME);
         }
+
         String username = userDto.getUsername();
         String nickname = userDto.getNickname();
         String birth = userDto.getBirth();
