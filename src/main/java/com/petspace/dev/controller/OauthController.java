@@ -1,8 +1,8 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.dto.oauth.OAuthRequestDto;
-import com.petspace.dev.dto.oauth.OAuthResponseDto;
-import com.petspace.dev.service.OAuthService;
+import com.petspace.dev.dto.oauth.OauthRequestDto;
+import com.petspace.dev.dto.oauth.OauthResponseDto;
+import com.petspace.dev.service.OauthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/oauth")
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthController {
+public class OauthController {
 
-    private final OAuthService oAuthService;
+    private final OauthService oAuthService;
 
     @PostMapping("/{provider}")
-    public ResponseEntity<OAuthResponseDto> OauthLoginRequest(@PathVariable String provider,
-                                                              @RequestBody OAuthRequestDto requestDto) {
+    public ResponseEntity<OauthResponseDto> OauthLoginRequest(@PathVariable String provider,
+                                                              @RequestBody OauthRequestDto requestDto) {
         log.info("provider={}, accessToken={}", provider, requestDto.getAccessToken());
-        OAuthResponseDto oAuthResponseDto = oAuthService.login(provider, requestDto);
+        OauthResponseDto oAuthResponseDto = oAuthService.login(provider, requestDto);
         return ResponseEntity.ok(oAuthResponseDto);
     }
 }

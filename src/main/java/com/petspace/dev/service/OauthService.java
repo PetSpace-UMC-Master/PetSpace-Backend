@@ -1,8 +1,8 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.oauth.OAuthAttributes;
-import com.petspace.dev.dto.oauth.OAuthRequestDto;
-import com.petspace.dev.dto.oauth.OAuthResponseDto;
+import com.petspace.dev.oauth.OauthAttributes;
+import com.petspace.dev.dto.oauth.OauthRequestDto;
+import com.petspace.dev.dto.oauth.OauthResponseDto;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.jwt.JwtProvider;
@@ -20,14 +20,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthService {
+public class OauthService {
 
     private final InMemoryClientRegistrationRepository inMemoryRepository;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public OAuthResponseDto login(String providerName, OAuthRequestDto requestDto) {
+    public OauthResponseDto login(String providerName, OauthRequestDto requestDto) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, requestDto);
@@ -39,7 +39,7 @@ public class OAuthService {
 
         log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
 
-        return OAuthResponseDto.builder()
+        return OauthResponseDto.builder()
                 .email(user.getEmail())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -49,9 +49,9 @@ public class OAuthService {
     /**
      * 회원정보를 토대로 회원 추출
      */
-    private User getUserProfile(ClientRegistration provider, OAuthRequestDto requestDto) {
+    private User getUserProfile(ClientRegistration provider, OauthRequestDto requestDto) {
         Map<String, Object> userAttributes = getUserAttributes(provider, requestDto);
-        User extract = OAuthAttributes.extract(provider.getClientName(), userAttributes);
+        User extract = OauthAttributes.extract(provider.getClientName(), userAttributes);
         log.info("user=[{}][{}][{}]", extract.getEmail(), extract.getNickname(), extract.getOauthProvider());
         return extract;
     }
@@ -59,7 +59,7 @@ public class OAuthService {
     /**
      * token을 토대로 회원정보 요청
      */
-    private Map<String, Object> getUserAttributes(ClientRegistration provider, OAuthRequestDto requestDto) {
+    private Map<String, Object> getUserAttributes(ClientRegistration provider, OauthRequestDto requestDto) {
         log.info("userInfoUri = {}", provider.getProviderDetails().getUserInfoEndpoint().getUri());
         return WebClient.create()
                 .get()

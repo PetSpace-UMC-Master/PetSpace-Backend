@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class OAuthResponseDto {
+public class OauthResponseDto {
 
     private String email;
     private String accessToken;
     private String refreshToken;
 
     @Builder
-    public OAuthResponseDto(String email, String accessToken, String refreshToken) {
+    public OauthResponseDto(String email, String accessToken, String refreshToken) {
         this.email = email;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
