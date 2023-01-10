@@ -1,4 +1,4 @@
-package com.petspace.dev.dto;
+package com.petspace.dev.dto.user;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package com.petspace.dev.config.oauth;
+package com.petspace.dev.service;
 
-import com.petspace.dev.config.oauth.dto.OAuthAttributes;
-import com.petspace.dev.config.oauth.dto.OAuthRequestDto;
-import com.petspace.dev.config.oauth.dto.OAuthResponseDto;
+import com.petspace.dev.oauth.OAuthAttributes;
+import com.petspace.dev.dto.oauth.OAuthRequestDto;
+import com.petspace.dev.dto.oauth.OAuthResponseDto;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.jwt.JwtProvider;

@@ -1,7 +1,8 @@
-package com.petspace.dev.config.oauth;
+package com.petspace.dev.controller;
 
-import com.petspace.dev.config.oauth.dto.OAuthRequestDto;
-import com.petspace.dev.config.oauth.dto.OAuthResponseDto;
+import com.petspace.dev.dto.oauth.OAuthRequestDto;
+import com.petspace.dev.dto.oauth.OAuthResponseDto;
+import com.petspace.dev.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

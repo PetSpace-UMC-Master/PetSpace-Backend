@@ -1,6 +1,5 @@
-package com.petspace.dev.config.oauth.dto;
+package com.petspace.dev.oauth;
 
-import com.petspace.dev.config.oauth.provider.KakaoUserInfo;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 

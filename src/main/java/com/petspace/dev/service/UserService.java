@@ -2,7 +2,7 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.domain.User;
-import com.petspace.dev.dto.UserLoginResponseDto;
+import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.petspace.dev.config.oauth.provider;
+package com.petspace.dev.oauth;
 
 import com.petspace.dev.domain.OauthProvider;
 import lombok.AllArgsConstructor;
