@@ -22,9 +22,8 @@ public class OAuthController {
     @PostMapping("/{provider}")
     public ResponseEntity<OAuthResponseDto> OauthLoginRequest(@PathVariable String provider,
                                                               @RequestBody OAuthRequestDto requestDto) {
-        String accessToken = requestDto.getAccessToken();
-        log.info("provider={}, accessToken={}", provider, accessToken);
-        OAuthResponseDto oAuthResponseDto = oAuthService.login(provider, accessToken);
+        log.info("provider={}, accessToken={}", provider, requestDto.getAccessToken());
+        OAuthResponseDto oAuthResponseDto = oAuthService.login(provider, requestDto);
         return ResponseEntity.ok(oAuthResponseDto);
     }
 }

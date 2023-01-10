@@ -1,6 +1,7 @@
 package com.petspace.dev.config.oauth;
 
 import com.petspace.dev.config.oauth.dto.OAuthAttributes;
+import com.petspace.dev.config.oauth.dto.OAuthRequestDto;
 import com.petspace.dev.config.oauth.dto.OAuthResponseDto;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.repository.UserRepository;
@@ -26,10 +27,10 @@ public class OAuthService {
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public OAuthResponseDto login(String providerName, String accessTokenFromResourceServer) {
+    public OAuthResponseDto login(String providerName, OAuthRequestDto requestDto) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
-        User user = getUserProfile(provider, accessTokenFromResourceServer);
+        User user = getUserProfile(provider, requestDto);
         log.info("user nickname={}, email={}, oauthProvider={}", user.getNickname(), user.getEmail(), user.getOauthProvider());
         userRepository.save(user);
 
@@ -48,8 +49,8 @@ public class OAuthService {
     /**
      * 회원정보를 토대로 회원 추출
      */
-    private User getUserProfile(ClientRegistration provider, String accessTokenFromResourceServer) {
-        Map<String, Object> userAttributes = getUserAttributes(provider, accessTokenFromResourceServer);
+    private User getUserProfile(ClientRegistration provider, OAuthRequestDto requestDto) {
+        Map<String, Object> userAttributes = getUserAttributes(provider, requestDto);
         User extract = OAuthAttributes.extract(provider.getClientName(), userAttributes);
         log.info("user=[{}][{}][{}]", extract.getEmail(), extract.getNickname(), extract.getOauthProvider());
         return extract;
@@ -58,13 +59,13 @@ public class OAuthService {
     /**
      * token을 토대로 회원정보 요청
      */
-    private Map<String, Object> getUserAttributes(ClientRegistration provider, String accessTokenFromResourceServer) {
+    private Map<String, Object> getUserAttributes(ClientRegistration provider, OAuthRequestDto requestDto) {
         log.info("userInfoUri = {}", provider.getProviderDetails().getUserInfoEndpoint().getUri());
         return WebClient.create()
                 .get()
                 .uri(provider.getProviderDetails().getUserInfoEndpoint().getUri())
                 .headers(header ->
-                        header.setBearerAuth(accessTokenFromResourceServer))
+                        header.setBearerAuth(requestDto.getAccessToken()))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
