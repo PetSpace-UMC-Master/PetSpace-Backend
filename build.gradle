@@ -24,6 +24,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.6.3'
+	implementation 'com.google.code.gson:gson:2.8.7'
 
 	// 쿼리 파라미터 확인
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'

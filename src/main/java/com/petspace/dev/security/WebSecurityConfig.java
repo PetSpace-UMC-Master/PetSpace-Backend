@@ -1,6 +1,6 @@
 package com.petspace.dev.security;
 
-import com.petspace.dev.service.UserOAuth2Service;
+//import com.petspace.dev.service.UserOAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,19 +21,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 //    private final JwtTokenProvider jwtTokenProvider;
-    private final UserOAuth2Service userOAuth2Service;
+//    private final UserOAuth2Service userOAuth2Service;
 
     @Bean
     public BCryptPasswordEncoder encoderPassword() {
         return new BCryptPasswordEncoder();
     }
-
-    // authenticationManager를 Bean 등록합니다.
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
 
     protected void configure(HttpSecurity http) throws Exception {
         http.cors();
@@ -45,16 +38,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 // 회원 관리 처리 API 전부를 login 없이 허용
+                .antMatchers( "/oauth2/**").permitAll()
                 .antMatchers("/app/signin/**").permitAll()
-                .antMatchers("/hello").permitAll()
+                .antMatchers("/app/users/**").permitAll()
+                .antMatchers("kapi.kakao.com/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()
                 .logoutSuccessUrl("/")
                 .and()
                 .oauth2Login()
-                .userInfoEndpoint() // oauth2 로그인 성공 후 가져올 때 설정들
-                .userService(userOAuth2Service);
+                .userInfoEndpoint(); // oauth2 로그인 성공 후 가져올 때 설정들
+//                .userService(userOAuth2Service);
 //                .and()
 //                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 //                .and()
