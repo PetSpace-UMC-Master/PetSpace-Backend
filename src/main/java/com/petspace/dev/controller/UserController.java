@@ -49,13 +49,8 @@ public class UserController {
         String email = userDto.getEmail();
         String imgUrl = userDto.getImgUrl();
         String password = userDto.getPassword();
-        OauthProvider oauthProvider = OauthProvider.NONE;
-        Status status = Status.ACTIVE;
-        HostPermission hostPermission = HostPermission.GUEST;
 
-        User user = new User(username, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
-
-
+        SessionUserDto user = new SessionUserDto(username, nickname, email, imgUrl, birth, password);
 
         try {
             return userService.signup(user);

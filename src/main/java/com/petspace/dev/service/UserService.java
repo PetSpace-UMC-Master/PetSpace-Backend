@@ -28,7 +28,7 @@ import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_EXISTS_EMAIL
 @Service
 @Component
 @Transactional(readOnly = true)
-public class UserService {
+public class  UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -51,21 +51,30 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseDto signup(User user) throws BaseException {
-        String password = passwordEncoder.encode(user.getPassword());
+    public ResponseDto signup(SessionUserDto userDto) throws BaseException {
+        String password = passwordEncoder.encode(userDto.getPassword());
 
         // 비밀번호 암호화
-        user.setPassword(password);
-        user.setHostPermission(HostPermission.GUEST);
-        user.setOauthProvider(OauthProvider.NONE);
-        user.setPrivacyAgreement(user.isPrivacyAgreement());
-        user.setStatus(Status.ACTIVE);
+        userDto.setPassword(password);
+
+        String username = userDto.getUsername();
+        String nickname = userDto.getNickname();
+        String birth = userDto.getBirth();
+        String email = userDto.getEmail();
+        String imgUrl = userDto.getImgUrl();
+        OauthProvider oauthProvider = OauthProvider.NONE;
+        HostPermission hostPermission = HostPermission.GUEST;
+        Status status = Status.ACTIVE;
 
         // 이메일 중복 확인
-        Optional<SessionUserDto> findByEmails = userRepository.findByEmail(user.getEmail());
+        Optional<SessionUserDto> findByEmails = userRepository.findByEmail(userDto.getEmail());
         if (!findByEmails.isEmpty()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
+
+        User user = new User(username, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
+
+
         userRepository.save(user);
 
         return new ResponseDto("success", "회원가입에 성공하였습니다", "");
@@ -184,7 +193,8 @@ public class UserService {
             if (!findByEmails.isEmpty()) {
                 throw new BaseException(POST_USERS_EXISTS_EMAIL);
             } else {
-                SessionUserDto kakaoUser = new SessionUserDto();
+
+                SessionUserDto kakaoUser = new SessionUserDto(kakaoId, nickname, email, imgUrl, birth, password);
 
                 kakaoUser.setImgUrl(imgUrl);
                 kakaoUser.setEmail(email);
