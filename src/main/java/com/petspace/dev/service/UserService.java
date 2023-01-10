@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Optional;
 
 import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_EXISTS_EMAIL;
 
@@ -60,8 +59,8 @@ public class UserService {
         user.setStatus(Status.ACTIVE);
 
         // 이메일 중복 확인
-        Optional<User> findByEmails = userRepository.findByEmail(user.getEmail());
-        if (!findByEmails.isEmpty()) {
+        User findByEmails = userRepository.findByEmail(user.getEmail());
+        if (findByEmails != null) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
         userRepository.save(user);
@@ -134,9 +133,6 @@ public class UserService {
             conn.setDoOutput(true);
             conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
 
-            //결과 코드가 200이라면 성공
-            int responseCode = conn.getResponseCode();
-
             //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line = "";
@@ -176,8 +172,8 @@ public class UserService {
             HostPermission hostPermission = HostPermission.GUEST;
 
 
-            Optional<User> findByEmails = userRepository.findByEmail(email);
-            if (!findByEmails.isEmpty()) {
+            User findByEmails = userRepository.findByEmail(email);
+            if (findByEmails != null) {
                 throw new BaseException(POST_USERS_EXISTS_EMAIL);
             } else {
                 User kakaoUser = new User(nickname, birth, email, imgUrl, oauthProvider, status, hostPermission);
@@ -201,6 +197,23 @@ public class UserService {
             return new ResponseDto("fail", "회원가입에 실패하였습니다", "");
 
         }
+    }
+
+    //로그인 로직
+    public User login(String email, String password) throws BaseException {
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
+
+        // 패스워드 암호화
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        }
+
+        return user;
     }
 
 
