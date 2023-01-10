@@ -66,13 +66,14 @@ public class User extends BaseTimeEntity {
     @Column(length = 45, nullable = false)
     private Status status;
 
-    @Builder
-    public User(String nickname, String birth, String email, String imgUrl,
+    public User(String username, String nickname, String birth, String email, String password, String imgUrl,
                 OauthProvider oauthProvider, Status status, HostPermission hostPermission) {
+        this.username = username;
         this.nickname = nickname;
         this.birth = birth;
         this.imgUrl = imgUrl;
         this.email = email;
+        this.password = password;
         this.oauthProvider = oauthProvider;
         this.status = status;
         this.hostPermission = hostPermission;

@@ -3,11 +3,13 @@ package com.petspace.dev.service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.petspace.dev.config.BaseException;
+import com.petspace.dev.config.BaseResponse;
 import com.petspace.dev.domain.HostPermission;
 import com.petspace.dev.domain.OauthProvider;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.ResponseDto;
+import com.petspace.dev.dto.SessionUserDto;
 import com.petspace.dev.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,13 +62,14 @@ public class UserService {
         user.setStatus(Status.ACTIVE);
 
         // 이메일 중복 확인
-        Optional<User> findByEmails = userRepository.findByEmail(user.getEmail());
+        Optional<SessionUserDto> findByEmails = userRepository.findByEmail(user.getEmail());
         if (!findByEmails.isEmpty()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
         userRepository.save(user);
 
         return new ResponseDto("success", "회원가입에 성공하였습니다", "");
+
     }
 
     public String getKaKaoAccessToken(String code) {
@@ -158,6 +161,7 @@ public class UserService {
             String nickname = "";
             String imgUrl = "";
             String kakaoId = "";
+            String password = "";
 
             if (hasEmail) {
                 email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
@@ -176,22 +180,21 @@ public class UserService {
             HostPermission hostPermission = HostPermission.GUEST;
 
 
-            Optional<User> findByEmails = userRepository.findByEmail(email);
+            Optional<SessionUserDto> findByEmails = userRepository.findByEmail(email);
             if (!findByEmails.isEmpty()) {
                 throw new BaseException(POST_USERS_EXISTS_EMAIL);
             } else {
-                User kakaoUser = new User(nickname, birth, email, imgUrl, oauthProvider, status, hostPermission);
+                SessionUserDto kakaoUser = new SessionUserDto();
 
                 kakaoUser.setImgUrl(imgUrl);
                 kakaoUser.setEmail(email);
                 kakaoUser.setBirth(birth);
                 kakaoUser.setNickname(nickname);
-                kakaoUser.setHostPermission(HostPermission.GUEST);
-                kakaoUser.setOauthProvider(OauthProvider.KAKAO);
-                kakaoUser.setPrivacyAgreement(true);
                 kakaoUser.setUsername("kakao_id_" + kakaoId);
 
-                userRepository.save(kakaoUser);
+                User user = new User(kakaoId, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
+
+                userRepository.save(user);
                 br.close();
 
                 return new ResponseDto("success", "회원가입에 성공하였습니다", "");

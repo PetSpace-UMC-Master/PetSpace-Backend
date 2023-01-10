@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 // 회원 관리 처리 API 전부를 login 없이 허용
                 .antMatchers( "/oauth2/**").permitAll()
-                .antMatchers("/app/signin/**").permitAll()
+                .antMatchers("/app/signup/**").permitAll()
                 .antMatchers("/app/users/**").permitAll()
                 .antMatchers("kapi.kakao.com/**").permitAll()
                 .anyRequest().authenticated()
