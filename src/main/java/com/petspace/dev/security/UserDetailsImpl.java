@@ -3,31 +3,31 @@ package com.petspace.dev.security;
 import com.petspace.dev.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private final User user;
+    private final Optional<User> user;
 
-    public UserDetailsImpl(User user) {
+    public UserDetailsImpl(Optional<User> user) {
         this.user = user;
     }
 
-    public User getUser() {
+    public Optional<User> getUser() {
         return user;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return user.get().getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.get().getUsername();
     }
 
     @Override

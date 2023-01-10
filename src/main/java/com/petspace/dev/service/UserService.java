@@ -8,6 +8,7 @@ import com.petspace.dev.domain.OauthProvider;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.ResponseDto;
+import com.petspace.dev.dto.SessionUserDto;
 import com.petspace.dev.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Optional;
 
 import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_EXISTS_EMAIL;
 
 @Service
 @Component
 @Transactional(readOnly = true)
-public class UserService {
+public class  UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -48,24 +50,35 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseDto signup(User user) throws BaseException {
-        String password = passwordEncoder.encode(user.getPassword());
+    public ResponseDto signup(SessionUserDto userDto) throws BaseException {
+        String password = passwordEncoder.encode(userDto.getPassword());
 
         // 비밀번호 암호화
-        user.setPassword(password);
-        user.setHostPermission(HostPermission.GUEST);
-        user.setOauthProvider(OauthProvider.NONE);
-        user.setPrivacyAgreement(user.isPrivacyAgreement());
-        user.setStatus(Status.ACTIVE);
+        userDto.setPassword(password);
+
+        String username = userDto.getUsername();
+        String nickname = userDto.getNickname();
+        String birth = userDto.getBirth();
+        String email = userDto.getEmail();
+        String imgUrl = userDto.getImgUrl();
+        OauthProvider oauthProvider = OauthProvider.NONE;
+        HostPermission hostPermission = HostPermission.GUEST;
+        Status status = Status.ACTIVE;
 
         // 이메일 중복 확인
-        User findByEmails = userRepository.findByEmail(user.getEmail());
-        if (findByEmails != null) {
+
+        Optional<User> findByEmails = userRepository.findByEmail(userDto.getEmail());
+        if (!findByEmails.isEmpty()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
+
+        User user = new User(username, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
+
+
         userRepository.save(user);
 
         return new ResponseDto("success", "회원가입에 성공하였습니다", "");
+
     }
 
     public String getKaKaoAccessToken(String code) {
@@ -154,6 +167,7 @@ public class UserService {
             String nickname = "";
             String imgUrl = "";
             String kakaoId = "";
+            String password = "";
 
             if (hasEmail) {
                 email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
@@ -172,22 +186,22 @@ public class UserService {
             HostPermission hostPermission = HostPermission.GUEST;
 
 
-            User findByEmails = userRepository.findByEmail(email);
-            if (findByEmails != null) {
+            Optional<User> findByEmails = userRepository.findByEmail(email);
+            if (!findByEmails.isEmpty()) {
                 throw new BaseException(POST_USERS_EXISTS_EMAIL);
             } else {
-                User kakaoUser = new User(nickname, birth, email, imgUrl, oauthProvider, status, hostPermission);
+
+                SessionUserDto kakaoUser = new SessionUserDto(kakaoId, nickname, email, imgUrl, birth, password);
 
                 kakaoUser.setImgUrl(imgUrl);
                 kakaoUser.setEmail(email);
                 kakaoUser.setBirth(birth);
                 kakaoUser.setNickname(nickname);
-                kakaoUser.setHostPermission(HostPermission.GUEST);
-                kakaoUser.setOauthProvider(OauthProvider.KAKAO);
-                kakaoUser.setPrivacyAgreement(true);
                 kakaoUser.setUsername("kakao_id_" + kakaoId);
 
-                userRepository.save(kakaoUser);
+                User user = new User(kakaoId, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
+
+                userRepository.save(user);
                 br.close();
 
                 return new ResponseDto("success", "회원가입에 성공하였습니다", "");
@@ -200,16 +214,16 @@ public class UserService {
     }
 
     //로그인 로직
-    public User login(String email, String password) throws BaseException {
+    public Optional<User> login(String email, String password) throws BaseException {
 
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
         if (user == null) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
-
+        
         // 패스워드 암호화
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.get().getPassword())) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
 

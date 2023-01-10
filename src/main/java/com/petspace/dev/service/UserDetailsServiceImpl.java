@@ -8,7 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Repository
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -22,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     //로그인할 때 들어온 username으로 DB에서 정보 찾기
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
         if (user == null) {
             throw new UsernameNotFoundException("Can't find " + email);
