@@ -7,7 +7,9 @@ import com.petspace.dev.dto.PostLogInReq;
 import com.petspace.dev.dto.PostLogInRes;
 import com.petspace.dev.dto.PostSignUpReq;
 import com.petspace.dev.dto.PostSignUpRes;
+import com.petspace.dev.provider.UserProvider;
 import com.petspace.dev.service.UserService;
+import com.petspace.dev.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,8 @@ import static com.petspace.dev.utils.ValidationRegex.isRegexEmail;
 public class UserController {
 
     private final UserService userService;
+    private final UserProvider userProvider;
+    private final JwtService jwtService;
 
     @PostMapping
     public BaseResponse<PostSignUpRes> signUpUser(@RequestBody PostSignUpReq postSignUpReq){
@@ -55,9 +59,16 @@ public class UserController {
         }
     }
 
-//    @PostMapping("/log-in")
-//    public BaseResponse<PostLogInRes> logIn(@RequestBody PostLogInReq postLoginReq){
-//
-//    }
+    @PostMapping("/log-in")
+    public BaseResponse<PostLogInRes> logIn(@RequestBody PostLogInReq postLoginReq){
+
+        try{
+            // TODO : 형식적 validation
+            PostLogInRes postLogInRes = userProvider.logIn(postLoginReq);
+            return new BaseResponse<>(postLogInRes);
+        }catch(BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 
 }

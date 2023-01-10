@@ -1,11 +1,13 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.Secret.Secret;
 import com.petspace.dev.config.BaseException;
 import com.petspace.dev.config.BaseResponseStatus;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.PostSignUpReq;
 import com.petspace.dev.dto.PostSignUpRes;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.utils.AES128;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,15 @@ public class UserService {
     @Transactional
     public PostSignUpRes signUp(User user) throws BaseException {
         validateDuplicateUser(user);
+
+        // 회원 가입시 비밀번호 encrypt
+        try{
+            String pwd = new AES128(Secret.USER_INFO_PASSWORD_KEY).encrypt(user.getPassword());
+            user.setPassword(pwd);
+        }catch(Exception ignored){
+            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+        }
+
         userRepository.save(user);
         // TODO welcome 빼고, 어느 정보들 넘겨줄지 논의
         return new PostSignUpRes(user.getId(), user.getNickname()+" 님 반갑습니다.");
@@ -40,12 +51,6 @@ public class UserService {
 
     /**
      * 회원 조회
-     */
-
-
-
-    /**
-     * 로그인 기능
      */
 
 }

@@ -1,6 +1,7 @@
 package com.petspace.dev.repository;
 
 import com.petspace.dev.domain.User;
+import com.petspace.dev.dto.PostLogInReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,5 @@ public class UserRepository {
                 .setParameter("email", email)
                 .getResultList();
     }
-
-
 
 }

@@ -26,8 +26,11 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### application info ###
 **/src/main/resources/application.yml
 
+### Secret Values ###
+**/src/main/java/com/petspace/dev/Secret/**
 
 ### NetBeans ###
 /nbproject/private/
