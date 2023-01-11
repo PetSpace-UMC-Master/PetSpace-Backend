@@ -7,9 +7,11 @@ import com.petspace.dev.domain.HostPermission;
 import com.petspace.dev.domain.OauthProvider;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
+import com.petspace.dev.dto.LoginResponseDto;
 import com.petspace.dev.dto.ResponseDto;
 import com.petspace.dev.dto.SessionUserDto;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,12 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 
 import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_EXISTS_EMAIL;
+import static com.petspace.dev.config.BaseResponseStatus.POST_USERS_WRONG_INPUT;
 
 @Service
 @Component
@@ -31,6 +35,7 @@ public class  UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${spring.security.oauth2.client.registration.kakao.clientId}")
     private String clientId;
@@ -44,15 +49,15 @@ public class  UserService {
     private String tokenUri;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Transactional
     public ResponseDto signup(SessionUserDto userDto) throws BaseException {
         String password = passwordEncoder.encode(userDto.getPassword());
-
         // 비밀번호 암호화
         userDto.setPassword(password);
 
@@ -82,6 +87,7 @@ public class  UserService {
     }
 
     public String getKaKaoAccessToken(String code) {
+
         String access_Token = "";
         String refresh_Token = "";
         String reqURL = tokenUri;
@@ -102,6 +108,7 @@ public class  UserService {
             sb.append("&client_secret=" + clientSecret);
             sb.append("&redirect_uri=" + redirectUri);
             sb.append("&code=" + code);
+            System.out.println("code : " + code);
             bw.write(sb.toString());
             bw.flush();
 
@@ -133,8 +140,8 @@ public class  UserService {
     }
 
     @Transactional
-    public ResponseDto createKakaoUser(String token) throws BaseException {
-
+    public Object createKakaoUser(String token) {
+        HttpServletResponse response;
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
         //access_token을 이용하여 사용자 정보 조회
@@ -188,43 +195,43 @@ public class  UserService {
 
             Optional<User> findByEmails = userRepository.findByEmail(email);
             if (!findByEmails.isEmpty()) {
-                throw new BaseException(POST_USERS_EXISTS_EMAIL);
+                User user = new User(kakaoId, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
+                user.setImgUrl(imgUrl);
+                String jwtToken = jwtTokenProvider.createToken(user.getEmail());
+                return jwtToken;
             } else {
 
-                SessionUserDto kakaoUser = new SessionUserDto(kakaoId, nickname, email, imgUrl, birth, password);
-
-                kakaoUser.setImgUrl(imgUrl);
-                kakaoUser.setEmail(email);
-                kakaoUser.setBirth(birth);
-                kakaoUser.setNickname(nickname);
-                kakaoUser.setUsername("kakao_id_" + kakaoId);
-
                 User user = new User(kakaoId, nickname, birth, email, password, imgUrl, oauthProvider, status, hostPermission);
-
                 userRepository.save(user);
                 br.close();
-
-                return new ResponseDto("success", "회원가입에 성공하였습니다", "");
+                String jwtToken = jwtTokenProvider.createToken(user.getEmail());
+                return jwtToken;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return new ResponseDto("fail", "회원가입에 실패하였습니다", "");
 
         }
+        return null;
+    }
+
+    private void kakaoUsersAuthorizationInput(User user, HttpServletResponse response) {
+        // response header에 token 추가
+        String token = jwtTokenProvider.createToken(user.getEmail());
+        response.addHeader("Authorization", "BEARER" + " " + token);
     }
 
     //로그인 로직
-    public Optional<User> login(String email, String password) throws BaseException {
+    public Object login(String email, String password) throws BaseException {
 
         Optional<User> user = userRepository.findByEmail(email);
 
-        if (user == null) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        if (user.isEmpty()) {
+            return new BaseException(POST_USERS_EXISTS_EMAIL);
         }
         
         // 패스워드 암호화
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+            return new BaseException(POST_USERS_WRONG_INPUT);
         }
 
         return user;

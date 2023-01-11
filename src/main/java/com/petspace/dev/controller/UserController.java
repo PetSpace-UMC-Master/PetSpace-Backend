@@ -68,9 +68,7 @@ public class UserController {
     public LoginResponseDto login(@RequestBody HashMap<String, String> map, HttpServletResponse response) throws BaseException {
         String email = map.get("email");
         String password = map.get("password");
-        System.out.println(email);
-        System.out.println(password);
-        Optional<User> user = userService.login(email, password);
+        Optional<User> user = (Optional<User>) userService.login(email, password);
         String checkEmail = user.get().getEmail();
 
         String token = jwtTokenProvider.createToken(checkEmail);
