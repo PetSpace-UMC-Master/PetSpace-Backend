@@ -1,8 +1,8 @@
-package com.petspace.dev.config.oauth.provider;
+package com.petspace.dev.oauth;
 
 import com.petspace.dev.domain.OauthProvider;
 
-public interface OAuthUserInfo {
+public interface OauthUserInfo {
     String getProviderId();
 
     OauthProvider getProvider();

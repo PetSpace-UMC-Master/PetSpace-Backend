@@ -1,4 +1,4 @@
-package com.petspace.dev.config.oauth.provider;
+package com.petspace.dev.oauth;
 
 import com.petspace.dev.domain.OauthProvider;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import java.util.Map;
 
 @AllArgsConstructor
-public class KakaoUserInfo implements OAuthUserInfo{
+public class KakaoUserInfo implements OauthUserInfo {
 
     private Map<String, Object> attributes;
 

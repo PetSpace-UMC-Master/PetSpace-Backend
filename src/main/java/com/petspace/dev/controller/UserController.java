@@ -1,9 +1,9 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.User;
-import com.petspace.dev.dto.UserJoinRequestDto;
-import com.petspace.dev.dto.UserLoginRequestDto;
-import com.petspace.dev.dto.UserLoginResponseDto;
+import com.petspace.dev.dto.user.UserJoinRequestDto;
+import com.petspace.dev.dto.user.UserLoginRequestDto;
+import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,13 +1,12 @@
-package com.petspace.dev.config.oauth.dto;
+package com.petspace.dev.oauth;
 
-import com.petspace.dev.config.oauth.provider.KakaoUserInfo;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 
 import java.util.Arrays;
 import java.util.Map;
 
-public enum OAuthAttributes {
+public enum OauthAttributes {
     KAKAO("kakao") {
         public User of(Map<String, Object> attributes) {
             KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
@@ -24,7 +23,7 @@ public enum OAuthAttributes {
 
     private final String providerName;
 
-    OAuthAttributes(String providerName) {
+    OauthAttributes(String providerName) {
         this.providerName = providerName;
     }
 
