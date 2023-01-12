@@ -77,4 +77,8 @@ public class User extends BaseTimeEntity{
         this.oauthProvider = oauthProvider;
         this.status = status;
     }
+
+    public void encodePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }
