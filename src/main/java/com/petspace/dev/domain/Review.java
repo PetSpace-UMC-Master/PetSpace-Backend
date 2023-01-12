@@ -1,11 +1,7 @@
 package com.petspace.dev.domain;
 
 import com.petspace.dev.domain.image.ReviewImage;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,4 +45,14 @@ public class Review extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    @Builder
+    public Review(Reservation reservation, List<ReviewImage> reviewImages, int score, String content, Status status) {
+        this.reservation = reservation;
+        this.reviewImages = reviewImages;
+        this.score = score;
+        this.content = content;
+        this.status = status;
+    }
+
 }

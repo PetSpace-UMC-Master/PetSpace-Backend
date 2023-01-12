@@ -32,6 +32,6 @@ public class ReviewImage {
     @JoinColumn(name = "review_id")
     private Review review;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String reviewImageUrl;
 }
