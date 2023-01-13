@@ -39,7 +39,7 @@ public class Reservation extends BaseTimeEntity{
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToOne(mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation", orphanRemoval = true)
     private Review review;
 
     @Column(nullable = false)
