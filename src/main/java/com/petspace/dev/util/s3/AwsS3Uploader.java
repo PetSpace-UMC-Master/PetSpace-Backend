@@ -39,14 +39,9 @@ public class AwsS3Uploader {
     // S3로 파일 업로드하기
     private String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
-        String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile)   // S3에 업로드
+                .withCannedAcl(CannedAccessControlList.PublicRead));
         removeNewFile(uploadFile);
-        return uploadImageUrl;
-    }
-
-    // S3로 업로드
-    private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 

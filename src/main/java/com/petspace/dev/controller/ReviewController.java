@@ -4,7 +4,6 @@ import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import static com.petspace.dev.util.BaseResponseStatus.SUCCESS;
@@ -19,10 +18,14 @@ public class ReviewController {
     @PostMapping("/create")
     public BaseResponse createReview(@RequestParam("userId") Long userId,
                                      @RequestParam("reservationId") Long reservationId,
-                                     @RequestBody ReviewCreateRequestDto requestDto) {
+                                     @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+        reviewService.save(userId, reservationId, reviewCreateRequestDto);
+        System.out.println("controller content : " + reviewCreateRequestDto.getContent());
+        System.out.println("controller score : " + reviewCreateRequestDto.getScore());
+        System.out.println("controller userId : " + userId);
+        System.out.println("controller reservationId : " + reservationId);
 
-        reviewService.save(userId, reservationId, requestDto);
-        return new BaseResponse(SUCCESS);
+        return new BaseResponse<>(SUCCESS);
     }
 }
 

@@ -4,16 +4,22 @@ import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
+import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +30,11 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
+    private final ReviewImageRepository reviewImageRepository;
+    private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
-    public Long save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
+    public BaseResponse save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
         Optional<User> user = userRepository.findById(userId);
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
@@ -43,6 +51,9 @@ public class ReviewService {
         String content = reviewRequestDto.getContent();
         int score = reviewRequestDto.getScore();
 
+        System.out.println("content : " + content );
+
+
         Review review = Review.builder()
                 .reservation(reservation1)
                 .status(Status.ACTIVE)
@@ -50,8 +61,25 @@ public class ReviewService {
                 .content(content)
                 .build();
 
-        return reviewRepository.save(review).getId();
+        System.out.println("review_content : " + review.getContent());
+        List<ReviewImage> reviewImages = uploadReviewImages(reviewRequestDto, review);
+
+        return new BaseResponse(review.getId());
     }
 
+    private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
+        return reviewRequestDto.getReviewImages().stream()
+                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "post"))
+                .map(url -> createPostImage(review, url))
+                .collect(Collectors.toList());
+    }
+
+    private ReviewImage createPostImage(Review review, String url) {
+        return reviewImageRepository.save(ReviewImage.builder()
+                .reviewImageUrl(url)
+                .review(review)
+                .build());
+    }
 }
+
 
