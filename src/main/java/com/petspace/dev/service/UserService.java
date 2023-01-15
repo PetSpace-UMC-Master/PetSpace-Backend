@@ -3,6 +3,7 @@ package com.petspace.dev.service;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.util.BaseResponse;
 import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class UserService {
 
     public Long join(User user) {
 
-        validateDuplicateEmail(user);
+        validateDuplicateEmail(user.getEmail());
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
@@ -49,8 +50,13 @@ public class UserService {
                 .build();
     }
 
-    private void validateDuplicateEmail(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+    public BaseResponse<Object> checkEmailDuplicate(String email) {
+        validateDuplicateEmail(email);
+        return new BaseResponse<>(NON_DUPLICATE_EMAIL);
+    }
+
+    private void validateDuplicateEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
             throw new UserException(DUPLICATED_EMAIL);
         }
     }
