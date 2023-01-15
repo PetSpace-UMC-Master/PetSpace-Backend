@@ -11,6 +11,7 @@ public enum BaseResponseStatus {
      * 1000 : 요청 성공
      */
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
+    NON_DUPLICATE_EMAIL(true, 1010, "사용가능한 이메일입니다."),
 
     /**
      * 2000 : Request 오류
@@ -24,8 +25,8 @@ public enum BaseResponseStatus {
     INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
 
     // UserException
-    DUPLICATED_EMAIL(false, 2013, "중복된 이메일입니다."),
-    INVALID_EMAIL_OR_PASSWORD(false, 2014, "이메일 혹은 비밀번호가 잘못되었습니다."),
+    DUPLICATED_EMAIL(false, 2010, "중복된 이메일입니다."),
+    INVALID_EMAIL_OR_PASSWORD(false, 2011, "이메일 혹은 비밀번호가 잘못되었습니다."),
 
     /**
      * 3000 : Response 오류
