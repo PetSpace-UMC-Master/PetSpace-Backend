@@ -1,14 +1,17 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.util.exception.UserException;
+import com.petspace.dev.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Service
 @Transactional
@@ -21,6 +24,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public Long join(User user) {
+
+        validateDuplicateEmail(user);
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
         userRepository.save(user);
@@ -31,12 +37,7 @@ public class UserService {
         String password = loginUser.getPassword();
         User user = userRepository.findByEmail(loginUser.getEmail())
                 .filter(u -> u.getPassword().equals(u.getPassword()))
-                .orElseThrow(() -> new IllegalArgumentException("이메일 혹은 비밀번호가 잘못되었습니다."));
-
-        // TODO BaseReponse에 담아서 Exception 처리?
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-        }
+                .orElseThrow(() -> new UserException(INVALID_EMAIL_OR_PASSWORD));
 
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
         String refreshToken = jwtProvider.createRefreshToken();
@@ -46,5 +47,12 @@ public class UserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    private void validateDuplicateEmail(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            log.warn("Duplicated Email = {}", user.getEmail());
+            throw new UserException(DUPLICATED_EMAIL);
+        }
     }
 }
