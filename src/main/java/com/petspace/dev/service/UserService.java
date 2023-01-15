@@ -36,7 +36,7 @@ public class UserService {
     public UserLoginResponseDto login(User loginUser) {
         String password = loginUser.getPassword();
         User user = userRepository.findByEmail(loginUser.getEmail())
-                .filter(u -> u.getPassword().equals(u.getPassword()))
+                .filter(u -> passwordEncoder.matches(password, u.getPassword()))
                 .orElseThrow(() -> new UserException(INVALID_EMAIL_OR_PASSWORD));
 
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
@@ -51,7 +51,6 @@ public class UserService {
 
     private void validateDuplicateEmail(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            log.warn("Duplicated Email = {}", user.getEmail());
             throw new UserException(DUPLICATED_EMAIL);
         }
     }
