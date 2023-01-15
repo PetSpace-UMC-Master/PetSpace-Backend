@@ -5,29 +5,33 @@ import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.service.UserService;
+import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/api/users")
-    public ResponseEntity<UserJoinRequestDto> join(@RequestBody UserJoinRequestDto dto) {
+    public BaseResponse<UserJoinRequestDto> join(@Valid @RequestBody UserJoinRequestDto dto) {
         User user = dto.toEntity();
         userService.join(user);
-        return ResponseEntity.ok(dto);
+        return new BaseResponse<>(dto);
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto dto) {
+    public BaseResponse<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto dto) {
         User loginUser = dto.toEntity();
         UserLoginResponseDto loginResponseDto = userService.login(loginUser);
-        return ResponseEntity.ok(loginResponseDto);
+        return new BaseResponse<>(loginResponseDto);
     }
 }
