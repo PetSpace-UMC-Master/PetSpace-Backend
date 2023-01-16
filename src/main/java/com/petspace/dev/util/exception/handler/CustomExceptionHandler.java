@@ -7,9 +7,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
 
 @RestControllerAdvice
@@ -17,21 +14,12 @@ import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
 public class CustomExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public BaseResponse<Object> handleValidationException(MethodArgumentNotValidException e) {
-        List<BaseResponse.ValidationError> errors = getFieldErrors(e);
-        return new BaseResponse<>(INVALID_INPUT, errors);
+    public BaseResponse<Object> handleValidationException() {
+        return new BaseResponse<>(INVALID_INPUT);
     }
 
     @ExceptionHandler({UserException.class})
     public BaseResponse<Object> handleUserException(UserException e) {
         return new BaseResponse<>(e.getStatus());
-    }
-
-    private List<BaseResponse.ValidationError> getFieldErrors(MethodArgumentNotValidException e) {
-        return e.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(BaseResponse.ValidationError::of)
-                .collect(Collectors.toList());
     }
 }
