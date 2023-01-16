@@ -51,7 +51,6 @@ public class ReviewService {
         }
 
         String content = reviewRequestDto.getContent();
-        //int score = reviewRequestDto.getScore();
 
         Review review = Review.builder()
                 .reservation(reservation)
