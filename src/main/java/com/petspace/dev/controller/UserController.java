@@ -4,6 +4,7 @@ import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
+import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.service.UserService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users")
-    public BaseResponse<UserJoinRequestDto> join(@Valid @RequestBody UserJoinRequestDto joinRequestDto) {
-        userService.join(joinRequestDto);
-        return new BaseResponse<>(joinRequestDto);
+    public BaseResponse<UserResponseDto> join(@Valid @RequestBody UserJoinRequestDto joinRequestDto) {
+        UserResponseDto responseDto = userService.join(joinRequestDto);
+        return new BaseResponse<>(responseDto);
     }
 
     @GetMapping("/users/email-check")
