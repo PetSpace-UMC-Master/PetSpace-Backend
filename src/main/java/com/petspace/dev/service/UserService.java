@@ -5,6 +5,7 @@ import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
+import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.jwt.JwtProvider;
@@ -26,7 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Long join(UserJoinRequestDto joinRequestDto) {
+    public UserResponseDto join(UserJoinRequestDto joinRequestDto) {
 
         validateSignupDto(joinRequestDto);
 
@@ -34,7 +35,13 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
         userRepository.save(user);
-        return user.getId();
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .birth(user.getBirth())
+                .build();
     }
 
     public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto) {

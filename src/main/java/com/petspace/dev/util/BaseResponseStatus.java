@@ -11,14 +11,12 @@ public enum BaseResponseStatus {
      * 1000 : 요청 성공
      */
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
-    NON_DUPLICATE_EMAIL(true, 1010, "사용가능한 이메일입니다."),
 
     /**
      * 2000 : Request 오류
      */
-
-    // Validation 예외
-    INVALID_INPUT(false, 2000, "입력값을 확인해주세요."),
+    // 입력값 예외 (검증)
+    INVALID_INPUT(false, 2000, "잘못된 입력이 존재합니다."),
 
     // JWT 예외
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
