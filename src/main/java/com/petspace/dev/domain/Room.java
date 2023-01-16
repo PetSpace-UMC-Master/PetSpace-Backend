@@ -1,11 +1,7 @@
 package com.petspace.dev.domain;
 
 import com.petspace.dev.domain.image.RoomImage;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -82,4 +78,10 @@ public class Room extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+//    @Builder
+//    public Room(User user, ) {
+//        user.
+//    }
+
 }
