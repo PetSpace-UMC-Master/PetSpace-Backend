@@ -16,6 +16,7 @@ public enum BaseResponseStatus {
     /**
      * 2000 : Request 오류
      */
+
     // Validation 예외
     INVALID_INPUT(false, 2000, "입력값을 확인해주세요."),
 
@@ -26,6 +27,7 @@ public enum BaseResponseStatus {
 
     // UserException
     DUPLICATED_EMAIL(false, 2010, "중복된 이메일입니다."),
+    INVALID_CHECKED_PASSWORD(false, 2011, "비밀번호 확인 값이 다릅니다."),
     INVALID_EMAIL_OR_PASSWORD(false, 2011, "이메일 혹은 비밀번호가 잘못되었습니다."),
 
     /**
