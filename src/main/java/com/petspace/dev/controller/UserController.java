@@ -1,6 +1,6 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.domain.User;
+import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
@@ -23,24 +23,21 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/api/users")
-    public BaseResponse<UserJoinRequestDto> join(@Valid @RequestBody UserJoinRequestDto dto) {
-        User user = dto.toEntity();
-        userService.join(user);
-        return new BaseResponse<>(dto);
+    @PostMapping("/app/users")
+    public BaseResponse<UserJoinRequestDto> join(@Valid @RequestBody UserJoinRequestDto joinRequestDto) {
+        userService.join(joinRequestDto);
+        return new BaseResponse<>(joinRequestDto);
     }
 
-    // 중복 확인
-    @GetMapping("/api/users/email-check")
-    public BaseResponse<Object> checkEmail(@RequestParam String email) {
-        return userService.checkEmailDuplicate(email);
+    @GetMapping("/app/users/email-check")
+    public BaseResponse<UserCheckEmailResponseDto> checkEmail(@RequestParam String email) {
+        UserCheckEmailResponseDto checkEmailResponseDto = userService.checkEmailDuplicate(email);
+        return new BaseResponse<>(checkEmailResponseDto);
     }
 
-
-    @PostMapping("/api/login")
-    public BaseResponse<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto dto) {
-        User loginUser = dto.toEntity();
-        UserLoginResponseDto loginResponseDto = userService.login(loginUser);
+    @PostMapping("/app/login")
+    public BaseResponse<UserLoginResponseDto> login(@Valid @RequestBody UserLoginRequestDto loginRequestDto) {
+        UserLoginResponseDto loginResponseDto = userService.login(loginRequestDto);
         return new BaseResponse<>(loginResponseDto);
     }
 }
