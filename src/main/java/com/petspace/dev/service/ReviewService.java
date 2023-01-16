@@ -6,6 +6,7 @@ import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
+import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
 import com.petspace.dev.repository.ReservationRepository;
@@ -36,7 +37,7 @@ public class ReviewService {
     private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
-    public BaseResponse save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
+    public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
         Optional<User> user = userRepository.findById(userId);
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
@@ -44,7 +45,7 @@ public class ReviewService {
         /**
          1. 유저 ID와 토큰이 안맞을 경우 : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
          2. 방이 존재하지 않는 경우 => OK
-         3. 스코어가 없는 경우
+         3. 스코어가 없는 경우 => OK
          */
 
         if (userRepository.findById(userId).isEmpty()) {
@@ -73,7 +74,9 @@ public class ReviewService {
         System.out.println("review_content : " + review.getContent());
         List<ReviewImage> reviewImages = uploadReviewImages(reviewRequestDto, review);
 
-        return new BaseResponse(review.getId());
+        return ReviewCreateResponseDto.builder()
+                .id(review.getId())
+                .build();
     }
 
     private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {

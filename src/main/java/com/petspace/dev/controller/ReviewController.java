@@ -1,6 +1,7 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
+import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,12 @@ public class ReviewController {
     @PostMapping("/create")
     public BaseResponse createReview(@RequestParam("userId") Long userId,
                                      @RequestParam("reservationId") Long reservationId,
-                                     @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto
-//                                     @RequestPart ReviewCreateRequestDto reviewCreateRequestDto
-                                     ) {
-        reviewService.save(userId, reservationId, reviewCreateRequestDto);
+                                     @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+        ReviewCreateResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
         log.info("score={}", reviewCreateRequestDto.getScore());
 
-        return new BaseResponse<>(SUCCESS);
+
+        return new BaseResponse<>(createResponseDto);
     }
 }
 
