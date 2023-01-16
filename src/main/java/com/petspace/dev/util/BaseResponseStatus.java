@@ -29,8 +29,13 @@ public enum BaseResponseStatus {
     // UserException
     DUPLICATED_EMAIL(false, 2010, "중복된 이메일입니다."),
     INVALID_CHECKED_PASSWORD(false, 2011, "비밀번호 확인 값이 다릅니다."),
-    INVALID_EMAIL_OR_PASSWORD(false, 2011, "이메일 혹은 비밀번호가 잘못되었습니다."),
+    INVALID_EMAIL_OR_PASSWORD(false, 2012, "이메일 혹은 비밀번호가 잘못되었습니다."),
 
+
+    // ReviewException
+    POST_REVIEW_EMPTY_USER(false, 2020, "해당 사용자가 존재하지 않습니다."),
+    POST_REVIEW_EMPTY_RESERVATION(false, 2021, "해당 예약이 존재하지 않습니다."),
+    POST_REVIEW_EMPTY_SCORE(false, 2022, "score를 입력해주세요."),
     /**
      * 3000 : Response 오류
      */
@@ -41,19 +46,9 @@ public enum BaseResponseStatus {
      * 4000 : Database, Server 오류
      */
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
-    SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
+    SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다.");
 
 
-    /**
-     * 5000 : Room 오류
-     */
-
-
-    /**
-     * 6000 : Review 오류
-     */
-    POST_REVIEW_EMPTY_RESERVATION(false, 6000, "해당 예약이 존재하지 않습니다."),
-    POST_REVIEW_EMPTY_SCORE(false, 6001, "score를 입력해주세요.");
 
 
 
