@@ -8,10 +8,9 @@ import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.repository.ReviewImageRepository;
-import com.petspace.dev.repository.ReviewRepository;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.exception.handler.ReviewException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.petspace.dev.util.exception.UserException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.petspace.dev.util.BaseResponseStatus.*;
@@ -39,8 +37,8 @@ public class ReviewService {
     @Transactional
     public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
-        Optional<User> user = userRepository.findById(userId);
-        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
 
         /**
          1. 유저 ID와 토큰이 안맞을 경우 : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
@@ -48,30 +46,22 @@ public class ReviewService {
          3. 스코어가 없는 경우 => OK
          */
 
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new UserException(POST_REVIEW_EMPTY_USER);
-        }
-
-        if (reservationRepository.findById(reservationId).isEmpty()) {
-            throw new UserException(POST_REVIEW_EMPTY_RESERVATION);
-        }
-
         if (reviewRequestDto.getScore() == null) {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
         }
 
-        Reservation reservation1 = reservation.get();
         String content = reviewRequestDto.getContent();
-        int score = reviewRequestDto.getScore();
+        //int score = reviewRequestDto.getScore();
 
         Review review = Review.builder()
-                .reservation(reservation1)
+                .reservation(reservation)
                 .status(Status.ACTIVE)
-                .score(score)
+                .score(reviewRequestDto.getScore())
                 .content(content)
                 .build();
 
         System.out.println("review_content : " + review.getContent());
+        log.info("reservation={}", reservation.getReview().getContent()); //
         List<ReviewImage> reviewImages = uploadReviewImages(reviewRequestDto, review);
 
         return ReviewCreateResponseDto.builder()

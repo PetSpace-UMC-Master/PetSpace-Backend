@@ -27,6 +27,11 @@ public class CustomExceptionHandler {
         return new BaseResponse<>(e.getStatus());
     }
 
+    @ExceptionHandler({ReviewException.class})
+    public BaseResponse<Object> handleUserException(ReviewException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
     private List<BaseResponse.ValidationError> getFieldErrors(MethodArgumentNotValidException e) {
         return e.getBindingResult()
                 .getFieldErrors()

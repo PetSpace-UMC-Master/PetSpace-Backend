@@ -60,4 +60,8 @@ public class Reservation extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    public void addReview(Review review) {
+        this.review = review;
+    }
 }
