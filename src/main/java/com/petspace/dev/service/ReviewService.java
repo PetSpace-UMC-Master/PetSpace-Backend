@@ -38,21 +38,15 @@ public class ReviewService {
 
         Optional<User> user = userRepository.findById(userId);
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
-        System.out.println("reservation : " + reservation);
 
         // toDo : 예외처리
-        // toDo : 예외처리
         // toDo : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
-        // toDo : 이미지 넣어지는지 확인
 
         User user1 = reservation.get().getUser();
         log.info("user1={}", user1);
         Reservation reservation1 = reservation.get();
         String content = reviewRequestDto.getContent();
         int score = reviewRequestDto.getScore();
-
-        System.out.println("content : " + content );
-
 
         Review review = Review.builder()
                 .reservation(reservation1)

@@ -20,10 +20,6 @@ public class ReviewController {
                                      @RequestParam("reservationId") Long reservationId,
                                      @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
         reviewService.save(userId, reservationId, reviewCreateRequestDto);
-        System.out.println("controller content : " + reviewCreateRequestDto.getContent());
-        System.out.println("controller score : " + reviewCreateRequestDto.getScore());
-        System.out.println("controller userId : " + userId);
-        System.out.println("controller reservationId : " + reservationId);
 
         return new BaseResponse<>(SUCCESS);
     }
