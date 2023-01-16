@@ -1,10 +1,7 @@
 package com.petspace.dev.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,4 +57,33 @@ public class Reservation extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    //==연관관계 메서드==//
+    public void setUser(User user) {
+        this.user = user;
+        user.getReservations().add(this);
+    }
+    public void setRoom(Room room) {
+        this.room = room;
+        room.getReservation().add(this);
+    }
+    @Builder
+    public Reservation(User user, Room room, String reservationCode, int totalPrice, int totalGuest, LocalDateTime startDate, LocalDateTime endDate, Status status) {
+        this.user = user;
+        this.room = room;
+        this.reservationCode = reservationCode;
+        this.totalPrice = totalPrice;
+        this.totalGuest = totalGuest;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+    }
+
+    //==생성 메서드==//
+    public static Reservation createReservation(User user, Room room, ReservationCreateRequestDto dto) {
+        Reservation reservation = dto.toEntity();
+        reservation.setUser(user);
+        reservation.setRoom(room);
+        return reservation;
+    }
 }
