@@ -1,14 +1,20 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.domain.User;
+import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
+import com.petspace.dev.dto.user.UserJoinRequestDto;
+import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.util.exception.UserException;
+import com.petspace.dev.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Service
 @Transactional
@@ -20,23 +26,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Long join(User user) {
+    public Long join(UserJoinRequestDto joinRequestDto) {
+
+        validateSignupDto(joinRequestDto);
+
+        User user = joinRequestDto.toEntity();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
         userRepository.save(user);
         return user.getId();
     }
 
-    public UserLoginResponseDto login(User loginUser) {
-        String password = loginUser.getPassword();
-        User user = userRepository.findByEmail(loginUser.getEmail())
-                .filter(u -> u.getPassword().equals(u.getPassword()))
-                .orElseThrow(() -> new IllegalArgumentException("이메일 혹은 비밀번호가 잘못되었습니다."));
-
-        // TODO BaseReponse에 담아서 Exception 처리?
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-        }
+    public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .filter(u -> passwordEncoder.matches(loginRequestDto.getPassword(), u.getPassword()))
+                .orElseThrow(() -> new UserException(INVALID_EMAIL_OR_PASSWORD));
 
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
         String refreshToken = jwtProvider.createRefreshToken();
@@ -46,5 +50,31 @@ public class UserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public UserCheckEmailResponseDto checkEmailDuplicate(String email) {
+        boolean isAvailable = validateDuplicateEmail(email);
+        return UserCheckEmailResponseDto.builder()
+                .email(email)
+                .isAvailable(isAvailable)
+                .build();
+    }
+
+    private void validateSignupDto(UserJoinRequestDto joinRequestDto) {
+        validateDuplicateEmail(joinRequestDto.getEmail());
+        validateCheckedPassword(joinRequestDto.getPassword(), joinRequestDto.getCheckedPassword());
+    }
+
+    private boolean validateDuplicateEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserException(DUPLICATED_EMAIL);
+        }
+        return true;
+    }
+
+    private void validateCheckedPassword(String password, String checkedPassword) {
+        if (!password.equals(checkedPassword)) {
+            throw new UserException(INVALID_CHECKED_PASSWORD);
+        }
     }
 }
