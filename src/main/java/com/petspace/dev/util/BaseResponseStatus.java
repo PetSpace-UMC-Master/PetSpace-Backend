@@ -44,7 +44,21 @@ public enum BaseResponseStatus {
      * 4000 : Database, Server 오류
      */
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
-    SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다.");
+    SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
+
+
+    /**
+     * 5000 : Room 오류
+     */
+
+
+    /**
+     * 6000 : Review 오류
+     */
+    POST_REVIEW_EMPTY_RESERVATION(false, 6000, "해당 예약이 존재하지 않습니다."),
+    POST_REVIEW_EMPTY_SCORE(false, 6001, "score를 입력해주세요.");
+
+
 
     private final boolean isSuccess;
     private final int responseCode;

@@ -5,8 +5,7 @@ import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import static com.petspace.dev.util.BaseResponseStatus.SUCCESS;
+import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/review")

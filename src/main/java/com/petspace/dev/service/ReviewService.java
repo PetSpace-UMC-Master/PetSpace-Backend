@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.petspace.dev.util.BaseResponseStatus.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -39,14 +41,27 @@ public class ReviewService {
         Optional<User> user = userRepository.findById(userId);
         Optional<Reservation> reservation = reservationRepository.findById(reservationId);
 
-        // toDo : 예외처리
-        // toDo : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
 
-        User user1 = reservation.get().getUser();
-        log.info("user1={}", user1);
+        /**
+         1. 유저 ID와 토큰이 안맞을 경우 : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
+         2. 방이 존재하지 않는 경우 => OK
+         3. 스코어가 없는 경우
+         */
+
+//        if (userRepository.findById(userId).isEmpty()) {
+//            throw new UserException();
+//        }
+//
+//        if (reservationRepository.findById(reservationId).isEmpty()) {
+//            return new BaseResponse(POST_REVIEW_EMPTY_RESERVATION);
+//        }
+
+        // toDo : 예외처리
         Reservation reservation1 = reservation.get();
         String content = reviewRequestDto.getContent();
+        log.info("before");
         int score = reviewRequestDto.getScore();
+        log.info("after");
 
         Review review = Review.builder()
                 .reservation(reservation1)
