@@ -1,9 +1,11 @@
 package com.petspace.dev.service;
 
 import com.petspace.dev.domain.User;
+import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
+import com.petspace.dev.dto.user.UserJoinRequestDto;
+import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.BaseResponse;
 import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +26,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Long join(User user) {
+    public Long join(UserJoinRequestDto joinRequestDto) {
 
-        validateDuplicateEmail(user.getEmail());
+        validateSignupDto(joinRequestDto);
 
+        User user = joinRequestDto.toEntity();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
         userRepository.save(user);
         return user.getId();
     }
 
-    public UserLoginResponseDto login(User loginUser) {
-        String password = loginUser.getPassword();
-        User user = userRepository.findByEmail(loginUser.getEmail())
-                .filter(u -> passwordEncoder.matches(password, u.getPassword()))
+    public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .filter(u -> passwordEncoder.matches(loginRequestDto.getPassword(), u.getPassword()))
                 .orElseThrow(() -> new UserException(INVALID_EMAIL_OR_PASSWORD));
 
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
@@ -50,14 +52,29 @@ public class UserService {
                 .build();
     }
 
-    public BaseResponse<Object> checkEmailDuplicate(String email) {
-        validateDuplicateEmail(email);
-        return new BaseResponse<>(NON_DUPLICATE_EMAIL);
+    public UserCheckEmailResponseDto checkEmailDuplicate(String email) {
+        boolean isAvailable = validateDuplicateEmail(email);
+        return UserCheckEmailResponseDto.builder()
+                .email(email)
+                .isAvailable(isAvailable)
+                .build();
     }
 
-    private void validateDuplicateEmail(String email) {
+    private void validateSignupDto(UserJoinRequestDto joinRequestDto) {
+        validateDuplicateEmail(joinRequestDto.getEmail());
+        validateCheckedPassword(joinRequestDto.getPassword(), joinRequestDto.getCheckedPassword());
+    }
+
+    private boolean validateDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new UserException(DUPLICATED_EMAIL);
+        }
+        return true;
+    }
+
+    private void validateCheckedPassword(String password, String checkedPassword) {
+        if (!password.equals(checkedPassword)) {
+            throw new UserException(INVALID_CHECKED_PASSWORD);
         }
     }
 }
