@@ -22,7 +22,7 @@ public class BaseResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final T result;
 
-    // Request Success
+    // Request Success, Request 성공시 무조건 result 존재
     public BaseResponse(T result){
         this.isSuccess = SUCCESS.isSuccess();
         this.responseMessage = SUCCESS.getResponseMessage();
@@ -30,7 +30,7 @@ public class BaseResponse<T> {
         this.result = result;
     }
 
-    // Common Exception
+    // Common Exception, 보내는 데이터 없이 메시지만 출력하면 되는 에러 처리
     public BaseResponse(BaseResponseStatus status) {
         this.isSuccess = status.isSuccess();
         this.responseMessage = status.getResponseMessage();
@@ -38,8 +38,7 @@ public class BaseResponse<T> {
         this.result = null;
     }
 
-    // TODO 프론트와 협의 후, 만약 에러메시지만 출력되도록 한다면, 이 아래로 모두 지워도 괜찮
-    // Validation Exception
+    // Validation Exception, 형식 검증에서 여러 fieldError 들을 result 에 담아서 보내는 에러 처리
     public BaseResponse(BaseResponseStatus status, T result) {
         this.isSuccess = status.isSuccess();
         this.responseMessage = status.getResponseMessage();
@@ -47,7 +46,6 @@ public class BaseResponse<T> {
         this.result = result;
     }
 
-    // @Valid 예외 발생시, 여러 예외를 던져줌
     @Getter
     @Builder
     public static class ValidationError {
