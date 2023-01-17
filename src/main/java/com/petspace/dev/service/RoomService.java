@@ -1,18 +1,13 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.domain.Facility;
-import com.petspace.dev.domain.Reservation;
-import com.petspace.dev.domain.Review;
-import com.petspace.dev.domain.Room;
+import com.petspace.dev.domain.*;
 import com.petspace.dev.domain.image.RoomImage;
-import com.petspace.dev.dto.oauth.OauthResponseDto;
-import com.petspace.dev.dto.room.RoomCreateRequestDto;
+import com.petspace.dev.dto.room.FacilityInfoDto;
 import com.petspace.dev.dto.room.RoomDetailResponseDto;
-import com.petspace.dev.repository.RoomImageRepository;
 import com.petspace.dev.repository.RoomRepository;
-import com.petspace.dev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,8 +18,6 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
 
-    private final RoomImageRepository roomImageRepository;
-
     // TODO
 //    public int createRoom(RoomCreateRequestDto roomCreateRequestDto){
 //        int result = 0;
@@ -33,6 +26,7 @@ public class RoomService {
 //        return result;
 //    }
 
+    @Transactional
     public RoomDetailResponseDto getRoomDetail(Long roomId) {
 
         // Room 가져오기. 현재는 Null 값일 수 없음을 가정한다.
@@ -73,8 +67,21 @@ public class RoomService {
         reviewPreview.stream().limit(5).collect(Collectors.toList()); // stream limit 은 없을 때 Exception 발생하지 않음.
 
         // Room 의 편의시설 받아오기
+        List<Facility> facilities = room.getRoomFacilities()
+                        .stream().map(RoomFacility::getFacility)
+                        .collect(Collectors.toList());
+        // Entity -> DTO List 로 바꾸기
+        List<FacilityInfoDto> facilityInfoDtos = new ArrayList<>();
+        for(Facility fc : facilities){
+            facilityInfoDtos.add(
+                    FacilityInfoDto.builder()
+                    .facilityName(fc.getFacilityName())
+                    .facilityImageUrl(fc.getFacilityImageUrl())
+                    .build()
+            );
+        }
 
-        return RoomDetailResponseDto // (room);
+        return RoomDetailResponseDto
                 .builder()
                 .id(room.getId())
                 .host(room.getUser().getUsername())
@@ -85,12 +92,12 @@ public class RoomService {
                 .maxGuest(room.getMaxGuest())
                 .maxPet(room.getMaxPet())
                 .decription(room.getDescription())
-                .checkinTime(room.getCheckinTime())
-                .checkoutTime(room.getCheckoutTime())
+                .checkinTime(room.getCheckinTime()) // TODO CheckIn 시간형식 논의
+                .checkoutTime(room.getCheckoutTime()) // TODO CheckOut 시간형식 논의
                 .rating(review_rate)
                 .reviewCount(review_count)
                 .reviewPreview(reviewPreview)
-                .facilities(new ArrayList<>()) // TODO 연관관계 매핑 이후 진행
+                .facilities(facilityInfoDtos)
                 .build();
     }
 
