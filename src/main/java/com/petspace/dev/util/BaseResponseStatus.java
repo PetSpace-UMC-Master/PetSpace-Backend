@@ -19,14 +19,15 @@ public enum BaseResponseStatus {
     INVALID_INPUT(false, 2000, "잘못된 입력이 존재합니다."),
 
     // JWT 예외
-    EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
+    EMPTY_JWT(false, 2001, "JWT값이 존재하지 않습니다."),
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
-    INVALID_USER_JWT(false, 2003, "권한이 없는 유저의 접근입니다."),
+    ACCESS_DENIED(false, 2003, "권한이 없는 유저의 접근입니다."),
 
     // UserException
     DUPLICATED_EMAIL(false, 2010, "중복된 이메일입니다."),
     INVALID_CHECKED_PASSWORD(false, 2011, "비밀번호 확인 값이 다릅니다."),
     INVALID_EMAIL_OR_PASSWORD(false, 2012, "이메일 혹은 비밀번호가 잘못되었습니다."),
+    NONE_USER(false, 2013, "존재하지 않는 회원입니다."),
 
     /**
      * 3000 : Response 오류
