@@ -34,6 +34,8 @@ public enum BaseResponseStatus {
     POST_REVIEW_EMPTY_USER(false, 2020, "해당 사용자가 존재하지 않습니다."),
     POST_REVIEW_EMPTY_RESERVATION(false, 2021, "해당 예약이 존재하지 않습니다."),
     POST_REVIEW_EMPTY_SCORE(false, 2022, "score를 입력해주세요."),
+
+
     /**
      * 3000 : Response 오류
      */
@@ -44,7 +46,14 @@ public enum BaseResponseStatus {
      * 4000 : Database, Server 오류
      */
     DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
-    SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다.");
+    SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
+
+    /**
+     * 5000 : AWS 오류
+     */
+    // AWS S3
+    POST_IMAGE_CONVERT_ERROR(false, 5000, "사진이 없거나 변환되지 않았습니다."),
+    POST_IMAGE_INVALID_EXTENSION(false, 5001, "올바른 확장자가 아닙니다.");
 
 
     private final boolean isSuccess;

@@ -30,4 +30,9 @@ public class CustomExceptionHandler {
         return new BaseResponse<>(e.getStatus());
     }
 
+    @ExceptionHandler({AwsException.class})
+    public BaseResponse<Object> handleUserException(AwsException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
 }

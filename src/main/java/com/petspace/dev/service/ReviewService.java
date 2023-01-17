@@ -10,6 +10,7 @@ import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.util.exception.handler.AwsException;
 import com.petspace.dev.util.exception.handler.ReviewException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,8 @@ public class ReviewService {
     public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
 
         /**
          1. 유저 ID와 토큰이 안맞을 경우 : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
@@ -58,10 +60,8 @@ public class ReviewService {
                 .score(reviewRequestDto.getScore())
                 .content(content)
                 .build();
-
-        System.out.println("review_content : " + review.getContent());
-        log.info("reservation={}", reservation.getReview().getContent()); //
         List<ReviewImage> reviewImages = uploadReviewImages(reviewRequestDto, review);
+
 
         return ReviewCreateResponseDto.builder()
                 .id(review.getId())
@@ -70,7 +70,7 @@ public class ReviewService {
 
     private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
         return reviewRequestDto.getReviewImages().stream()
-                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "post"))
+                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
                 .map(url -> createPostImage(review, url))
                 .collect(Collectors.toList());
     }

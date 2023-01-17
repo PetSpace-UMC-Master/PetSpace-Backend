@@ -4,17 +4,22 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.exception.handler.ReviewException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import com.petspace.dev.util.exception.handler.AwsException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,25 +32,38 @@ public class AwsS3Uploader {
     public String bucket;  // S3 버킷 이름
 
     public String upload(MultipartFile multipartFile, String dirName){
+
         try {
+            if(!multipartFile.isEmpty()){
+                // 확장자 확인
+                String originFileName = multipartFile.getOriginalFilename().toUpperCase();
+                log.info("fileName={}", originFileName);
+
+                String ext = originFileName.substring(originFileName.lastIndexOf(".") + 1);
+                log.info("ext={}", ext);
+
+                if(!ext.matches("JPEG|JPG|HEIC|PNG|GIF|" )){
+                    throw new ReviewException(POST_IMAGE_INVALID_EXTENSION);
+                }
+            }
             File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
-                    .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
-            return upload(uploadFile, dirName);
+                    .orElseThrow(() -> new AwsException(POST_IMAGE_CONVERT_ERROR));
+
+            String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
+
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile)   // S3에 업로드
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            removeNewFile(uploadFile);
+
+            return amazonS3Client.getUrl(bucket, fileName).toString();
+
         } catch (IOException e) {
             throw new RuntimeException();
         }
     }
 
-    // S3로 파일 업로드하기
-    private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile)   // S3에 업로드
-                .withCannedAcl(CannedAccessControlList.PublicRead));
-        removeNewFile(uploadFile);
-        return amazonS3Client.getUrl(bucket, fileName).toString();
-    }
-
-    // 로컬에 저장된 이미지 지우기
+    // 로컬서버에 저장된 이미지 지우기
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
             log.info("File delete success");
@@ -54,7 +72,7 @@ public class AwsS3Uploader {
         log.info("File delete fail");
     }
 
-    // 로컬에 파일 업로드 하기
+    // 로컬서버에 파일 변환 하기
     private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(System.getProperty("user.dir") + "/" + file.getOriginalFilename());
         if (convertFile.createNewFile()) { // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)

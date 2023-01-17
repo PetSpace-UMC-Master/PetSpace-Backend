@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,7 @@ public class ReviewController {
     @PostMapping("/create")
     public BaseResponse createReview(@RequestParam("userId") Long userId,
                                      @RequestParam("reservationId") Long reservationId,
-                                     @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+                                     @Valid @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
         ReviewCreateResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
         log.info("score={}", reviewCreateRequestDto.getScore());
 
