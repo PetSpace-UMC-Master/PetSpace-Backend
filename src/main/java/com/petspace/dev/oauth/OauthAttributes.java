@@ -1,5 +1,6 @@
 package com.petspace.dev.oauth;
 
+import com.petspace.dev.domain.Role;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 
@@ -17,6 +18,7 @@ public enum OauthAttributes {
                     .privacyAgreement(true)
                     .hostPermission(false)
                     .status(Status.ACTIVE)
+                    .role(Role.USER)
                     .build();
         }
     };

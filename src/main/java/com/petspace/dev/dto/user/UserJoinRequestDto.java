@@ -1,6 +1,7 @@
 package com.petspace.dev.dto.user;
 
 import com.petspace.dev.domain.OauthProvider;
+import com.petspace.dev.domain.Role;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.User;
 import lombok.Getter;
@@ -50,6 +51,7 @@ public class UserJoinRequestDto {
                 .hostPermission(false)
                 .oauthProvider(OauthProvider.NONE)
                 .status(Status.ACTIVE)
+                .role(Role.USER)
                 .build();
     }
 }
