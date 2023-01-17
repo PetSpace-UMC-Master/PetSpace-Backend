@@ -62,8 +62,8 @@ public class User extends BaseTimeEntity{
     @Column(length = 45, nullable = false)
     private Status status;
 
-    @Builder
 
+    @Builder
     public User(String username, String nickname, String birth, String email, String password,
                 boolean privacyAgreement, boolean marketingAgreement, boolean hostPermission, OauthProvider oauthProvider, Status status) {
         this.username = username;
