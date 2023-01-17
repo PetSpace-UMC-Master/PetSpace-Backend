@@ -42,7 +42,7 @@ public class AwsS3Uploader {
                 String ext = originFileName.substring(originFileName.lastIndexOf(".") + 1);
                 log.info("ext={}", ext);
 
-                if(!ext.matches("JPEG|JPG|HEIC|PNG|GIF|" )){
+                if(!ext.matches("JPEG|JPG|HEIC|PNG|" )){
                     throw new ReviewException(POST_IMAGE_INVALID_EXTENSION);
                 }
             }
