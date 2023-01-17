@@ -25,7 +25,7 @@ public class RoomDetailResponseDto {
     private LocalDateTime checkoutTime;
     private double rating; // Review AVG
     private long reviewCount; // Review COUNT
-    private List<Review> reviewPreview;
-    private List<FacilityInfoDto> facilities;
+    private List<RoomDetailReviewDto> reviewPreview;
+    private List<RoomDetailFacilityDto> facilities;
 
 }
