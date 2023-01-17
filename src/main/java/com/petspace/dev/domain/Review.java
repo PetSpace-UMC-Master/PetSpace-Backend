@@ -1,23 +1,9 @@
 package com.petspace.dev.domain;
 
 import com.petspace.dev.domain.image.ReviewImage;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +23,7 @@ public class Review extends BaseTimeEntity{
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<ReviewImage> reviewImages = new ArrayList<>();
 
     @Column(nullable = false)
@@ -49,4 +35,16 @@ public class Review extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    @Builder
+    public Review(Reservation reservation, List<ReviewImage> reviewImages, int score, String content, Status status) {
+        this.reservation = reservation;
+        if (reservation != null) {
+            reservation.addReview(this);
+        }
+        this.reviewImages = reviewImages;
+        this.score = score;
+        this.content = content;
+        this.status = status;
+    }
 }
