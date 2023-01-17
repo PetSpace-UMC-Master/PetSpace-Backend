@@ -3,18 +3,7 @@ package com.petspace.dev.domain;
 import com.petspace.dev.domain.image.RoomImage;
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +29,9 @@ public class Room extends BaseTimeEntity{
 
     @OneToMany(mappedBy = "room")
     private List<RoomCategory> roomCategories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<RoomFacility> roomFacilities = new ArrayList<>();
 
     @OneToMany(mappedBy = "room")
     private List<RoomAvailable> roomAvailables = new ArrayList<>();
@@ -78,10 +70,5 @@ public class Room extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
-
-//    @Builder
-//    public Room(User user, ) {
-//        user.
-//    }
 
 }
