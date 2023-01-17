@@ -1,20 +1,9 @@
 package com.petspace.dev.domain.image;
 
 import com.petspace.dev.domain.Review;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -28,10 +17,16 @@ public class ReviewImage {
     @Column(name = "review_image_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "review_id")
     private Review review;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String reviewImageUrl;
+
+    @Builder
+    public ReviewImage(Review review, String reviewImageUrl) {
+        this.review = review;
+        this.reviewImageUrl = reviewImageUrl;
+    }
 }

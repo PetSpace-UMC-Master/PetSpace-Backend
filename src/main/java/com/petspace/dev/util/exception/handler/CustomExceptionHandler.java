@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.stream.Collectors;
+
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
 
 @RestControllerAdvice
@@ -22,4 +24,15 @@ public class CustomExceptionHandler {
     public BaseResponse<Object> handleUserException(UserException e) {
         return new BaseResponse<>(e.getStatus());
     }
+
+    @ExceptionHandler({ReviewException.class})
+    public BaseResponse<Object> handleUserException(ReviewException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
+    @ExceptionHandler({AwsException.class})
+    public BaseResponse<Object> handleUserException(AwsException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
 }
