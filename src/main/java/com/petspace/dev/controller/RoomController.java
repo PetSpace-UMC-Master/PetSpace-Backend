@@ -16,7 +16,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping("/rooms")
-    public BaseResponse<List<RoomListResponseDto>> get() {
-        return new BaseResponse<>(roomService.findAllDesc());
+    public BaseResponse<List<RoomListResponseDto>> get(@RequestParam Optional<Integer> page) {
+        return new BaseResponse<>(roomService.findAllDesc(page));
     }
 }
