@@ -7,10 +7,11 @@ import com.petspace.dev.domain.User;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.dto.review.ReviewCreateResponseDto;
+import com.petspace.dev.dto.review.ReviewListResponseDto;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReservationRepository;
+import com.petspace.dev.repository.ReviewRepository;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.exception.handler.AwsException;
 import com.petspace.dev.util.exception.handler.ReviewException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.petspace.dev.util.exception.UserException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewImageRepository reviewImageRepository;
+    private final ReviewRepository reviewRepository;
     private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
@@ -80,6 +83,29 @@ public class ReviewService {
                 .reviewImageUrl(url)
                 .review(review)
                 .build());
+    }
+
+    public List<ReviewListResponseDto> findAll() {
+        List<Review> reviewGroup = reviewRepository.findAllDesc();
+        List<ReviewListResponseDto> dtoList = new ArrayList<>();
+
+        for(Review review : reviewGroup) {
+            List<ReviewImage> reviewImages = review.getReviewImages();
+
+            ReviewListResponseDto responseDto = ReviewListResponseDto.builder()
+                    .id(review.getId())
+                    .nickName(review.getReservation().getUser().getNickname())
+                    .reviewImage(reviewImages)
+                    .score(review.getScore())
+                    .content(review.getContent())
+                    .createdAt(review.getCreatedAt())
+                    .status(review.getStatus())
+                    .build();
+
+            dtoList.add(responseDto);
+        }
+
+        return dtoList;
     }
 }
 

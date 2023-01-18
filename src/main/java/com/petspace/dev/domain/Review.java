@@ -1,5 +1,7 @@
 package com.petspace.dev.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.image.ReviewImage;
 import lombok.*;
 
@@ -19,10 +21,12 @@ public class Review extends BaseTimeEntity{
     @Column(name = "review_id")
     private Long id;
 
+    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
     private List<ReviewImage> reviewImages = new ArrayList<>();
 
