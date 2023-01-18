@@ -32,7 +32,7 @@ public class Reservation extends BaseTimeEntity{
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToOne(mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation", orphanRemoval = true)
     private Review review;
 
     @Column(nullable = false)
@@ -91,5 +91,8 @@ public class Reservation extends BaseTimeEntity{
         totalPrice = room.getPrice() * period.getDays();
         this.totalPrice = totalPrice;
         return totalPrice;
+    }
+    public void addReview(Review review) {
+        this.review = review;
     }
 }
