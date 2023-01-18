@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class ReservationCreateRequestDto {
 
-    private int totalPrice;
+    //private int totalPrice;
     private int totalGuest;
     @DateTimeFormat(pattern = "yyyy-mm-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
@@ -23,8 +23,8 @@ public class ReservationCreateRequestDto {
     //dto -> entity
     public Reservation toEntity() {
         return Reservation.builder()
-                .reservationCode(UUID.randomUUID().toString()) //
-                .totalPrice(totalPrice)
+                .reservationCode(UUID.randomUUID().toString()) //reservationCode 생성
+                .totalPrice(0) //전체가격을 0으로 초기화 후 따로 계산한다.
                 .totalGuest(totalGuest)
                 .startDate(startDate)
                 .endDate(endDate)
