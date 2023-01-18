@@ -14,7 +14,7 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @GetMapping("/api/room")
+    @GetMapping("/app/room")
     public BaseResponse<RoomDetailResponseDto> getRoomDetail(@RequestParam("id") Long roomId){
         RoomDetailResponseDto roomDetailResponseDto = roomService.getRoomDetail(roomId);
 
