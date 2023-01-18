@@ -18,7 +18,11 @@ public class RoomController {
     @GetMapping("/rooms")
     public BaseResponse<List<RoomListResponseDto>> get(@RequestParam Optional<Integer> page,
                                                        @RequestParam Optional<String> sortBy,
-                                                       @RequestParam Optional<String> order) {
+                                                       @RequestParam Optional<String> order,
+                                                       @RequestParam Optional<Long> categoryId) {
+        if (!categoryId.isEmpty()) {
+            return new BaseResponse<>(roomService.findAllDescByCategory(page, sortBy, order, categoryId));
+        }
         return new BaseResponse<>(roomService.findAllDesc(page, sortBy, order));
     }
 }
