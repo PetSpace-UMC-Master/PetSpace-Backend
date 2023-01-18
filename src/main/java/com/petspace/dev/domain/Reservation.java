@@ -1,20 +1,14 @@
 package com.petspace.dev.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 @Entity
 @Getter
@@ -28,11 +22,13 @@ public class Reservation extends BaseTimeEntity{
     @Column(name = "reservation_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id")
     private Room room;
 
@@ -84,6 +80,16 @@ public class Reservation extends BaseTimeEntity{
         Reservation reservation = dto.toEntity();
         reservation.setUser(user);
         reservation.setRoom(room);
+        reservation.getTotalPrice();
         return reservation;
+    }
+
+    //==조회 로직==//
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        Period period = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
+        totalPrice = room.getPrice() * period.getDays();
+        this.totalPrice = totalPrice;
+        return totalPrice;
     }
 }
