@@ -16,6 +16,9 @@ import com.petspace.dev.util.exception.handler.ReviewException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.petspace.dev.util.exception.UserException;
@@ -85,7 +88,7 @@ public class ReviewService {
                 .build());
     }
 
-    public List<ReviewListResponseDto> findAll() {
+    public Page<ReviewListResponseDto> findAll(Pageable pageable) {
         List<Review> reviewGroup = reviewRepository.findAllDesc();
         List<ReviewListResponseDto> dtoList = new ArrayList<>();
 
@@ -105,7 +108,7 @@ public class ReviewService {
             dtoList.add(responseDto);
         }
 
-        return dtoList;
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
 }
 

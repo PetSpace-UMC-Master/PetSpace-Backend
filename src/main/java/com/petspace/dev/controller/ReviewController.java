@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,9 +46,11 @@ public class ReviewController {
     }
 
     @GetMapping("/review")
-    public BaseResponse findAll() {
-        List<ReviewListResponseDto> responseDtoList = reviewService.findAll();
-        return new BaseResponse(responseDtoList);
+    public BaseResponse findAll(@RequestParam int page,
+                                @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewListResponseDto> responseDtos = reviewService.findAll(pageable);
+        return new BaseResponse(responseDtos);
     }
 
 }
