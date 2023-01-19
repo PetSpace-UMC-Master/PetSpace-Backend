@@ -1,5 +1,6 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.util.input.room.SortBy;
 import com.petspace.dev.dto.room.RoomListResponseDto;
 import com.petspace.dev.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,13 @@ import java.util.stream.Collectors;
 public class RoomService {
     private final RoomRepository roomRepository;
 
-    private static final int defaultPageSize = 5;
+    private static final int DEFAULT_PAGE_SIZE = 5;
 
     @Transactional(readOnly = true)
     public List<RoomListResponseDto> findAllDesc(Optional<Integer> page,
-                                                 Optional<String> sortBy,
-                                                 Optional<String> order) {
-        Sort sort = getSortBy(sortBy.orElse("id"), order.orElse("desc"));
-        Pageable pageable = PageRequest.of(page.orElse(0), defaultPageSize, sort);
+                                                 Optional<SortBy> sortBy) {
+        Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
+        Pageable pageable = PageRequest.of(page.orElse(0), DEFAULT_PAGE_SIZE, sort);
 
         return roomRepository.findAllDesc(pageable).stream()
                 .map(RoomListResponseDto::new)
@@ -34,21 +34,20 @@ public class RoomService {
 
     @Transactional(readOnly = true)
     public List<RoomListResponseDto> findAllDescByCategory(Optional<Integer> page,
-                                                 Optional<String> sortBy,
-                                                 Optional<String> order,
+                                                 Optional<SortBy> sortBy,
                                                  Optional<Long> categoryId) {
-        Sort sort = getSortBy(sortBy.orElse("id"), order.orElse("desc"));
-        Pageable pageable = PageRequest.of(page.orElse(0), defaultPageSize, sort);
+        Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
+        Pageable pageable = PageRequest.of(page.orElse(0), DEFAULT_PAGE_SIZE, sort);
 
         return roomRepository.findAllDescByCategory(pageable, categoryId.get()).stream()
                 .map(RoomListResponseDto::new)
                 .collect(Collectors.toList());
     }
 
-    public Sort getSortBy(String column, String order) {
-        if (order.equals("ASC")) {
-            return Sort.by(column).ascending().and(Sort.by("id").descending());
+    public Sort getSortBy(SortBy sortBy) {
+        if (sortBy.getOrderType().equals("ASC")) {
+            return Sort.by(sortBy.getSortType()).ascending().and(Sort.by("id").descending());
         }
-        return Sort.by(column).descending().and(Sort.by("id").descending());
+        return Sort.by(sortBy.getSortType()).descending().and(Sort.by("id").descending());
     }
 }
