@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        if (jwtProvider.isValidToken(token)) {
+        if (token != null && jwtProvider.isValidToken(token)) {
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -36,7 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HEADER_AUTHORIZATION);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(PREFIX_TOKEN)) {
-            log.info("Before login or not having authorization");
             return bearerToken.substring(PREFIX_TOKEN.length());
         }
         return null; // 로그인안할 시, null!
