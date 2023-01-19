@@ -21,7 +21,7 @@ public class RoomController {
                                                        @RequestParam Optional<SortBy> sortBy,
                                                        @RequestParam Optional<CategoryType> categoryType) {
         if (!categoryType.isEmpty()) {
-            return new BaseResponse<>(roomService.findAllDescByCategory(page, sortBy, categoryType));
+            return new BaseResponse<>(roomService.findAllDescByCategory(page, sortBy, categoryType.get()));
         }
         return new BaseResponse<>(roomService.findAllDesc(page, sortBy));
     }

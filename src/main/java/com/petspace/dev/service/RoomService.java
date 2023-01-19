@@ -36,11 +36,11 @@ public class RoomService {
     @Transactional(readOnly = true)
     public List<RoomListResponseDto> findAllDescByCategory(Optional<Integer> page,
                                                  Optional<SortBy> sortBy,
-                                                 Optional<CategoryType> categoryType) {
+                                                 CategoryType categoryType) {
         Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
         Pageable pageable = PageRequest.of(page.orElse(0), DEFAULT_PAGE_SIZE, sort);
 
-        return roomRepository.findAllDescByCategory(pageable, categoryType.get().getCategoryId()).stream()
+        return roomRepository.findAllDescByCategory(pageable, categoryType.getCategoryId()).stream()
                 .map(RoomListResponseDto::new)
                 .collect(Collectors.toList());
     }
