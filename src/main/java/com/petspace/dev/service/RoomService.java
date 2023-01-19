@@ -1,5 +1,6 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.util.input.room.CategoryType;
 import com.petspace.dev.util.input.room.SortBy;
 import com.petspace.dev.dto.room.RoomListResponseDto;
 import com.petspace.dev.repository.RoomRepository;
@@ -35,11 +36,11 @@ public class RoomService {
     @Transactional(readOnly = true)
     public List<RoomListResponseDto> findAllDescByCategory(Optional<Integer> page,
                                                  Optional<SortBy> sortBy,
-                                                 Optional<Long> categoryId) {
+                                                 Optional<CategoryType> categoryType) {
         Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
         Pageable pageable = PageRequest.of(page.orElse(0), DEFAULT_PAGE_SIZE, sort);
 
-        return roomRepository.findAllDescByCategory(pageable, categoryId.get()).stream()
+        return roomRepository.findAllDescByCategory(pageable, categoryType.get().getCategoryId()).stream()
                 .map(RoomListResponseDto::new)
                 .collect(Collectors.toList());
     }
