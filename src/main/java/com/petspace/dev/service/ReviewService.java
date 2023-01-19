@@ -101,7 +101,8 @@ public class ReviewService {
                     .reviewImage(reviewImages)
                     .score(review.getScore())
                     .content(review.getContent())
-                    .createdAt(review.getCreatedAt())
+                    .createdDate(review.getCreatedAt().toString().substring(0,10))
+                    .createdTime(review.getCreatedAt().toString().substring(11, 19))
                     .status(review.getStatus())
                     .build();
 

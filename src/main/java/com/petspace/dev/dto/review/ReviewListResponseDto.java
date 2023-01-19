@@ -17,7 +17,8 @@ public class ReviewListResponseDto {
     private List<ReviewImage> reviewImage;
     private float score;
     private String content;
-    private LocalDateTime createdAt;
+    private String createdDate;
+    private String createdTime;
     private Status status;
 
 }
