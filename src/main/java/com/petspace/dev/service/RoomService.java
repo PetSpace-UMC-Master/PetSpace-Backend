@@ -21,10 +21,26 @@ public class RoomService {
     private static final int defaultPageSize = 5;
 
     @Transactional(readOnly = true)
-    public List<RoomListResponseDto> findAllDesc(Optional<Integer> page, Optional<String> sortBy, Optional<String> order) {
+    public List<RoomListResponseDto> findAllDesc(Optional<Integer> page,
+                                                 Optional<String> sortBy,
+                                                 Optional<String> order) {
         Sort sort = getSortBy(sortBy.orElse("id"), order.orElse("desc"));
         Pageable pageable = PageRequest.of(page.orElse(0), defaultPageSize, sort);
+
         return roomRepository.findAllDesc(pageable).stream()
+                .map(RoomListResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoomListResponseDto> findAllDescByCategory(Optional<Integer> page,
+                                                 Optional<String> sortBy,
+                                                 Optional<String> order,
+                                                 Optional<Long> categoryId) {
+        Sort sort = getSortBy(sortBy.orElse("id"), order.orElse("desc"));
+        Pageable pageable = PageRequest.of(page.orElse(0), defaultPageSize, sort);
+
+        return roomRepository.findAllDescByCategory(pageable, categoryId.get()).stream()
                 .map(RoomListResponseDto::new)
                 .collect(Collectors.toList());
     }
