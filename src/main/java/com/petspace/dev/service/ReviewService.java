@@ -89,7 +89,7 @@ public class ReviewService {
     }
 
     public Page<ReviewListResponseDto> findAll(Pageable pageable) {
-        List<Review> reviewGroup = reviewRepository.findAllDesc();
+        List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
         List<ReviewListResponseDto> dtoList = new ArrayList<>();
 
         for(Review review : reviewGroup) {
