@@ -3,25 +3,24 @@ package com.petspace.dev.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import static com.petspace.dev.util.BaseResponseStatus.SUCCESS;
 
 @Getter
-@AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "responseCode", "responseMessage", "result"})
 public class BaseResponse<T> {
 
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
-    private final String responseMessage;
+
     private final int responseCode;
+    private final String responseMessage;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private T result;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private final T result;
 
-    // Request Success
+    // Request Success, Request 성공시 무조건 result 존재
     public BaseResponse(T result){
         this.isSuccess = SUCCESS.isSuccess();
         this.responseMessage = SUCCESS.getResponseMessage();
@@ -29,11 +28,11 @@ public class BaseResponse<T> {
         this.result = result;
     }
 
-    // Request Fail
+    // Common Exception, 보내는 데이터 없이 메시지만 출력하면 되는 에러 처리
     public BaseResponse(BaseResponseStatus status) {
         this.isSuccess = status.isSuccess();
         this.responseMessage = status.getResponseMessage();
         this.responseCode = status.getResponseCode();
+        this.result = null;
     }
-
 }
