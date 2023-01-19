@@ -19,11 +19,13 @@ public enum BaseResponseStatus {
     INVALID_INPUT(false, 2000, "잘못된 입력이 존재합니다."),
 
     // JWT 예외
-    EMPTY_JWT(false, 2001, "JWT값이 존재하지 않습니다."),
-    INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
-    ACCESS_DENIED(false, 2003, "권한이 없는 유저의 접근입니다."),
-    INVALID_USER_JWT(false, 2004, "권한이 없는 유저의 접근입니다."),
-    INVALID_USER_EXIST(false, 2005, "존재하지 않는 유저의 접근입니다."),
+    EXPIRED_JWT(false, 2001, "이미 만료된 토큰입니다."),
+    UNSUPPORTED_TOKEN_TYPE(false, 2002, "지원되지 않는 토큰 형식입니다."),
+    MALFORMED_TOKEN_TYPE(false, 2003, "인증 토큰이 올바르게 구성되지 않았습니다."),
+    INVALID_SIGNATURE_JWT(false, 2004, "인증 시그니처가 올바르지 않습니다"),
+    INVALID_TOKEN_TYPE(false, 2005, "잘못된 토큰입니다."),
+
+    UNAUTHORIZED_JWT(false, 2006, "권한이 없는 유저의 접근입니다."),
 
     // UserException
     DUPLICATED_EMAIL(false, 2010, "중복된 이메일입니다."),
