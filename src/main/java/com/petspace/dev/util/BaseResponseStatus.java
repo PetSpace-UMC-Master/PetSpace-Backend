@@ -17,6 +17,7 @@ public enum BaseResponseStatus {
      */
     // 입력값 예외 (검증)
     INVALID_INPUT(false, 2000, "잘못된 입력이 존재합니다."),
+    METHOD_ARGUMENT_TYPE_MISMATCH(false, 2099, "Request Parameter의 유형이 불일치합니다."),
 
     // JWT 예외
     EMPTY_JWT(false, 2001, "JWT를 입력해주세요."),
