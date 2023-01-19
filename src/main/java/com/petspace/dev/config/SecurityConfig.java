@@ -2,11 +2,11 @@ package com.petspace.dev.config;
 
 import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.util.jwt.filter.JwtAuthenticationFilter;
+import com.petspace.dev.util.jwt.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,6 +34,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtExceptionFilter jwtExceptionFilter() {
+        return new JwtExceptionFilter();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
@@ -41,12 +46,12 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/oauth/**", "/app/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/app/users").permitAll()
-                .antMatchers("/test").authenticated() // 회원 인증 테스트용
+                // TODO 로그인, 회원가입, 방 전체보기, 방 상세보기는 비회원인 상태에서도 가능함, 이후에 추가하기
+                .antMatchers("/", "/oauth/**", "/app/login", "/app/sign-in/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(jwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter(), jwtAuthenticationFilter(jwtProvider).getClass());
         return http.build();
     }
 }
