@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/app")
 @RequiredArgsConstructor
@@ -45,6 +43,10 @@ public class ReviewController {
         return new BaseResponse<>(createResponseDto);
     }
 
+    @Operation(summary = "Getting All Reviews", description = "Review Read API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+    })
     @GetMapping("/review")
     public BaseResponse findAll(@RequestParam int page,
                                 @RequestParam int size) {
