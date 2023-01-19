@@ -1,13 +1,16 @@
 package com.petspace.dev.util.jwt;
 
+import com.petspace.dev.util.exception.JwtNotAvailableException;
 import com.petspace.dev.util.jwt.filter.PrincipalDetails;
 import com.petspace.dev.util.jwt.filter.PrincipalDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +21,8 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Random;
+
+import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Component
 @RequiredArgsConstructor
@@ -58,36 +63,40 @@ public class JwtProvider {
                 .compact();
     }
 
+    public boolean isValidToken(String token) {
+        Jws<Claims> claimsJws = getClaims(token);
+        log.info("expiredDate={}", claimsJws.getBody().getExpiration());
+        log.info("expired?={}", claimsJws.getBody().getExpiration().before(new Date()));
+        return !claimsJws.getBody().getExpiration().before(new Date());
+    }
+
     public Authentication getAuthentication(String token) {
-        PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(getPayload(token));
+        PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(getEmail(token));
         log.info("getAuthentication, email={}", principalDetails.getUsername());
         return new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
     }
 
-    public String getPayload(String token){
+    private String getEmail(String token) {
+        Jws<Claims> claims = getClaims(token);
+        return claims.getBody().getSubject();
+    }
+
+    private Jws<Claims> getClaims(String token){
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims().getSubject(); // todo 토큰 만료
-        } catch (JwtException e){
-            throw new JwtException("유효하지 않는 토큰입니다."); // todo 유효x 토큰
-        }
-    }
-
-    public boolean isValidToken(String token) {
-        try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
                     .parseClaimsJws(token);
-            return !claimsJws.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException exception) {
-            return false; // todo 토큰 만료
+        } catch (ExpiredJwtException e) {
+            throw new JwtNotAvailableException(EXPIRED_JWT);
+        } catch (UnsupportedJwtException e) {
+            throw new JwtNotAvailableException(UNSUPPORTED_TOKEN_TYPE);
+        } catch (MalformedJwtException e) {
+            throw new JwtNotAvailableException(MALFORMED_TOKEN_TYPE);
+        } catch (SignatureException e) {
+            throw new JwtNotAvailableException(INVALID_SIGNATURE_JWT);
+        } catch (IllegalArgumentException e) {
+            throw new JwtNotAvailableException(INVALID_TOKEN_TYPE);
         }
     }
 }
