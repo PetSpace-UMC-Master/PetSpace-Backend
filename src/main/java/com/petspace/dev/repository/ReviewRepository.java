@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("SELECT r FROM Review r ORDER BY r.id DESC ")
+    @Query("SELECT r FROM Review r WHERE r.status='ACTIVE' ORDER BY r.id DESC ")
     List<Review> findAllDesc(Pageable pageable);
 }
