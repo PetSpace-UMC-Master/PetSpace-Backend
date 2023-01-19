@@ -24,8 +24,7 @@ public enum BaseResponseStatus {
     MALFORMED_TOKEN_TYPE(false, 2003, "인증 토큰이 올바르게 구성되지 않았습니다."),
     INVALID_SIGNATURE_JWT(false, 2004, "인증 시그니처가 올바르지 않습니다"),
     INVALID_TOKEN_TYPE(false, 2005, "잘못된 토큰입니다."),
-
-    UNAUTHORIZED_JWT(false, 2006, "권한이 없는 유저의 접근입니다."),
+    ACCESS_DENIED(false, 2006, "권한이 없는 유저의 접근입니다."),
 
     // UserException
     DUPLICATED_EMAIL(false, 2010, "중복된 이메일입니다."),
