@@ -26,13 +26,13 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/sign-in")
+    @PostMapping("/sign-up")
     public BaseResponse<UserResponseDto> join(@Valid @RequestBody UserJoinRequestDto joinRequestDto) {
         UserResponseDto responseDto = userService.join(joinRequestDto);
         return new BaseResponse<>(responseDto);
     }
 
-    @GetMapping("/sign-in/email-check")
+    @GetMapping("/sign-up/email-check")
     public BaseResponse<UserCheckEmailResponseDto> checkEmail(@RequestParam String email) {
         UserCheckEmailResponseDto checkEmailResponseDto = userService.checkEmailDuplicate(email);
         return new BaseResponse<>(checkEmailResponseDto);
