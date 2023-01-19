@@ -1,6 +1,6 @@
-package com.petspace.dev.util.jwt.filter;
+package com.petspace.dev.config.filter;
 
-import com.petspace.dev.util.jwt.JwtProvider;
+import com.petspace.dev.service.auth.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

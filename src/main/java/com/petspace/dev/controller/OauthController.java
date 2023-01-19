@@ -2,7 +2,7 @@ package com.petspace.dev.controller;
 
 import com.petspace.dev.dto.oauth.OauthRequestDto;
 import com.petspace.dev.dto.oauth.OauthResponseDto;
-import com.petspace.dev.service.OauthService;
+import com.petspace.dev.service.auth.OauthService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

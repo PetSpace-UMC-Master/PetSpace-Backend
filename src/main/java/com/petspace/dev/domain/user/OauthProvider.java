@@ -1,4 +1,4 @@
-package com.petspace.dev.domain;
+package com.petspace.dev.domain.user;
 
 public enum OauthProvider {
     NONE, KAKAO, GOOGLE

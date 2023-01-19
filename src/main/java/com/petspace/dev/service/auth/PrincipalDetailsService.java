@@ -1,8 +1,9 @@
-package com.petspace.dev.util.jwt.filter;
+package com.petspace.dev.service.auth;
 
-import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.user.User;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.UserException;
+import com.petspace.dev.domain.user.auth.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;

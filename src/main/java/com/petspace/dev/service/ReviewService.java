@@ -3,7 +3,7 @@ package com.petspace.dev.service;
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Status;
-import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.user.User;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.dto.review.ReviewCreateResponseDto;

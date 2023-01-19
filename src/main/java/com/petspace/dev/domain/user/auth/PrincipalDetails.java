@@ -1,6 +1,6 @@
-package com.petspace.dev.util.jwt.filter;
+package com.petspace.dev.domain.user.auth;
 
-import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

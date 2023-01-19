@@ -1,5 +1,10 @@
-package com.petspace.dev.domain;
+package com.petspace.dev.domain.user;
 
+import com.petspace.dev.domain.BaseTimeEntity;
+import com.petspace.dev.domain.Favorite;
+import com.petspace.dev.domain.Reservation;
+import com.petspace.dev.domain.Room;
+import com.petspace.dev.domain.Status;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +26,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity{
+public class User extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")

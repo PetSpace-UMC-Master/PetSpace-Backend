@@ -1,9 +1,9 @@
 package com.petspace.dev.config;
 
-import com.petspace.dev.util.jwt.JwtProvider;
-import com.petspace.dev.util.jwt.filter.JwtAccessDeniedHandler;
-import com.petspace.dev.util.jwt.filter.JwtAuthenticationFilter;
-import com.petspace.dev.util.jwt.filter.JwtExceptionFilter;
+import com.petspace.dev.service.auth.JwtProvider;
+import com.petspace.dev.config.filter.JwtAccessDeniedHandler;
+import com.petspace.dev.config.filter.JwtAuthenticationFilter;
+import com.petspace.dev.config.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;

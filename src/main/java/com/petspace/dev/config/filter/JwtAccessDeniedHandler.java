@@ -1,4 +1,4 @@
-package com.petspace.dev.util.jwt.filter;
+package com.petspace.dev.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petspace.dev.util.BaseResponse;
