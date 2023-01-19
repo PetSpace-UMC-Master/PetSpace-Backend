@@ -1,6 +1,7 @@
 package com.petspace.dev.config;
 
 import com.petspace.dev.util.jwt.JwtProvider;
+import com.petspace.dev.util.jwt.filter.JwtAccessDeniedHandler;
 import com.petspace.dev.util.jwt.filter.JwtAuthenticationFilter;
 import com.petspace.dev.util.jwt.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtAccessDeniedHandler jwtAccessDeniedHandler() {
+        return new JwtAccessDeniedHandler();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
@@ -47,11 +53,12 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 // TODO 로그인, 회원가입, 방 전체보기, 방 상세보기는 비회원인 상태에서도 가능함, 이후에 추가하기
-                .antMatchers("/", "/oauth/**", "/app/login", "/app/sign-in/**").permitAll()
+                .antMatchers("/", "/oauth/**", "/app/login", "/app/sign-up/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionFilter(), jwtAuthenticationFilter(jwtProvider).getClass());
+                .addFilterBefore(jwtExceptionFilter(), jwtAuthenticationFilter(jwtProvider).getClass())
+                .exceptionHandling().accessDeniedHandler(jwtAccessDeniedHandler());
         return http.build();
     }
 }
