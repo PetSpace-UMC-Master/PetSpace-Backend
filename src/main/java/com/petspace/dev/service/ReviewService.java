@@ -5,9 +5,7 @@ import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.domain.image.ReviewImage;
-import com.petspace.dev.dto.review.ReviewCreateRequestDto;
-import com.petspace.dev.dto.review.ReviewCreateResponseDto;
-import com.petspace.dev.dto.review.ReviewListResponseDto;
+import com.petspace.dev.dto.review.*;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewRepository;
@@ -81,6 +79,13 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    private List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Review review) {
+        return reviewRequestDto.getReviewImages().stream()
+                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
+                .map(url -> createPostImage(review, url))
+                .collect(Collectors.toList());
+    }
+
     private ReviewImage createPostImage(Review review, String url) {
         return reviewImageRepository.save(ReviewImage.builder()
                 .reviewImageUrl(url)
@@ -88,7 +93,7 @@ public class ReviewService {
                 .build());
     }
 
-    public Page<ReviewListResponseDto> findAll(Pageable pageable) {
+    public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
         List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
         List<ReviewListResponseDto> dtoList = new ArrayList<>();
 
@@ -111,6 +116,24 @@ public class ReviewService {
 
         return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
+
+    @Transactional
+    public ReviewUpdateResponseDto update(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
+
+        Review getReview = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+
+        getReview.setContent(reviewRequestDto.getContent());
+        getReview.setScore(reviewRequestDto.getScore());
+
+        List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, getReview);
+
+        return ReviewUpdateResponseDto.builder()
+                .id(getReview.getId())
+                .build();
+    }
+
 }
 
 

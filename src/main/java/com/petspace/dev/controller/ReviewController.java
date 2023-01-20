@@ -1,9 +1,7 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.dto.review.ReviewListResponseDto;
+import com.petspace.dev.dto.review.*;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.dto.review.ReviewCreateRequestDto;
-import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +51,19 @@ public class ReviewController {
     public BaseResponse findAll(@RequestParam int page,
                                 @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ReviewListResponseDto> responseDtos = reviewService.findAll(pageable);
+        Page<ReviewListResponseDto> responseDtos = reviewService.findAllReview(pageable);
         return new BaseResponse(responseDtos);
     }
+
+    @PostMapping("/reviews/update/{idx}")
+    public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                     @PathVariable Long idx,
+                                     @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
+        Long userId = principalDetail.getId();
+        ReviewUpdateResponseDto responseDto = reviewService.update(userId, idx, reviewUpdateRequestDto);
+
+        return new BaseResponse<>(responseDto);
+    }
+
 }
 
