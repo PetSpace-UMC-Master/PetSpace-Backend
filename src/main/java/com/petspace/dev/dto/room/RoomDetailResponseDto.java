@@ -92,24 +92,18 @@ public class RoomDetailResponseDto {
      */
     private List<RoomDetailFacilityDto> getRoomDetailFacilityDtos(Room room) {
 
-        // Facility Entity List 가져오기
-        List<Facility> facilities = room.getRoomFacilities()
+        List<RoomDetailFacilityDto> facilities = room.getRoomFacilities()
                 .stream().map(RoomFacility::getFacility)
+                .map(facility -> {
+                    RoomDetailFacilityDto roomDetailFacilityDto = RoomDetailFacilityDto.builder()
+                            .facilityName(facility.getFacilityName())
+                            .facilityImageUrl(facility.getFacilityImageUrl())
+                            .build();
+                    return roomDetailFacilityDto;
+                })
                 .collect(Collectors.toList());
 
-        // Room 엔티티를 필요한 정보로 DTO 화 하여 List 에 담는다.
-        List<RoomDetailFacilityDto> facilityInfoDtos = new ArrayList<>();
-        if(!facilityInfoDtos.isEmpty()) {
-            for (Facility fc : facilities) {
-                facilityInfoDtos.add(
-                        RoomDetailFacilityDto.builder()
-                                .facilityName(fc.getFacilityName())
-                                .facilityImageUrl(fc.getFacilityImageUrl())
-                                .build()
-                );
-            }
-        }
-        return facilityInfoDtos;
+        return facilities;
     }
 
 
