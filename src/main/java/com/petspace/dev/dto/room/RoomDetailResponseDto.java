@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 public class RoomDetailResponseDto {
 
     private Long roomId;
-    private String hostName; // User Entity의 name
-    private String address; // Address Entity 데이터 가공
+    private String hostName;
+    private String address;
     private String roomName;
-    private int price; //
+    private int price;
     private int maxGuest;
     private int maxPet;
     private String roomDecription;
@@ -24,11 +24,10 @@ public class RoomDetailResponseDto {
     private LocalDateTime checkoutTime;
     private double roomAverageScore; // Review AVG
     private long reviewCount; // Review COUNT
-    private List<String> roomImageUrl;
-    private List<RoomDetailReviewDto> reviewPreview;
-    private List<RoomDetailFacilityDto> facilities;
+    private List<String> roomImageUrls;
+    private List<RoomDetailReview> reviewPreviews;
+    private List<RoomDetailFacility> facilities;
 
-    // TODO 자료구조명 대신 복수형으로 변수명
     public RoomDetailResponseDto(Room room){
 
         this.roomId = room.getId();
@@ -49,13 +48,13 @@ public class RoomDetailResponseDto {
                 .stream().map(Reservation::getReview)
                 .count();
         // Room 의 Image 리스트에서 URL 만을 List<String> 으로 받아오기
-        this.roomImageUrl = room.getRoomImages()
+        this.roomImageUrls = room.getRoomImages()
                 .stream().map(RoomImage::getRoomImageUrl)
                 .collect(Collectors.toList());
         // 리뷰 미리보기 5개 가져오기
-        this.reviewPreview = getRoomDetailReviewDtos(room);
+        this.reviewPreviews = getRoomDetailReviews(room);
         // Room 의 편의시설 받아오기
-        this.facilities = getRoomDetailFacilityDtos(room);
+        this.facilities = getRoomDetailFacilities(room);
     }
 
     /**
@@ -76,21 +75,21 @@ public class RoomDetailResponseDto {
     /**
      * 리뷰 미리보기 5개 가져오기
      */
-    private List<RoomDetailReviewDto> getRoomDetailReviewDtos(Room room) {
+    private List<RoomDetailReview> getRoomDetailReviews(Room room) {
 
-        List<RoomDetailReviewDto> reviewPreview = room.getReservation()
+        List<RoomDetailReview> reviewPreview = room.getReservation()
                 .stream().map(Reservation::getReview)
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(Review::getId).reversed())
                 .limit(5)
                 .map(review ->{
-                    RoomDetailReviewDto roomDetailReviewDto = RoomDetailReviewDto.builder()
+                    RoomDetailReview roomDetailReviews = RoomDetailReview.builder()
                             .userId(review.getReservation().getUser().getId())
                             .nickname(review.getReservation().getUser().getNickname())
                             .createdAt(review.getCreatedAt())
                             .description(review.getContent())
                             .build();
-                    return roomDetailReviewDto;
+                    return roomDetailReviews;
                 })
                 .collect(Collectors.toList());
         return reviewPreview;
@@ -99,16 +98,16 @@ public class RoomDetailResponseDto {
     /**
      * Room 의 편의시설 받아오기
      */
-    private List<RoomDetailFacilityDto> getRoomDetailFacilityDtos(Room room) {
+    private List<RoomDetailFacility> getRoomDetailFacilities(Room room) {
 
-        List<RoomDetailFacilityDto> facilities = room.getRoomFacilities()
+        List<RoomDetailFacility> facilities = room.getRoomFacilities()
                 .stream().map(RoomFacility::getFacility)
                 .map(facility -> {
-                    RoomDetailFacilityDto roomDetailFacilityDto = RoomDetailFacilityDto.builder()
+                    RoomDetailFacility roomDetailFacilities = RoomDetailFacility.builder()
                             .facilityName(facility.getFacilityName())
                             .facilityImageUrl(facility.getFacilityImageUrl())
                             .build();
-                    return roomDetailFacilityDto;
+                    return roomDetailFacilities;
                 })
                 .collect(Collectors.toList());
 

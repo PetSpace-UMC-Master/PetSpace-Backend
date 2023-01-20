@@ -2,13 +2,12 @@ package com.petspace.dev.dto.room;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
 @Builder
-public class RoomDetailReviewDto {
+public class RoomDetailReview {
 
     private Long userId;
     private String nickname;
