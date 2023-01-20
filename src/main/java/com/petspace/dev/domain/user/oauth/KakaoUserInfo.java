@@ -1,6 +1,6 @@
-package com.petspace.dev.oauth;
+package com.petspace.dev.domain.user.oauth;
 
-import com.petspace.dev.domain.OauthProvider;
+import com.petspace.dev.domain.user.OauthProvider;
 import lombok.AllArgsConstructor;
 
 import java.util.Map;

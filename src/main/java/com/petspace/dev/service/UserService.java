@@ -1,6 +1,6 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
@@ -8,7 +8,7 @@ import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.UserException;
-import com.petspace.dev.util.jwt.JwtProvider;
+import com.petspace.dev.service.auth.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
