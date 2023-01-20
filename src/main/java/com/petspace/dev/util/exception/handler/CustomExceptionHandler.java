@@ -1,13 +1,13 @@
 package com.petspace.dev.util.exception.handler;
 
 import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.exception.AwsException;
+import com.petspace.dev.util.exception.ReviewException;
 import com.petspace.dev.util.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.stream.Collectors;
 
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
 
