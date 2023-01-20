@@ -1,11 +1,10 @@
-package com.petspace.dev.service;
+package com.petspace.dev.service.auth;
 
-import com.petspace.dev.oauth.OauthAttributes;
+import com.petspace.dev.domain.user.oauth.OauthAttributes;
 import com.petspace.dev.dto.oauth.OauthRequestDto;
 import com.petspace.dev.dto.oauth.OauthResponseDto;
-import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.user.User;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;

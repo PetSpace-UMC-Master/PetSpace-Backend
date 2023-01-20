@@ -1,7 +1,12 @@
 package com.petspace.dev.domain;
 
 import com.petspace.dev.domain.image.RoomImage;
-import lombok.*;
+import com.petspace.dev.domain.user.User;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

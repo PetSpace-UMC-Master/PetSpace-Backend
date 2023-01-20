@@ -1,5 +1,6 @@
 package com.petspace.dev.domain;
 
+import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,7 +40,7 @@ public class Reservation extends BaseTimeEntity{
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToOne(mappedBy = "reservation")
+    @OneToOne(mappedBy = "reservation", orphanRemoval = true)
     private Review review;
 
     @Column(nullable = false)
@@ -60,4 +61,8 @@ public class Reservation extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    public void addReview(Review review) {
+        this.review = review;
+    }
 }
