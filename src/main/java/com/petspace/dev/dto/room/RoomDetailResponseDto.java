@@ -71,6 +71,7 @@ public class RoomDetailResponseDto {
 
         List<RoomDetailReviewDto> reviewPreview = room.getReservation()
                 .stream().map(Reservation::getReview)
+                .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(Review::getId).reversed())
                 .limit(5)
                 .map(review ->{
@@ -83,7 +84,6 @@ public class RoomDetailResponseDto {
                     return roomDetailReviewDto;
                 })
                 .collect(Collectors.toList());
-
         return reviewPreview;
     }
 
@@ -105,6 +105,5 @@ public class RoomDetailResponseDto {
 
         return facilities;
     }
-
 
 }
