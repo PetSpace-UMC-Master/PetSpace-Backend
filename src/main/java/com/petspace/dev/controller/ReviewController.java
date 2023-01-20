@@ -9,16 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
-import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @RestController
-@RequestMapping("/review")
+@RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
 public class ReviewController {
@@ -32,13 +29,12 @@ public class ReviewController {
             @ApiResponse(responseCode = "2021", description = "해당 예약이 존재하지 않습니다."),
             @ApiResponse(responseCode = "2022", description = "score를 입력해주세요.")
     })
-    @PostMapping("/create")
+    @PostMapping("/reviews")
     public BaseResponse createReview(@RequestParam("userId") Long userId,
                                      @RequestParam("reservationId") Long reservationId,
                                      @Valid @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
         ReviewCreateResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
         log.info("score={}", reviewCreateRequestDto.getScore());
-
 
         return new BaseResponse<>(createResponseDto);
     }
