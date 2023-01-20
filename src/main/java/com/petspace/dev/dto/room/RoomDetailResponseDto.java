@@ -27,17 +27,13 @@ public class RoomDetailResponseDto {
     private List<String> roomImageUrl;
     private List<RoomDetailReviewDto> reviewPreview;
     private List<RoomDetailFacilityDto> facilities;
-    // TODO DTO 말고 다른 자료구조로 될까 ? VO
 
     // TODO 자료구조명 대신 복수형으로 변수명
-    // TODO DTO 내부 DTO 이름 VO .. 어쩌구
     public RoomDetailResponseDto(Room room){
 
         this.roomId = room.getId();
         this.hostName = room.getUser().getUsername();
         // Room 의 주소 받아오기. TODO 주소 어느 형식으로 보내줄지 논의 필요
-        // TODO 예외 처리 필요 -> 서울... region 안갖고와도 될 것 같던데?
-        // TODO 두개만 합치고 컬럼 하나는 리전 그대로 주는 방식으로 예외처리?
         this.address = room.getAddress().getCity() + " " + room.getAddress().getAddressDetail();
         this.roomName = room.getRoomName();
         this.price = room.getPrice();
@@ -71,40 +67,24 @@ public class RoomDetailResponseDto {
     /**
      * 리뷰 미리보기 5개 가져오기
      */
-    // TODO dtos??????? -> dto 자체가 data transfer object -> dto 맞지 않음 +++ room 붙힐 필요가? + VO 검색해볼것
     private List<RoomDetailReviewDto> getRoomDetailReviewDtos(Room room) {
 
-//         Review Entity List 가져오기
-        List<Review> reviewPreview = room.getReservation()
+        List<RoomDetailReviewDto> reviewPreview = room.getReservation()
                 .stream().map(Reservation::getReview)
                 .sorted(Comparator.comparing(Review::getId).reversed())
                 .limit(5)
+                .map(review ->{
+                    RoomDetailReviewDto roomDetailReviewDto = RoomDetailReviewDto.builder()
+                            .userId(review.getReservation().getUser().getId())
+                            .nickname(review.getReservation().getUser().getNickname())
+                            .createdAt(review.getCreatedAt())
+                            .description(review.getContent())
+                            .build();
+                    return roomDetailReviewDto;
+                })
                 .collect(Collectors.toList());
 
-        // TODO 스트림을 통해 줄일 수 있을 듯 함
-        // 현재는 ID 가 높은 5개 리뷰가 출력되고, 업데이트가 아닌 생성 시간이 가장 최근인 5개 리뷰를 의미한다.
-        Comparator<Review> comparator = (r1, r2) -> Long.valueOf(
-                        r1.getId())
-                .compareTo(r2.getId());
-
-        Collections.sort(reviewPreview, comparator.reversed()); // TODO stream 쪽 order 찾아보기 // 리팩토링
-        reviewPreview = reviewPreview.stream().limit(5).collect(Collectors.toList()); // stream limit 은 없을 때 Exception 발생하지 않음.
-
-        // 5개 Review 엔티티를 필요한 정보로 DTO 화 하여 List 에 담는다.
-        List<RoomDetailReviewDto> roomDetailReviewDtos = new ArrayList<>();
-        if(!reviewPreview.isEmpty()){
-        // TODO reviewPreview.stream().map(roomDetailReviewDtos::new).collect(Collectors.toList())
-            for(Review review : reviewPreview){
-                roomDetailReviewDtos.add(
-                        RoomDetailReviewDto.builder()
-                                .nickname(review.getReservation().getUser().getNickname())
-                                .createdAt(review.getCreatedAt())
-                                .description(review.getContent())
-                                .build()
-                );
-            }
-        }
-        return roomDetailReviewDtos;
+        return reviewPreview;
     }
 
     /**
