@@ -97,7 +97,7 @@ public class ReviewService {
         List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
         List<ReviewListResponseDto> dtoList = new ArrayList<>();
 
-        for(Review review : reviewGroup) {
+        for (Review review : reviewGroup) {
             List<ReviewImage> reviewImages = review.getReviewImages();
 
             ReviewListResponseDto responseDto = ReviewListResponseDto.builder()
@@ -106,7 +106,7 @@ public class ReviewService {
                     .reviewImage(reviewImages)
                     .score(review.getScore())
                     .content(review.getContent())
-                    .createdDate(review.getCreatedAt().toString().substring(0,10))
+                    .createdDate(review.getCreatedAt().toString().substring(0, 10))
                     .createdTime(review.getCreatedAt().toString().substring(11, 19))
                     .status(review.getStatus())
                     .build();
@@ -119,21 +119,28 @@ public class ReviewService {
 
     @Transactional
     public ReviewUpdateResponseDto update(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
-
         User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
+        Review getReview = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
-        Review getReview = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+        if(getReview.getReservation().getUser().getId().equals(user.getId())) {
+            new ReviewException(UPDATE_REVIEW_INVALID_USER);
+        }
 
-        getReview.setContent(reviewRequestDto.getContent());
-        getReview.setScore(reviewRequestDto.getScore());
+        if(reviewRequestDto.getScore() != null) {
+            getReview.setScore(reviewRequestDto.getScore());
+        }
 
-        List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, getReview);
+        if(reviewRequestDto.getContent() != null) {
+            getReview.setContent(reviewRequestDto.getContent());
+        }
+
+//        List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, getReview);
 
         return ReviewUpdateResponseDto.builder()
                 .id(getReview.getId())
                 .build();
     }
-
 }
 
 
