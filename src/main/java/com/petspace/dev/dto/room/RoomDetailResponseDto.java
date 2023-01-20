@@ -43,13 +43,7 @@ public class RoomDetailResponseDto {
         this.checkinTime = room.getCheckinTime(); // TODO CheckIn 시간형식 논의
         this.checkoutTime = room.getCheckoutTime(); // TODO CheckIn 시간형식 논의
         // 리뷰 평점 가져오기
-        this.roomAverageScore = room.getReservation()// TODO 소수점 2자리
-                .stream().map(Reservation::getReview)
-                .filter(Objects::nonNull) // Review 가 nonNull 인 경우만
-                .map(Review::getScore)
-                .mapToDouble(n -> n)
-                .average()
-                .orElse(0);
+        this.roomAverageScore = getRoomAverageScore(room);
         // 리뷰 개수 가져오기
         this.reviewCount = room.getReservation()
                 .stream().map(Reservation::getReview)
@@ -62,6 +56,21 @@ public class RoomDetailResponseDto {
         this.reviewPreview = getRoomDetailReviewDtos(room);
         // Room 의 편의시설 받아오기
         this.facilities = getRoomDetailFacilityDtos(room);
+    }
+
+    /**
+     * 리뷰 평점 구하기
+     */
+    private double getRoomAverageScore(Room room){
+        double roomAverageScore = room.getReservation()
+                .stream().map(Reservation::getReview)
+                .filter(Objects::nonNull) // Review 가 nonNull 인 경우만
+                .map(Review::getScore)
+                .mapToDouble(n -> n)
+                .average()
+                .orElse(0);
+
+        return Double.parseDouble(String.format("%.2f", roomAverageScore));
     }
 
     /**
