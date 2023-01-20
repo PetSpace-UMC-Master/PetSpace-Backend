@@ -32,7 +32,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "2021", description = "해당 예약이 존재하지 않습니다."),
             @ApiResponse(responseCode = "2022", description = "score를 입력해주세요.")
     })
-    @PostMapping("/review")
+    @PostMapping("/reviews")
     public BaseResponse createReview(@RequestParam("userId") Long userId,
                                      @RequestParam("reservationId") Long reservationId,
                                      @Valid @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
@@ -47,7 +47,7 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
     })
-    @GetMapping("/review")
+    @GetMapping("/reviews")
     public BaseResponse findAll(@RequestParam int page,
                                 @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
