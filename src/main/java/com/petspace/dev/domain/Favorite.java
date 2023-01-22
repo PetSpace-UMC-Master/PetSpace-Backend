@@ -50,7 +50,7 @@ public class Favorite {
         this.isClicked = isClicked;
     }
 
-    public void clickFavorite() {
+    public void changeFavoriteClickStatus() {
         this.isClicked = !isClicked;
     }
 }
