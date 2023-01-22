@@ -35,10 +35,10 @@ public class Favorite {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    private boolean isChecked;
+    private boolean isClicked;
 
     @Builder
-    public Favorite(User user, Room room, boolean isChecked) {
+    public Favorite(User user, Room room, boolean isClicked) {
         this.user = user;
         if (user != null) {
             user.getFavorites().add(this);
@@ -47,6 +47,10 @@ public class Favorite {
         if (room != null) {
             room.getFavorites().add(this);
         }
-        this.isChecked = isChecked;
+        this.isClicked = isClicked;
+    }
+
+    public void clickFavorite() {
+        this.isClicked = !isClicked;
     }
 }
