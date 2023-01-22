@@ -38,6 +38,8 @@ public enum BaseResponseStatus {
     POST_REVIEW_EMPTY_RESERVATION(false, 2021, "해당 예약이 존재하지 않습니다."),
     POST_REVIEW_EMPTY_SCORE(false, 2022, "score를 입력해주세요."),
 
+    // RoomException
+    NONE_ROOM(false, 2030, "존재하지 않는 숙소입니다."),
 
     /**
      * 3000 : Response 오류
