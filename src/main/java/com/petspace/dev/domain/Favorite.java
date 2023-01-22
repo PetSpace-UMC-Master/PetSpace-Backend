@@ -40,7 +40,13 @@ public class Favorite {
     @Builder
     public Favorite(User user, Room room, boolean isChecked) {
         this.user = user;
+        if (user != null) {
+            user.getFavorites().add(this);
+        }
         this.room = room;
+        if (room != null) {
+            room.getFavorites().add(this);
+        }
         this.isChecked = isChecked;
     }
 }
