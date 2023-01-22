@@ -1,0 +1,16 @@
+package com.petspace.dev.controller;
+
+import com.petspace.dev.service.FavoriteService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/app")
+@RequiredArgsConstructor
+@Slf4j
+public class FavoriteController {
+
+    private final FavoriteService favoriteService;
+}
