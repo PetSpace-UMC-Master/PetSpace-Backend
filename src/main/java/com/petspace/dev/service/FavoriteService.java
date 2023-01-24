@@ -45,8 +45,9 @@ public class FavoriteService {
     public FavoriteRegionsResponseDto showRegions(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(NONE_USER));
-        List<String> regions = user.getFavorites().stream()
-                .filter(Favorite::isClicked)
+
+        List<Favorite> favorites = favoriteRepository.findAllByUserId(user.getId());
+        List<String> regions = favorites.stream().filter(Favorite::isClicked)
                 .map(f -> f.getRoom().getAddress().getRegion())
                 .distinct()
                 .collect(Collectors.toList());
