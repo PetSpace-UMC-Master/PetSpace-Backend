@@ -28,7 +28,7 @@ public class ReservationCreateRequestDto {
                 .totalGuest(totalGuest)
                 .startDate(startDate)
                 .endDate(endDate)
-                .status(Status.ACTIVE)
+                .status(Status.PENDING) //처음 reservation을 create할 때는 admin이 승인할 때까지 PENDING상태이다.
                 .build();
     }
 }
