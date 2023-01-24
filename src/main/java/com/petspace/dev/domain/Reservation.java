@@ -3,12 +3,17 @@ package com.petspace.dev.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
+import com.petspace.dev.util.BaseResponseStatus;
+import com.petspace.dev.util.exception.ReservationException;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
+
+import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Entity
 @Getter
@@ -80,17 +85,37 @@ public class Reservation extends BaseTimeEntity{
         Reservation reservation = dto.toEntity();
         reservation.setUser(user);
         reservation.setRoom(room);
-        reservation.getTotalPrice();
+        reservation.setTotalPrice();
+        //startDate부터 endDate까지 Room의 RoomAvailable을 INACTIVE로 변경
+        for(RoomAvailable roomAvailable : reservation.getRoom().getRoomAvailables()) {
+            if(roomAvailable.getAvailableDay().toLocalDate().compareTo(reservation.getStartDate().toLocalDate()) >= 0
+            && roomAvailable.getAvailableDay().toLocalDate().isBefore(reservation.getEndDate().toLocalDate())) {
+                if(roomAvailable.getStatus() != Status.ACTIVE){
+                    throw new ReservationException(POST_RESERVATION_INVALID_ROOM_STATUS);
+                }
+                roomAvailable.setStatus(Status.INACTIVE);
+            }
+        }
         return reservation;
     }
 
-    //==조회 로직==//
-    public int getTotalPrice() {
+    //==삭제 메서드==//
+    public static void deleteReservation(Reservation reservation) {
+        if(reservation.getStatus() != Status.ACTIVE) {
+            throw new ReservationException(PATCH_RESERVATION_INVALID_RESERVATION_STATUS);
+        }
+        for(RoomAvailable roomAvailable : reservation.getRoom().getRoomAvailables()) {
+            roomAvailable.setStatus(Status.ACTIVE);
+        }
+        reservation.setStatus(Status.INACTIVE);
+    }
+
+    //==totalPrice setting 로직==//
+    public void setTotalPrice() {
         int totalPrice = 0;
         Period period = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
         totalPrice = room.getPrice() * period.getDays();
         this.totalPrice = totalPrice;
-        return totalPrice;
     }
     public void addReview(Review review) {
         this.review = review;

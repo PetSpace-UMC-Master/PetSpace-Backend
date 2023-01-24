@@ -21,21 +21,27 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/api/reservations/{userId}/{roomId}")
-    public ResponseEntity<ReservationCreateResponseDto> make(@PathVariable Long userId, @PathVariable Long roomId, @RequestBody ReservationCreateRequestDto dto) {
-        Reservation reservation = reservationService.makeReservation(userId, roomId, dto);
-        return ResponseEntity.ok(ReservationCreateResponseDto.builder()
-                .reservationCode(reservation.getReservationCode())
-                .totalPrice(reservation.getTotalPrice())
-                .totalGuest(reservation.getTotalGuest())
-                .startDate(reservation.getStartDate())
-                .endDate(reservation.getEndDate())
-                .build());
+    @PostMapping("/app/reservations/{userId}/{roomId}")
+    public BaseResponse<ReservationCreateResponseDto> createReservation(@PathVariable Long userId, @PathVariable Long roomId, @RequestBody ReservationCreateRequestDto dto) {
+        ReservationCreateResponseDto responseDto = reservationService.save(userId, roomId, dto);
+        return new BaseResponse<>(responseDto);
     }
 
-    @GetMapping("/api/reservations/{userId}")
+    @GetMapping("/app/reservations/{userId}")
     public BaseResponse<Object> readReservationByUserId(@PathVariable Long userId) {
-        List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readReservation(userId);
+        List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readUpComingReservation(userId);
         return new BaseResponse<>(reservationReadResponseDtoList);
+    }
+
+    @GetMapping("/app/reservations/{userId}/terminate")
+    public BaseResponse<Object> readTerminateReservationByUserId(@PathVariable Long userId) {
+        List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readTerminateReservation(userId);
+        return new BaseResponse<>(reservationReadResponseDtoList);
+    }
+
+    @PatchMapping("app/reservations/{reservationId}/delete")
+    public BaseResponse<Object> deleteReservation(@PathVariable Long reservationId) {
+        Long id = reservationService.delete(reservationId);
+        return new BaseResponse<>(id);
     }
 }
