@@ -37,9 +37,11 @@ public class FavoriteService {
                 .orElseThrow(() -> new UserException(NONE_USER));
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomException(NONE_ROOM));
+        Favorite favorite = favoriteRepository.findByUserIdAndRoomId(userId, roomId)
+                .orElse(null);
 
         log.info("user={}, room={}", user.getEmail(), room.getRoomName());
-        return addOrChangeFavoriteStatus(userId, roomId, user, room);
+        return addOrChangeFavoriteStatus(favorite, user, room);
     }
 
     public FavoriteRegionsResponseDto showRegions(Long userId) {
@@ -58,8 +60,7 @@ public class FavoriteService {
                 .build();
     }
 
-    private FavoriteClickResponseDto addOrChangeFavoriteStatus(Long userId, Long roomId, User user, Room room) {
-        Favorite favorite = favoriteRepository.findByUserIdAndRoomId(userId, roomId).orElse(null);
+    private FavoriteClickResponseDto addOrChangeFavoriteStatus(Favorite favorite, User user, Room room) {
 
         if (favorite == null) {
             favorite = Favorite.builder()
