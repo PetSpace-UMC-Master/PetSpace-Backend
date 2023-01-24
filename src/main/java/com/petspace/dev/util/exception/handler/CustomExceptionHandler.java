@@ -1,6 +1,7 @@
 package com.petspace.dev.util.exception.handler;
 
 import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.exception.ReservationException;
 import com.petspace.dev.util.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,6 +33,11 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({AwsException.class})
     public BaseResponse<Object> handleUserException(AwsException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
+    @ExceptionHandler({ReservationException.class})
+    public BaseResponse<Object> handleUserException(ReservationException e) {
         return new BaseResponse<>(e.getStatus());
     }
 
