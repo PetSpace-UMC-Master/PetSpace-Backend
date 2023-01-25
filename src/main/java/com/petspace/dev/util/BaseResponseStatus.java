@@ -41,6 +41,8 @@ public enum BaseResponseStatus {
     // RoomException
     NONE_ROOM(false, 2030, "존재하지 않는 숙소입니다."),
 
+    // RequestParam exception
+    EMPTY_REQUEST_PARAMETER(false, 2098, "Request Parameter가 존재하지 않습니다."),
     /**
      * 3000 : Response 오류
      */
