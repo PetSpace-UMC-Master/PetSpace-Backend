@@ -47,7 +47,7 @@ public class FavoriteService {
     public List<FavoriteResponseDto> showFavoritesByRegion(Long userId, String region) {
         List<Favorite> favorites = favoriteRepository.findAllFavoritesByUserIdAndRegion(userId, region);
 
-        List<FavoriteResponseDto> favoriteResponseDtos = favorites.stream().filter(Favorite::isClicked)
+        List<FavoriteResponseDto> favoriteResponseDtos = favorites.stream()
                 .map(FavoriteResponseDto::of)
                 .collect(Collectors.toList());
 
