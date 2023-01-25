@@ -45,16 +45,12 @@ public class FavoriteService {
     }
 
     public List<FavoriteResponseDto> showFavoritesByRegion(Long userId, String region) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(NONE_USER));
-        List<Favorite> favorites = favoriteRepository.findAllFavoritesByUserId(userId);
+        List<Favorite> favorites = favoriteRepository.findAllFavoritesByUserIdAndRegion(userId, region);
 
         List<FavoriteResponseDto> favoriteResponseDtos = favorites.stream().filter(Favorite::isClicked)
-                // TODO N+1 문제 발생
-                .filter(favorite -> favorite.getRoom().getAddress().getRegion().equals(region))
                 .map(FavoriteResponseDto::of)
                 .collect(Collectors.toList());
-        log.info("favorites=[{}]", favoriteResponseDtos);
+
         return favoriteResponseDtos;
     }
 
