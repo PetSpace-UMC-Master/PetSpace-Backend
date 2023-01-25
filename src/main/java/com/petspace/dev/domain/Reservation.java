@@ -1,12 +1,9 @@
 package com.petspace.dev.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
-import com.petspace.dev.util.BaseResponseStatus;
 import com.petspace.dev.util.exception.ReservationException;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
 import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,7 +14,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.List;
 
 import static com.petspace.dev.util.BaseResponseStatus.*;
 
@@ -99,7 +95,7 @@ public class Reservation extends BaseTimeEntity{
                 if(roomAvailable.getStatus() != Status.ACTIVE){
                     throw new ReservationException(POST_RESERVATION_INVALID_ROOM_STATUS);
                 }
-                roomAvailable.setStatus(Status.PENDING);
+                roomAvailable.setStatus(Status.INACTIVE);
             }
         }
         return reservation;

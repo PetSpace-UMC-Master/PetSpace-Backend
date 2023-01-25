@@ -28,7 +28,7 @@ public class ReservationController {
                                                                         @RequestParam("roomId") Long roomId,
                                                                         @RequestBody ReservationCreateRequestDto dto) {
         Long userId = principalDetail.getId();
-        ReservationCreateResponseDto responseDto = reservationService.save(userId, roomId, dto);
+        ReservationCreateResponseDto responseDto = reservationService.saveReservation(userId, roomId, dto);
         return new BaseResponse<>(responseDto);
     }
 
@@ -47,8 +47,8 @@ public class ReservationController {
     }
 
     @PatchMapping("app/reservations/{reservationId}/delete")
-    public BaseResponse<Object> deleteReservation(@PathVariable Long reservationId) {
-        Long id = reservationService.delete(reservationId);
+    public BaseResponse<Object> deleteReservation(@AuthenticationPrincipal PrincipalDetails principalDetail, @PathVariable Long reservationId) {
+        Long id = reservationService.deleteReservation(reservationId);
         return new BaseResponse<>(id);
     }
 }
