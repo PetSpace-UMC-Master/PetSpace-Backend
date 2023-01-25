@@ -17,6 +17,8 @@ public class RoomDetailResponseDto {
     private Long hostId;
     private String hostName;
     private String address;
+    private String latitude; // 위도
+    private String longitude; // 경도
     private String roomName;
     private int price;
     private int maxGuest;
@@ -35,15 +37,18 @@ public class RoomDetailResponseDto {
         this.roomId = room.getId();
         this.hostId = room.getUser().getId();
         this.hostName = room.getUser().getUsername();
-        // Room 의 주소 받아오기. TODO 주소 어느 형식으로 보내줄지 논의 필요
-        this.address = room.getAddress().getCity() + " " + room.getAddress().getAddressDetail();
+        // Room 의 주소 받아오기.
+        Address address = room.getAddress();
+        this.address = address.getCity() + " " + address.getAddressDetail();
+        this.latitude = address.getLatitude();
+        this.longitude = address.getLongitude();
         this.roomName = room.getRoomName();
         this.price = room.getPrice();
         this.maxGuest = room.getMaxGuest();
         this.maxPet = room.getMaxPet();
         this.roomDecription = room.getDescription();
-        this.checkinTime = room.getCheckinTime(); // TODO CheckIn 시간형식 논의
-        this.checkoutTime = room.getCheckoutTime(); // TODO CheckIn 시간형식 논의
+        this.checkinTime = room.getCheckinTime();
+        this.checkoutTime = room.getCheckoutTime();
         // 리뷰 평점 가져오기
         this.roomAverageScore = getRoomAverageScore(room);
         // 리뷰 개수 가져오기
