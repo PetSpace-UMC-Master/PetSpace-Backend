@@ -3,12 +3,15 @@ package com.petspace.dev.util.exception.handler;
 import com.petspace.dev.util.BaseResponse;
 import com.petspace.dev.util.exception.AwsException;
 import com.petspace.dev.util.exception.ReviewException;
+import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static com.petspace.dev.util.BaseResponseStatus.EMPTY_REQUEST_PARAMETER;
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
 
 @RestControllerAdvice
@@ -33,6 +36,16 @@ public class CustomExceptionHandler {
     @ExceptionHandler({AwsException.class})
     public BaseResponse<Object> handleUserException(AwsException e) {
         return new BaseResponse<>(e.getStatus());
+    }
+
+    @ExceptionHandler({RoomException.class})
+    public BaseResponse<Object> handleUserException(RoomException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    public BaseResponse<Object> handleRequestParameter() {
+        return new BaseResponse<>(EMPTY_REQUEST_PARAMETER);
     }
 
 }

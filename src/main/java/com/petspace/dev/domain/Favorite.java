@@ -3,9 +3,9 @@ package com.petspace.dev.domain;
 import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Favorite {
@@ -36,5 +35,22 @@ public class Favorite {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    private boolean isChecked;
+    private boolean isClicked;
+
+    @Builder
+    public Favorite(User user, Room room, boolean isClicked) {
+        this.user = user;
+        if (user != null) {
+            user.getFavorites().add(this);
+        }
+        this.room = room;
+        if (room != null) {
+            room.getFavorites().add(this);
+        }
+        this.isClicked = isClicked;
+    }
+
+    public void changeFavoriteClickStatus() {
+        this.isClicked = !isClicked;
+    }
 }
