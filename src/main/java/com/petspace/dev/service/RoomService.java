@@ -20,7 +20,7 @@ public class RoomService {
     public RoomDetailResponseDto getRoomDetail(Long roomId) {
 
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(()-> new RoomException(INVALID_ROOM_ID));
+                .orElseThrow(()-> new RoomException(NONE_ROOM));
 
         return new RoomDetailResponseDto(room);
     }

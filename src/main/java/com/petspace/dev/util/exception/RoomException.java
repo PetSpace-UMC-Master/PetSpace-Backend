@@ -4,7 +4,7 @@ import com.petspace.dev.util.BaseResponseStatus;
 import lombok.Getter;
 
 @Getter
-public class RoomException extends RuntimeException{
+public class RoomException extends RuntimeException {
 
     private final BaseResponseStatus status;
 

@@ -39,8 +39,10 @@ public enum BaseResponseStatus {
     POST_REVIEW_EMPTY_SCORE(false, 2022, "score를 입력해주세요."),
 
     // RoomException
-    INVALID_ROOM_ID(false, 2030,"존재하지 않는 숙소 정보입니다."),
+    NONE_ROOM(false, 2030, "존재하지 않는 숙소입니다."),
 
+    // RequestParam exception
+    EMPTY_REQUEST_PARAMETER(false, 2098, "Request Parameter가 존재하지 않습니다."),
     /**
      * 3000 : Response 오류
      */
