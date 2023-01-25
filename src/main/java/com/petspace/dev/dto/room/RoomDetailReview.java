@@ -11,6 +11,7 @@ public class RoomDetailReview {
 
     private Long userId;
     private String nickname;
+    private int score;
     private LocalDateTime createdAt;
     private String description;
 

@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 @Getter @Setter
 public class RoomDetailResponseDto {
 
+    // TODO isFavorite 추가 필요
     private Long roomId;
+    private Long hostId;
     private String hostName;
     private String address;
     private String roomName;
@@ -31,6 +33,7 @@ public class RoomDetailResponseDto {
     public RoomDetailResponseDto(Room room){
 
         this.roomId = room.getId();
+        this.hostId = room.getUser().getId();
         this.hostName = room.getUser().getUsername();
         // Room 의 주소 받아오기. TODO 주소 어느 형식으로 보내줄지 논의 필요
         this.address = room.getAddress().getCity() + " " + room.getAddress().getAddressDetail();
@@ -83,9 +86,11 @@ public class RoomDetailResponseDto {
                 .sorted(Comparator.comparing(Review::getId).reversed())
                 .limit(5)
                 .map(review ->{
+                    Reservation reservation = review.getReservation();
                     RoomDetailReview roomDetailReviews = RoomDetailReview.builder()
-                            .userId(review.getReservation().getUser().getId())
-                            .nickname(review.getReservation().getUser().getNickname())
+                            .userId(reservation.getUser().getId())
+                            .nickname(reservation.getUser().getNickname())
+                            .score(review.getScore())
                             .createdAt(review.getCreatedAt())
                             .description(review.getContent())
                             .build();
