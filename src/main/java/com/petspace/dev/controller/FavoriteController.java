@@ -5,6 +5,7 @@ import com.petspace.dev.dto.favorite.FavoriteClickResponseDto;
 import com.petspace.dev.dto.favorite.FavoriteResponseDto;
 import com.petspace.dev.service.FavoriteService;
 import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.input.room.RegionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,9 +27,9 @@ public class FavoriteController {
 
     @GetMapping("/favorites")
     public BaseResponse<List<FavoriteResponseDto>> showFavorites(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                 @RequestParam String region) {
+                                                                 @RequestParam RegionType region) {
         Long userId = principalDetails.getId();
-        List<FavoriteResponseDto> responseDtos = favoriteService.showFavoritesByRegion(userId, region);
+        List<FavoriteResponseDto> responseDtos = favoriteService.showFavoritesByRegion(userId, region.getKorRegionName());
         return new BaseResponse<>(responseDtos);
     }
 
