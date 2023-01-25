@@ -27,7 +27,6 @@ public class FavoriteController {
     @GetMapping("/favorites")
     public BaseResponse<List<FavoriteResponseDto>> showFavorites(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @RequestParam String region) {
-
         Long userId = principalDetails.getId();
         List<FavoriteResponseDto> responseDtos = favoriteService.showFavoritesByRegion(userId, region);
         return new BaseResponse<>(responseDtos);
