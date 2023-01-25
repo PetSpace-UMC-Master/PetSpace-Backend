@@ -1,6 +1,14 @@
-package com.petspace.dev.domain;
+package com.petspace.dev.domain.user;
 
+<<<<<<< HEAD:src/main/java/com/petspace/dev/domain/User.java
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+=======
+import com.petspace.dev.domain.BaseTimeEntity;
+import com.petspace.dev.domain.Favorite;
+import com.petspace.dev.domain.Reservation;
+import com.petspace.dev.domain.Room;
+import com.petspace.dev.domain.Status;
+>>>>>>> development:src/main/java/com/petspace/dev/domain/user/User.java
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +23,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity{
+public class User extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -57,9 +65,13 @@ public class User extends BaseTimeEntity{
     @Column(length = 45, nullable = false)
     private Status status;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Builder
     public User(String username, String nickname, String birth, String email, String password,
-                boolean privacyAgreement, boolean marketingAgreement, boolean hostPermission, OauthProvider oauthProvider, Status status) {
+                boolean privacyAgreement, boolean marketingAgreement, boolean hostPermission,
+                OauthProvider oauthProvider, Status status, Role role) {
         this.username = username;
         this.nickname = nickname;
         this.birth = birth;
@@ -70,6 +82,7 @@ public class User extends BaseTimeEntity{
         this.hostPermission = hostPermission;
         this.oauthProvider = oauthProvider;
         this.status = status;
+        this.role = role;
     }
 
     public void encodePassword(String encodedPassword) {

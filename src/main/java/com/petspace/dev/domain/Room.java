@@ -2,6 +2,7 @@ package com.petspace.dev.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.image.RoomImage;
+import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
