@@ -1,14 +1,11 @@
 package com.petspace.dev.domain.user;
 
-<<<<<<< HEAD:src/main/java/com/petspace/dev/domain/User.java
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-=======
 import com.petspace.dev.domain.BaseTimeEntity;
 import com.petspace.dev.domain.Favorite;
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.Status;
->>>>>>> development:src/main/java/com/petspace/dev/domain/user/User.java
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

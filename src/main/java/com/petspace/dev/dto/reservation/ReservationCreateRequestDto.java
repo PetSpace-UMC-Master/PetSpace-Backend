@@ -3,7 +3,6 @@ package com.petspace.dev.dto.reservation;
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.Status;
-import com.petspace.dev.domain.User;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Getter
 public class ReservationCreateRequestDto {
 
-    //private int totalPrice;
+    private int totalPrice;
     private int totalGuest;
     @DateTimeFormat(pattern = "yyyy-mm-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
