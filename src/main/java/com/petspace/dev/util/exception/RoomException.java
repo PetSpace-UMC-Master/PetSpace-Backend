@@ -11,4 +11,5 @@ public class RoomException extends RuntimeException {
     public RoomException(BaseResponseStatus status) {
         this.status = status;
     }
+
 }
