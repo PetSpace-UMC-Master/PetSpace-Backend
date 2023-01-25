@@ -1,6 +1,5 @@
 package com.petspace.dev.domain;
 
-<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
@@ -8,14 +7,12 @@ import com.petspace.dev.util.BaseResponseStatus;
 import com.petspace.dev.util.exception.ReservationException;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
-=======
 import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
->>>>>>> development
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
