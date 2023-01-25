@@ -1,6 +1,7 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.Reservation;
+import com.petspace.dev.domain.user.auth.PrincipalDetails;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
 import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
 import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
@@ -9,6 +10,7 @@ import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,20 +23,25 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    @PostMapping("/app/reservations/{userId}/{roomId}")
-    public BaseResponse<ReservationCreateResponseDto> createReservation(@PathVariable Long userId, @PathVariable Long roomId, @RequestBody ReservationCreateRequestDto dto) {
+    @PostMapping("/app/reservations")
+    public BaseResponse<ReservationCreateResponseDto> createReservation(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                                                        @RequestParam("roomId") Long roomId,
+                                                                        @RequestBody ReservationCreateRequestDto dto) {
+        Long userId = principalDetail.getId();
         ReservationCreateResponseDto responseDto = reservationService.save(userId, roomId, dto);
         return new BaseResponse<>(responseDto);
     }
 
-    @GetMapping("/app/reservations/{userId}")
-    public BaseResponse<Object> readReservationByUserId(@PathVariable Long userId) {
+    @GetMapping("/app/reservations")
+    public BaseResponse<Object> readReservationByUserId(@AuthenticationPrincipal PrincipalDetails principalDetail) {
+        Long userId = principalDetail.getId();
         List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readUpComingReservation(userId);
         return new BaseResponse<>(reservationReadResponseDtoList);
     }
 
-    @GetMapping("/app/reservations/{userId}/terminate")
-    public BaseResponse<Object> readTerminateReservationByUserId(@PathVariable Long userId) {
+    @GetMapping("/app/reservations/terminate")
+    public BaseResponse<Object> readTerminateReservationByUserId(@AuthenticationPrincipal PrincipalDetails principalDetail) {
+        Long userId = principalDetail.getId();
         List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readTerminateReservation(userId);
         return new BaseResponse<>(reservationReadResponseDtoList);
     }

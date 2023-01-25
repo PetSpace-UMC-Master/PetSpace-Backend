@@ -2,7 +2,7 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Room;
-import com.petspace.dev.domain.User;
+import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
 import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
 import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
