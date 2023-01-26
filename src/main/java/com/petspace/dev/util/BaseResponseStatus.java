@@ -40,7 +40,11 @@ public enum BaseResponseStatus {
     UPDATE_REVIEW_INVALID_REVIEW(false, 2023, "유효하지 않은 리뷰입니다."),
     UPDATE_REVIEW_INVALID_USER(false, 2023, "유효하지 않은 유저의 접근입니다."),
 
+    // RoomException
+    NONE_ROOM(false, 2030, "존재하지 않는 숙소입니다."),
 
+    // RequestParam exception
+    EMPTY_REQUEST_PARAMETER(false, 2098, "Request Parameter가 존재하지 않습니다."),
     /**
      * 3000 : Response 오류
      */
