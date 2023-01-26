@@ -65,19 +65,19 @@ public class ReviewController {
     })
     @PatchMapping("/reviews/{idx}/update")
     public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @PathVariable Long idx,
+                                     @PathVariable Long roomId,
                                      @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
         Long userId = principalDetail.getId();
-        ReviewUpdateResponseDto responseDto = reviewService.update(userId, idx, reviewUpdateRequestDto);
+        ReviewUpdateResponseDto responseDto = reviewService.update(userId, roomId, reviewUpdateRequestDto);
 
         return new BaseResponse<>(responseDto);
     }
 
-    @PatchMapping("/reviews/{idx}/delete")
+    @PatchMapping("/reviews/{roomId}/delete")
     public BaseResponse deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @PathVariable Long idx) {
+                                     @PathVariable Long roomId) {
         Long userId = principalDetail.getId();
-        ReviewDeleteResponseDto responseDto = reviewService.delete(userId, idx);
+        ReviewDeleteResponseDto responseDto = reviewService.delete(userId, roomId);
 
         return new BaseResponse(responseDto);
     }
