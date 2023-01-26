@@ -112,6 +112,7 @@ public class RoomDetailResponseDto {
 
         List<RoomDetailFacility> facilities = room.getRoomFacilities()
                 .stream().map(RoomFacility::getFacility)
+                .limit(6)
                 .map(facility -> {
                     RoomDetailFacility roomDetailFacilities = RoomDetailFacility.builder()
                             .facilityName(facility.getFacilityName())
