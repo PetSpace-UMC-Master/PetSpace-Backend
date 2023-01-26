@@ -72,5 +72,14 @@ public class ReviewController {
 
         return new BaseResponse<>(responseDto);
     }
+
+    @PatchMapping("/reviews/{idx}/delete")
+    public BaseResponse deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                     @PathVariable Long idx) {
+        Long userId = principalDetail.getId();
+        ReviewDeleteResponseDto responseDto = reviewService.delete(userId, idx);
+
+        return new BaseResponse(responseDto);
+    }
 }
 

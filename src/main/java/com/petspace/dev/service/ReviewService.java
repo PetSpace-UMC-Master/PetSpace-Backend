@@ -10,6 +10,7 @@ import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewRepository;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.util.BaseResponse;
 import com.petspace.dev.util.exception.ReviewException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
@@ -165,6 +166,19 @@ public class ReviewService {
                 .reviewImageUrl(url)
                 .review(review)
                 .build());
+    }
+
+    @Transactional
+    public ReviewDeleteResponseDto delete(Long userId, Long reviewId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
+        Review getReview = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+
+        getReview.setStatus(Status.valueOf("INACTIVE"));
+
+        return ReviewDeleteResponseDto.builder()
+                .id(getReview.getId())
+                .build();
     }
 
 }
