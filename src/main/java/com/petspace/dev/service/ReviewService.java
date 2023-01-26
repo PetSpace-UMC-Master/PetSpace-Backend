@@ -137,15 +137,21 @@ public class ReviewService {
 
         Review getReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
-
+        
+        // DB Url 삭제
         if (getReview.getReviewImages().size() != 0) {
             reviewImageRepository.deleteAllByIdInBatch(reviewId);
         }
         log.info("getReview={}", getReview.getId());
-////            // S3 삭제
-////            awsS3Uploader.deleteImage(review.getReviewImages().toString());
-////            log.info("images={}", review.getReviewImages());
-//        }
+
+        // S3 삭제
+        List<ReviewImage> reviewImages = getReview.getReviewImages();
+
+        for (ReviewImage reviewImage : reviewImages) {
+            String imageKey = reviewImage.getReviewImageUrl().substring(49);
+            awsS3Uploader.deleteReviewImage(imageKey);
+            log.info("imageKey={}", imageKey);
+        }
 
 
         return reviewRequestDto.getReviewImages().stream()
