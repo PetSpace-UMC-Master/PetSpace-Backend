@@ -64,7 +64,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",
                     content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class)))
     })
-    @PostMapping("/reviews/{idx}/update")
+    @PatchMapping("/reviews/{idx}/update")
     public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long idx,
                                      @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
