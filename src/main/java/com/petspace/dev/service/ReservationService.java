@@ -35,9 +35,9 @@ public class ReservationService {
     public ReservationCreateResponseDto saveReservation(Long userId, Long roomId, ReservationCreateRequestDto dto) {
         //엔티티 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ReservationException(POST_RESERVATION_EMPTY_USER));
+                .orElseThrow(() -> new ReservationException(GET_RESERVATION_EMPTY_USER));
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new ReservationException(POST_RESERVATION_EMPTY_ROOM));
+                .orElseThrow(() -> new ReservationException(GET_RESERVATION_EMPTY_ROOM));
 
         //Reservation 생성
         Reservation reservation = Reservation.createReservation(user, room, dto);
@@ -50,7 +50,7 @@ public class ReservationService {
 
         //엔티티 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ReservationException(POST_RESERVATION_EMPTY_USER));
+                .orElseThrow(() -> new ReservationException(GET_RESERVATION_EMPTY_USER));
 
         return user.getReservations().stream()
                 .filter(r -> r.getStartDate().toLocalDate().compareTo(LocalDate.now()) >= 0) //예약이 현재보다 나중에 있으면 ture
@@ -63,7 +63,7 @@ public class ReservationService {
 
         //엔티티 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ReservationException(POST_RESERVATION_EMPTY_USER));
+                .orElseThrow(() -> new ReservationException(GET_RESERVATION_EMPTY_USER));
 
         return user.getReservations().stream()
                 .filter(r -> r.getStartDate().toLocalDate().compareTo(LocalDate.now()) < 0) //예약이 현재보다 나중에 있으면 ture

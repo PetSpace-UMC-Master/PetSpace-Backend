@@ -7,6 +7,9 @@ import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
 import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
 import com.petspace.dev.service.ReservationService;
 import com.petspace.dev.util.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,12 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    @Operation(summary = "Reservation Post", description = "Reservation Post API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2030", description = "해당 사용자가 존재하지 않습니다."),
+            @ApiResponse(responseCode = "2031", description = "해당 숙소가 존재하지 않습니다."),
+    })
     @PostMapping("/app/reservations")
     public BaseResponse<ReservationCreateResponseDto> createReservation(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                                                         @RequestParam("roomId") Long roomId,
@@ -32,6 +41,11 @@ public class ReservationController {
         return new BaseResponse<>(responseDto);
     }
 
+    @Operation(summary = "Reservation Get", description = "Read Upcoming Reservation API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2030", description = "해당 사용자가 존재하지 않습니다."),
+    })
     @GetMapping("/app/reservations")
     public BaseResponse<Object> readReservationByUserId(@AuthenticationPrincipal PrincipalDetails principalDetail) {
         Long userId = principalDetail.getId();
@@ -39,6 +53,12 @@ public class ReservationController {
         return new BaseResponse<>(reservationReadResponseDtoList);
     }
 
+
+    @Operation(summary = "Reservation Get", description = "Read terminate Reservation API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2030", description = "해당 사용자가 존재하지 않습니다."),
+    })
     @GetMapping("/app/reservations/terminate")
     public BaseResponse<Object> readTerminateReservationByUserId(@AuthenticationPrincipal PrincipalDetails principalDetail) {
         Long userId = principalDetail.getId();
@@ -46,6 +66,12 @@ public class ReservationController {
         return new BaseResponse<>(reservationReadResponseDtoList);
     }
 
+    @Operation(summary = "Reservation Patch", description = "Soft Delete Reservation API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2033", description = "유효하지 않은 예약입니다."),
+            @ApiResponse(responseCode = "2034", description = "존재하지 않는 예약입니다."),
+    })
     @PatchMapping("app/reservations/{reservationId}/delete")
     public BaseResponse<Object> deleteReservation(@AuthenticationPrincipal PrincipalDetails principalDetail, @PathVariable Long reservationId) {
         Long id = reservationService.deleteReservation(reservationId);
