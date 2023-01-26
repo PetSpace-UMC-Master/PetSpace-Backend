@@ -6,13 +6,14 @@ import com.petspace.dev.domain.Status;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
 public class ReservationCreateRequestDto {
 
-    private int totalPrice;
+    @NotBlank(message = "인원수를 입력해주세요.")
     private int totalGuest;
     @DateTimeFormat(pattern = "yyyy-mm-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
