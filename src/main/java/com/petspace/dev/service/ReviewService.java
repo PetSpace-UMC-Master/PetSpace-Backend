@@ -17,12 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.petspace.dev.util.exception.UserException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.petspace.dev.util.BaseResponseStatus.*;
@@ -72,27 +72,6 @@ public class ReviewService {
                 .build();
     }
 
-    private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
-        return reviewRequestDto.getReviewImages().stream()
-                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
-                .map(url -> createPostImage(review, url))
-                .collect(Collectors.toList());
-    }
-
-    private List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Review review) {
-        return reviewRequestDto.getReviewImages().stream()
-                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
-                .map(url -> createPostImage(review, url))
-                .collect(Collectors.toList());
-    }
-
-    private ReviewImage createPostImage(Review review, String url) {
-        return reviewImageRepository.save(ReviewImage.builder()
-                .reviewImageUrl(url)
-                .review(review)
-                .build());
-    }
-
     public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
         List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
         List<ReviewListResponseDto> dtoList = new ArrayList<>();
@@ -135,12 +114,53 @@ public class ReviewService {
             getReview.setContent(reviewRequestDto.getContent());
         }
 
-//        List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, getReview);
+        if(reviewRequestDto.getReviewImages() != null) {
+            List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, reviewId, getReview);
+        }
+
 
         return ReviewUpdateResponseDto.builder()
                 .id(getReview.getId())
                 .build();
     }
+
+    // S3 Upload
+    private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
+        return reviewRequestDto.getReviewImages().stream()
+                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
+                .map(url -> createPostImage(review, url))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Long reviewId, Review review) {
+
+        Review getReview = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+
+        if (getReview.getReviewImages().size() != 0) {
+            reviewImageRepository.deleteAllByIdInBatch(reviewId);
+        }
+        log.info("getReview={}", getReview.getId());
+////            // S3 삭제
+////            awsS3Uploader.deleteImage(review.getReviewImages().toString());
+////            log.info("images={}", review.getReviewImages());
+//        }
+
+
+        return reviewRequestDto.getReviewImages().stream()
+                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
+                .map(url -> createPostImage(review, url))
+                .collect(Collectors.toList());
+    }
+
+    private ReviewImage createPostImage(Review review, String url) {
+        return reviewImageRepository.save(ReviewImage.builder()
+                .reviewImageUrl(url)
+                .review(review)
+                .build());
+    }
+
 }
 
 
