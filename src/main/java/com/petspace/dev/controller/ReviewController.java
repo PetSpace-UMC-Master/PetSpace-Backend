@@ -1,5 +1,6 @@
 package com.petspace.dev.controller;
 
+import com.petspace.dev.domain.user.auth.PrincipalDetails;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.service.ReviewService;
@@ -9,16 +10,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
-import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @RestController
-@RequestMapping("/review")
+@RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
 public class ReviewController {
@@ -32,13 +31,13 @@ public class ReviewController {
             @ApiResponse(responseCode = "2021", description = "해당 예약이 존재하지 않습니다."),
             @ApiResponse(responseCode = "2022", description = "score를 입력해주세요.")
     })
-    @PostMapping("/create")
-    public BaseResponse createReview(@RequestParam("userId") Long userId,
+    @PostMapping("/reviews")
+    public BaseResponse createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @RequestParam("reservationId") Long reservationId,
                                      @Valid @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+        Long userId = principalDetail.getId();
         ReviewCreateResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
         log.info("score={}", reviewCreateRequestDto.getScore());
-
 
         return new BaseResponse<>(createResponseDto);
     }

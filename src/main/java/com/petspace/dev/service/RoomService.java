@@ -1,5 +1,8 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.domain.Room;
+import com.petspace.dev.dto.room.RoomDetailResponseDto;
+import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.input.room.CategoryType;
 import com.petspace.dev.util.input.room.SortBy;
 import com.petspace.dev.dto.room.RoomListResponseDto;
@@ -14,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.petspace.dev.util.BaseResponseStatus.NONE_ROOM;
 
 @RequiredArgsConstructor
 @Service
@@ -50,5 +55,14 @@ public class RoomService {
             return Sort.by(sortBy.getSortType()).ascending().and(Sort.by("id").descending());
         }
         return Sort.by(sortBy.getSortType()).descending().and(Sort.by("id").descending());
+    }
+
+    @Transactional(readOnly = true)
+    public RoomDetailResponseDto getRoomDetail(Long roomId) {
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(()-> new RoomException(NONE_ROOM));
+
+        return new RoomDetailResponseDto(room);
     }
 }

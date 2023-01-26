@@ -1,16 +1,22 @@
 package com.petspace.dev.util.exception.handler;
 
 import com.petspace.dev.util.BaseResponse;
+<<<<<<< HEAD
 import com.petspace.dev.util.BaseResponseStatus;
+=======
+import com.petspace.dev.util.exception.AwsException;
+import com.petspace.dev.util.exception.ReviewException;
+import com.petspace.dev.util.exception.RoomException;
+>>>>>>> development
 import com.petspace.dev.util.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.stream.Collectors;
-
+import static com.petspace.dev.util.BaseResponseStatus.EMPTY_REQUEST_PARAMETER;
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
 import static com.petspace.dev.util.BaseResponseStatus.METHOD_ARGUMENT_TYPE_MISMATCH;
 
@@ -38,8 +44,21 @@ public class CustomExceptionHandler {
         return new BaseResponse<>(e.getStatus());
     }
 
+<<<<<<< HEAD
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public BaseResponse<Object> handlerRequestParam() {
         return new BaseResponse<>(METHOD_ARGUMENT_TYPE_MISMATCH);
     }
+=======
+    @ExceptionHandler({RoomException.class})
+    public BaseResponse<Object> handleUserException(RoomException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    public BaseResponse<Object> handleRequestParameter() {
+        return new BaseResponse<>(EMPTY_REQUEST_PARAMETER);
+    }
+
+>>>>>>> development
 }

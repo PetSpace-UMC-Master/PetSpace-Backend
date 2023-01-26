@@ -1,14 +1,14 @@
-package com.petspace.dev.util.exception.handler;
+package com.petspace.dev.util.exception;
 
 import com.petspace.dev.util.BaseResponseStatus;
 import lombok.Getter;
 
 @Getter
-public class AwsException extends RuntimeException{
+public class ReviewException extends RuntimeException{
 
     private final BaseResponseStatus status;
 
-    public AwsException(BaseResponseStatus status) {
+    public ReviewException(BaseResponseStatus status) {
         this.status = status;
     }
 }
