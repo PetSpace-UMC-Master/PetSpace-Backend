@@ -39,11 +39,18 @@ public enum BaseResponseStatus {
     POST_REVIEW_EMPTY_SCORE(false, 2022, "score를 입력해주세요."),
 
     // ReservationException
-    GET_RESERVATION_EMPTY_USER(false, 2030, "해당 사용자가 존재하지 않습니다."),
-    GET_RESERVATION_EMPTY_ROOM(false, 2031, "해당 숙소가 존재하지 않습니다."),
-    POST_RESERVATION_INVALID_ROOM_STATUS(false, 2032, "해당 숙소가 예약 불가능한 상태입니다."),
-    PATCH_RESERVATION_INVALID_RESERVATION_STATUS(false, 2033, "유효하지 않은 예약입니다."),
-    NONE_RESERVATION(false, 2034, "존재하지 않는 예약입니다."),
+    GET_RESERVATION_EMPTY_USER(false, 2230, "해당 사용자가 존재하지 않습니다."),
+    GET_RESERVATION_EMPTY_ROOM(false, 2231, "해당 숙소가 존재하지 않습니다."),
+    POST_RESERVATION_INVALID_ROOM_STATUS(false, 2232, "해당 숙소가 예약 불가능한 상태입니다."),
+    PATCH_RESERVATION_INVALID_RESERVATION_STATUS(false, 2233, "유효하지 않은 예약입니다."),
+    NONE_RESERVATION(false, 2234, "존재하지 않는 예약입니다."),
+
+    // RoomException
+    NONE_ROOM(false, 2030, "존재하지 않는 숙소입니다."),
+
+    // RequestParam exception
+    EMPTY_REQUEST_PARAMETER(false, 2098, "Request Parameter가 존재하지 않습니다."),
+
     /**
      * 3000 : Response 오류
      */

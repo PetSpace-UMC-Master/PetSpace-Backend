@@ -38,6 +38,9 @@ public class Room extends BaseTimeEntity{
     private List<RoomCategory> roomCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "room")
+    private List<RoomFacility> roomFacilities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
     private List<RoomAvailable> roomAvailables = new ArrayList<>();
 
     @OneToMany(mappedBy = "room")
@@ -75,4 +78,5 @@ public class Room extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
 }
