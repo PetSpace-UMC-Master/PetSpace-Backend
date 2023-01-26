@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,8 +25,8 @@ public class RoomDetailResponseDto {
     private int maxGuest;
     private int maxPet;
     private String roomDecription;
-    private LocalDateTime checkinTime;
-    private LocalDateTime checkoutTime;
+    private String checkinTime;
+    private String checkoutTime;
     private double roomAverageScore; // Review AVG
     private long reviewCount; // Review COUNT
     private List<String> roomImageUrls;
@@ -47,8 +48,8 @@ public class RoomDetailResponseDto {
         this.maxGuest = room.getMaxGuest();
         this.maxPet = room.getMaxPet();
         this.roomDecription = room.getDescription();
-        this.checkinTime = room.getCheckinTime();
-        this.checkoutTime = room.getCheckoutTime();
+        this.checkinTime = room.getCheckinTime().format(DateTimeFormatter.ofPattern("HH시 mm분"));;
+        this.checkoutTime = room.getCheckoutTime().format(DateTimeFormatter.ofPattern("HH시 mm분"));
         // 리뷰 평점 가져오기
         this.roomAverageScore = getRoomAverageScore(room);
         // 리뷰 개수 가져오기
