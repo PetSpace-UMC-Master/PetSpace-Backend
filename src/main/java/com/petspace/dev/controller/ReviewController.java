@@ -58,6 +58,12 @@ public class ReviewController {
         return new BaseResponse(responseDtos);
     }
 
+
+    @Operation(summary = "Updating Review", description = "Review Update API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",
+                    content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class)))
+    })
     @PostMapping("/reviews/{idx}/update")
     public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long idx,
