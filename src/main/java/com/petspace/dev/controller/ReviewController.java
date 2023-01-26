@@ -51,8 +51,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
     })
     @GetMapping("/reviews")
-    public BaseResponse findAll(@RequestParam int page,
-                                @RequestParam int size) {
+    public BaseResponse findAllReview(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ReviewListResponseDto> responseDtos = reviewService.findAllReview(pageable);
         return new BaseResponse(responseDtos);
@@ -73,6 +72,5 @@ public class ReviewController {
 
         return new BaseResponse<>(responseDto);
     }
-
 }
 
