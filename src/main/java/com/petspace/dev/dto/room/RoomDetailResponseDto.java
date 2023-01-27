@@ -97,13 +97,36 @@ public class RoomDetailResponseDto {
                             .userId(reservation.getUser().getId())
                             .nickname(reservation.getUser().getNickname())
                             .score(review.getScore())
-                            .createdAt(review.getCreatedAt())
+                            .createdAt(calculateCreatedDateFromNow(review.getCreatedAt()))
                             .description(review.getContent())
                             .build();
                     return roomDetailReviews;
                 })
                 .collect(Collectors.toList());
         return reviewPreview;
+    }
+
+    /**
+     * 리뷰 시간 계산
+     */
+    private String calculateCreatedDateFromNow(LocalDateTime localDateTime){
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if(now.getYear() == localDateTime.getYear()){
+            if(now.getMonth() == localDateTime.getMonth()){
+                if(now.getDayOfMonth() == localDateTime.getDayOfMonth()){
+                    return "오늘";
+                }else{
+                    return now.getDayOfMonth() - localDateTime.getDayOfMonth() + "일 전";
+                }
+            }else{
+                return now.getMonthValue() - localDateTime.getMonthValue() + "개월 전";
+            }
+        }else{
+            return now.getYear() - localDateTime.getYear() + "년 전";
+        }
+
     }
 
     /**
