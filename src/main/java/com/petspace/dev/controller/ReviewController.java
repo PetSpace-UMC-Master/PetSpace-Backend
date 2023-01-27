@@ -60,10 +60,10 @@ public class ReviewController {
 
     @Operation(summary = "Updating Review", description = "Review Update API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다.",
-                    content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class)))
+            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.",
+                    content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class))),
     })
-    @PatchMapping("/reviews/{idx}/update")
+    @PatchMapping("/reviews/{roomId}")
     public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long roomId,
                                      @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
@@ -73,7 +73,13 @@ public class ReviewController {
         return new BaseResponse<>(responseDto);
     }
 
-    @PatchMapping("/reviews/{roomId}/delete")
+
+    @Operation(summary = "Updating Review", description = "Review Update API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.",
+                    content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class))),
+    })
+    @DeleteMapping("/reviews/{roomId}")
     public BaseResponse deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long roomId) {
         Long userId = principalDetail.getId();

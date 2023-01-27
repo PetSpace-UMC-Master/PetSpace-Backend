@@ -73,6 +73,7 @@ public class ReviewService {
                 .build();
     }
 
+    // dtos
     public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
         List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
         List<ReviewListResponseDto> dtoList = new ArrayList<>();
@@ -103,6 +104,8 @@ public class ReviewService {
         Review getReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
+
+        // getReview 변수명 변경, update할 리뷰 이런 식으로
         if(getReview.getReservation().getUser().getId().equals(user.getId())) {
             new ReviewException(UPDATE_REVIEW_INVALID_USER);
         }
@@ -115,6 +118,7 @@ public class ReviewService {
             getReview.setContent(reviewRequestDto.getContent());
         }
 
+        // null이 아니라 size
         if(reviewRequestDto.getReviewImages() != null) {
             List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, reviewId, getReview);
         }
@@ -125,7 +129,7 @@ public class ReviewService {
                 .build();
     }
 
-    // S3 Upload
+    // S3 Upload, 함수 위치 변경
     private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
         return reviewRequestDto.getReviewImages().stream()
                 .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
@@ -136,16 +140,17 @@ public class ReviewService {
     @Transactional
     public List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Long reviewId, Review review) {
 
+        // review, 메서드로 빼기
         Review getReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
         
-        // DB Url 삭제
+        // DB Url 삭제, 메서드로 빼기, private로 빼기
         if (getReview.getReviewImages().size() != 0) {
             reviewImageRepository.deleteAllByIdInBatch(reviewId);
         }
         log.info("getReview={}", getReview.getId());
 
-        // S3 삭제
+        // S3 삭제, private로 빼기
         List<ReviewImage> reviewImages = getReview.getReviewImages();
 
         for (ReviewImage reviewImage : reviewImages) {
