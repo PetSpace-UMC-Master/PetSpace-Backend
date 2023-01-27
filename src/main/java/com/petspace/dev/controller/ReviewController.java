@@ -68,7 +68,7 @@ public class ReviewController {
                                      @PathVariable Long roomId,
                                      @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
         Long userId = principalDetail.getId();
-        ReviewUpdateResponseDto responseDto = reviewService.update(userId, roomId, reviewUpdateRequestDto);
+        ReviewUpdateResponseDto responseDto = reviewService.updateReview(userId, roomId, reviewUpdateRequestDto);
 
         return new BaseResponse<>(responseDto);
     }
@@ -83,7 +83,7 @@ public class ReviewController {
     public BaseResponse deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long roomId) {
         Long userId = principalDetail.getId();
-        ReviewDeleteResponseDto responseDto = reviewService.delete(userId, roomId);
+        ReviewDeleteResponseDto responseDto = reviewService.deleteReview(userId, roomId);
 
         return new BaseResponse(responseDto);
     }

@@ -73,10 +73,9 @@ public class ReviewService {
                 .build();
     }
 
-    // dtos
     public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
         List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
-        List<ReviewListResponseDto> dtoList = new ArrayList<>();
+        List<ReviewListResponseDto> dtos = new ArrayList<>();
 
         for (Review review : reviewGroup) {
             List<ReviewImage> reviewImages = review.getReviewImages();
@@ -92,45 +91,44 @@ public class ReviewService {
                     .status(review.getStatus())
                     .build();
 
-            dtoList.add(responseDto);
+            dtos.add(responseDto);
         }
 
-        return new PageImpl<>(dtoList, pageable, dtoList.size());
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
     @Transactional
-    public ReviewUpdateResponseDto update(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
+    public ReviewUpdateResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review getReview = reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
-
-        // getReview 변수명 변경, update할 리뷰 이런 식으로
-        if(getReview.getReservation().getUser().getId().equals(user.getId())) {
+        if(review.getReservation().getUser().getId().equals(user.getId())) {
             new ReviewException(UPDATE_REVIEW_INVALID_USER);
         }
 
         if(reviewRequestDto.getScore() != null) {
-            getReview.setScore(reviewRequestDto.getScore());
+            review.setScore(reviewRequestDto.getScore());
         }
 
         if(reviewRequestDto.getContent() != null) {
-            getReview.setContent(reviewRequestDto.getContent());
+            review.setContent(reviewRequestDto.getContent());
         }
 
-        // null이 아니라 size
-        if(reviewRequestDto.getReviewImages() != null) {
-            List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, reviewId, getReview);
+        if(!reviewRequestDto.getReviewImages().isEmpty()) {
+            List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, reviewId, review);
         }
-
 
         return ReviewUpdateResponseDto.builder()
-                .id(getReview.getId())
+                .id(review.getId())
                 .build();
     }
 
-    // S3 Upload, 함수 위치 변경
-    private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
+    @Transactional
+    public List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Long reviewId, Review review) {
+
+        deleteImages(reviewId);
+
         return reviewRequestDto.getReviewImages().stream()
                 .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
                 .map(url -> createPostImage(review, url))
@@ -138,28 +136,39 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Long reviewId, Review review) {
-
-        // review, 메서드로 빼기
+    public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
         Review getReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
-        
-        // DB Url 삭제, 메서드로 빼기, private로 빼기
+
+        getReview.setStatus(Status.valueOf("INACTIVE"));
+
+        return ReviewDeleteResponseDto.builder()
+                .id(getReview.getId())
+                .build();
+    }
+
+    private void deleteImages(Long reviewId) {
+        Review getReview = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+
         if (getReview.getReviewImages().size() != 0) {
             reviewImageRepository.deleteAllByIdInBatch(reviewId);
         }
-        log.info("getReview={}", getReview.getId());
 
-        // S3 삭제, private로 빼기
+        deleteS3Images(getReview);
+    }
+
+    private void deleteS3Images(Review getReview) {
         List<ReviewImage> reviewImages = getReview.getReviewImages();
 
         for (ReviewImage reviewImage : reviewImages) {
             String imageKey = reviewImage.getReviewImageUrl().substring(49);
             awsS3Uploader.deleteReviewImage(imageKey);
-            log.info("imageKey={}", imageKey);
         }
+    }
 
-
+    private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
         return reviewRequestDto.getReviewImages().stream()
                 .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
                 .map(url -> createPostImage(review, url))
@@ -172,20 +181,6 @@ public class ReviewService {
                 .review(review)
                 .build());
     }
-
-    @Transactional
-    public ReviewDeleteResponseDto delete(Long userId, Long reviewId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review getReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
-
-        getReview.setStatus(Status.valueOf("INACTIVE"));
-
-        return ReviewDeleteResponseDto.builder()
-                .id(getReview.getId())
-                .build();
-    }
-
 }
 
 
