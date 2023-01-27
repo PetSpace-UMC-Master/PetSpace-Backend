@@ -1,7 +1,7 @@
 package com.petspace.dev.service.auth;
 
-import com.petspace.dev.util.exception.JwtNotAvailableException;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
+import com.petspace.dev.util.exception.JwtNotAvailableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -10,6 +10,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,7 @@ import java.util.Random;
 import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Component
+@Getter
 @RequiredArgsConstructor
 @Slf4j
 public class JwtProvider {
@@ -31,23 +33,23 @@ public class JwtProvider {
     private final PrincipalDetailsService principalDetailsService;
 
     @Value("${jwt.access-token.expire-length}")
-    private long accessTokenValidityInMilliSeconds;
+    private long accessTokenExpiredIn;
 
     @Value("${jwt.refresh-token.expire-length}")
-    private long refreshTokenValidityInMilliSeconds;
+    private long refreshTokenExpiredIn;
 
     @Value("${jwt.token.secret-key}")
     private String secretKey;
 
     public String createAccessToken(String payload) {
-        return createToken(payload,accessTokenValidityInMilliSeconds);
+        return createToken(payload, accessTokenExpiredIn);
     }
 
     public String createRefreshToken() {
         byte[] array = new byte[7];
         new Random().nextBytes(array);
         String generatedString = new String(array, StandardCharsets.UTF_8);
-        return createToken(generatedString, refreshTokenValidityInMilliSeconds);
+        return createToken(generatedString, refreshTokenExpiredIn);
     }
 
     public String createToken(String payload, long expireLength) {
