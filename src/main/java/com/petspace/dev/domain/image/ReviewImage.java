@@ -1,5 +1,6 @@
 package com.petspace.dev.domain.image;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.petspace.dev.domain.Review;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class ReviewImage {
     @Column(name = "review_image_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "review_id")
     private Review review;
