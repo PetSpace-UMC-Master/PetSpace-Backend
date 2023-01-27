@@ -43,15 +43,9 @@ public class ReviewService {
     @Transactional
     public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
+        userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
-
-        /**
-         1. 유저 ID와 토큰이 안맞을 경우 : JWT 토큰 확인 - 유저 아이디의 이메일과 JWT 디코딩의 이메일이 같으면 실행 else 에러
-         2. 방이 존재하지 않는 경우 => OK
-         3. 스코어가 없는 경우 => OK
-         */
 
         if (reviewRequestDto.getScore() == null) {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
@@ -65,8 +59,8 @@ public class ReviewService {
                 .score(reviewRequestDto.getScore())
                 .content(content)
                 .build();
-        List<ReviewImage> reviewImages = uploadReviewImages(reviewRequestDto, review);
 
+        uploadReviewImages(reviewRequestDto, review);
 
         return ReviewCreateResponseDto.builder()
                 .id(review.getId())
@@ -116,7 +110,7 @@ public class ReviewService {
         }
 
         if(!reviewRequestDto.getReviewImages().isEmpty()) {
-            List<ReviewImage> reviewImages = updateReviewImages(reviewRequestDto, reviewId, review);
+            updateReviewImages(reviewRequestDto, reviewId, review);
         }
 
         return ReviewUpdateResponseDto.builder()
@@ -137,26 +131,26 @@ public class ReviewService {
 
     @Transactional
     public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review getReview = reviewRepository.findById(reviewId)
+        userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
-        getReview.setStatus(Status.valueOf("INACTIVE"));
+        review.setStatus(Status.valueOf("INACTIVE"));
 
         return ReviewDeleteResponseDto.builder()
-                .id(getReview.getId())
+                .id(review.getId())
                 .build();
     }
 
     private void deleteImages(Long reviewId) {
-        Review getReview = reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
-        if (getReview.getReviewImages().size() != 0) {
+        if (review.getReviewImages().size() != 0) {
             reviewImageRepository.deleteAllByIdInBatch(reviewId);
         }
 
-        deleteS3Images(getReview);
+        deleteS3Images(review);
     }
 
     private void deleteS3Images(Review getReview) {
