@@ -77,7 +77,7 @@ public class ReservationService {
         //엔티티 조회
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(NONE_RESERVATION));
-        Reservation.deleteReservation(reservation);
+        reservation.deleteReservation();
         return reservation.getId();
     }
 }

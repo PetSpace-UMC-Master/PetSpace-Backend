@@ -27,6 +27,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    // todo swagger responseCode 다 200으로 바꾸고 schema 검색해서 알맞게 바꾸기!!
     @Operation(summary = "Reservation Post", description = "Reservation Post API Doc")
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
@@ -74,7 +75,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "2034", description = "존재하지 않는 예약입니다."),
     })
     @PatchMapping("app/reservations/{reservationId}/delete")
-    public BaseResponse<Object> deleteReservation(@AuthenticationPrincipal PrincipalDetails principalDetail, @PathVariable Long reservationId) {
+    public BaseResponse<Long> deleteReservation(@AuthenticationPrincipal PrincipalDetails principalDetail, @PathVariable Long reservationId) {
         Long id = reservationService.deleteReservation(reservationId);
         return new BaseResponse<>(id);
     }
