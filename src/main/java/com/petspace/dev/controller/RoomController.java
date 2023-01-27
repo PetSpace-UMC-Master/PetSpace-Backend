@@ -20,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
-@Slf4j
+@RequestMapping("/app")
 public class RoomController {
     private final FavoriteService favoriteService;
     private final RoomService roomService;
+
     @GetMapping("/rooms")
     public BaseResponse<List<RoomListResponseDto>> get(@RequestParam Optional<Integer> page,
                                                        @RequestParam Optional<SortBy> sortBy,
