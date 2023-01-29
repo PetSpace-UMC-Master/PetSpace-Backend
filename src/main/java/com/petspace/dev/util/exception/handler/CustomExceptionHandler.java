@@ -2,6 +2,7 @@ package com.petspace.dev.util.exception.handler;
 
 import com.petspace.dev.util.BaseResponse;
 import com.petspace.dev.util.exception.AwsException;
+import com.petspace.dev.util.exception.ReissueException;
 import com.petspace.dev.util.exception.ReviewException;
 import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.exception.UserException;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static com.petspace.dev.util.BaseResponseStatus.EMPTY_REQUEST_PARAMETER;
-import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
+import static com.petspace.dev.util.BaseResponseStatus.INVALID_REQUEST;
 
 @RestControllerAdvice
 @Slf4j
@@ -20,7 +21,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public BaseResponse<Object> handleValidationException() {
-        return new BaseResponse<>(INVALID_INPUT);
+        return new BaseResponse<>(INVALID_REQUEST);
     }
 
     @ExceptionHandler({UserException.class})
@@ -48,4 +49,8 @@ public class CustomExceptionHandler {
         return new BaseResponse<>(EMPTY_REQUEST_PARAMETER);
     }
 
+    @ExceptionHandler(ReissueException.class)
+    public BaseResponse<Object> handleRefreshTokenException(ReissueException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
 }
