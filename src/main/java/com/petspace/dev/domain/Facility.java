@@ -26,4 +26,7 @@ public class Facility {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String facilityImageUrl;
 
+    @Column(nullable = false)
+    private String category;
+
 }

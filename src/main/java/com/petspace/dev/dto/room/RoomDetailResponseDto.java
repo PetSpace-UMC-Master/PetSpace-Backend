@@ -31,7 +31,7 @@ public class RoomDetailResponseDto {
     private long reviewCount; // Review COUNT
     private List<String> roomImageUrls;
     private List<RoomDetailReview> reviewPreviews;
-    private List<RoomDetailFacility> facilities;
+    private List<RoomFacilityInfo> facilities;
 
     public RoomDetailResponseDto(Room room){
 
@@ -130,15 +130,16 @@ public class RoomDetailResponseDto {
     }
 
     /**
-     * Room 의 편의시설 받아오기
+     * Room 의 편의시설 6개 받아오기
      */
-    private List<RoomDetailFacility> getRoomDetailFacilities(Room room) {
+    private List<RoomFacilityInfo> getRoomDetailFacilities(Room room) {
 
-        List<RoomDetailFacility> facilities = room.getRoomFacilities()
+        List<RoomFacilityInfo> facilities = room.getRoomFacilities()
                 .stream().map(RoomFacility::getFacility)
                 .limit(6)
                 .map(facility -> {
-                    RoomDetailFacility roomDetailFacilities = RoomDetailFacility.builder()
+                    RoomFacilityInfo roomDetailFacilities = RoomFacilityInfo.builder()
+                            .facilityCategory(facility.getCategory())
                             .facilityName(facility.getFacilityName())
                             .facilityImageUrl(facility.getFacilityImageUrl())
                             .build();

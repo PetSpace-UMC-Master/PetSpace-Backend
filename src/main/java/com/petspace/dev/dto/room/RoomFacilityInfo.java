@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RoomDetailFacility {
+public class RoomFacilityInfo {
 
+    private String facilityCategory;
     private String facilityName;
     private String facilityImageUrl;
 
