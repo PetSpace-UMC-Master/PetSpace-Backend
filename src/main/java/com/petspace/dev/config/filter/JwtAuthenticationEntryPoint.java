@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.petspace.dev.util.BaseResponseStatus.*;
+import static com.petspace.dev.util.BaseResponseStatus.EMPTY_AUTHORIZATION_HEADER;
 
 @Component
 @Slf4j
@@ -27,7 +27,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         log.info("Exception={}", jwtExceptionStatus);
         // 헤더를 아예 추가하지 않을 시
         if (jwtExceptionStatus == null) {
-            customizeError(response, UNAUTHORIZED_TOKEN);
+            customizeError(response, EMPTY_AUTHORIZATION_HEADER);
         } else{ // 토큰 값이 잘못된 경우
             customizeError(response, jwtExceptionStatus);
         }
