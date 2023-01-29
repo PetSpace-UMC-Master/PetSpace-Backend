@@ -1,6 +1,7 @@
 package com.petspace.dev.config.filter;
 
 import com.petspace.dev.service.auth.JwtProvider;
+import com.petspace.dev.util.exception.JwtNotAvailableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.petspace.dev.util.BaseResponseStatus.EXPIRED_ACCESS_TOKEN;
+
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -26,9 +29,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        if (token != null && jwtProvider.isValidToken(token)) {
-            Authentication authentication = jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (token != null) {
+                if (!jwtProvider.isValidToken(token)) {
+                    throw new JwtNotAvailableException(EXPIRED_ACCESS_TOKEN);
+                }
+                Authentication authentication = jwtProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("authentication={}", authentication.getPrincipal());
+            }
+        }
+        catch (JwtNotAvailableException e) {
+            log.warn("e={}", e.getStatus().getResponseMessage());
+            request.setAttribute("JwtException", e.getStatus());
         }
         filterChain.doFilter(request, response);
     }
@@ -38,6 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(PREFIX_TOKEN)) {
             return bearerToken.substring(PREFIX_TOKEN.length());
         }
-        return null; // 로그인안할 시, null!
+        return null;
     }
 }
