@@ -42,31 +42,29 @@ public class RoomFacilityResponseDto {
         // Category 별로 그룹화
         List<FacilitiesWithSameCategory> facilitiesWithSameCategories = new ArrayList<>();
 
-        // 카테고리별로 한 번의 loop
-        while(!facilities.isEmpty()){
-            RoomFacilityInfo roomFacilityInfo = facilities.get(0);
+        // distinct 한 Category 종류
+        List<String> categories = facilities.stream()
+                .map(RoomFacilityInfo::getFacilityCategory)
+                .distinct()
+                .collect(Collectors.toList());
 
-            // 카테고리에 해당하는 모든 편의시설 정보
-            FacilitiesWithSameCategory facilitiesWithCategory = new FacilitiesWithSameCategory();
-            // Category 지정
-            facilitiesWithCategory.setCategory(roomFacilityInfo.getFacilityCategory());
+        // Category 별로 묶어서 추가
+        if(!categories.isEmpty()){
+            for(int idx=0; idx<categories.size(); idx++){
+                String category = categories.get(idx);
 
-            // Categroy 에 해당하는 모든 편의시설 추가
-            List<RoomFacilityInfo> roomFacilityInfos = new ArrayList<>();
+                // 같은 Category 를 갖는 시설 정보 리스트
+                List<RoomFacilityInfo> roomFacilityInfos = facilities.stream()
+                        .filter(roomFacilityInfo -> roomFacilityInfo.getFacilityCategory().equals(category))
+                        .collect(Collectors.toList());
 
-            for(int i=0; i<facilities.size(); i++){
-                // Category 같으면 List 에 추가
-                if(facilities.get(i).getFacilityCategory().equals(roomFacilityInfo.getFacilityCategory())){
-                    roomFacilityInfos.add(facilities.get(i));
-                    facilities.remove(i);
-                    i--;
-                }
+                FacilitiesWithSameCategory facilitiesWithCategory = new FacilitiesWithSameCategory();
+
+                facilitiesWithCategory.setCategory(category);
+                facilitiesWithCategory.setFacilities(roomFacilityInfos);
+
+                facilitiesWithSameCategories.add(facilitiesWithCategory);
             }
-
-            facilitiesWithCategory.setFacilities(roomFacilityInfos);
-
-            // (카테고리 + 해당 리스트) 를 리스트에 추가
-            facilitiesWithSameCategories.add(facilitiesWithCategory);
         }
 
         return facilitiesWithSameCategories;
