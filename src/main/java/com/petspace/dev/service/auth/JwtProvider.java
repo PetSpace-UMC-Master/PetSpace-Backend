@@ -65,31 +65,17 @@ public class JwtProvider {
     }
 
     public boolean isValidToken(String token) {
-        Jws<Claims> claimsJws = getClaims(token);
-        log.info("expiredDate={}", claimsJws.getBody().getExpiration());
-        log.info("expired?={}", claimsJws.getBody().getExpiration().before(new Date()));
-        return !claimsJws.getBody().getExpiration().before(new Date());
-    }
-
-    public Authentication getAuthentication(String token) {
-        PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(getEmail(token));
-        log.info("getAuthentication, email={}", principalDetails.getUsername());
-        return new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
-    }
-
-    private String getEmail(String token) {
-        Jws<Claims> claims = getClaims(token);
-        return claims.getBody().getSubject();
-    }
-
-    private Jws<Claims> getClaims(String token){
         try {
-            return Jwts.parserBuilder()
+            Jws<Claims> claimsJws = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
+
+            log.info("expiredDate={}", claimsJws.getBody().getExpiration());
+            log.info("expired?={}", claimsJws.getBody().getExpiration().before(new Date()));
+            return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
-            throw new JwtNotAvailableException(EXPIRED_JWT);
+            return false;
         } catch (UnsupportedJwtException e) {
             throw new JwtNotAvailableException(UNSUPPORTED_TOKEN_TYPE);
         } catch (MalformedJwtException e) {
@@ -98,6 +84,24 @@ public class JwtProvider {
             throw new JwtNotAvailableException(INVALID_SIGNATURE_JWT);
         } catch (IllegalArgumentException e) {
             throw new JwtNotAvailableException(INVALID_TOKEN_TYPE);
+        }
+    }
+
+    public Authentication getAuthentication(String token) {
+        PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(getPayload(token));
+        log.info("getAuthentication, email={}", principalDetails.getUsername());
+        return new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
+    }
+
+    public String getPayload(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
         }
     }
 }
