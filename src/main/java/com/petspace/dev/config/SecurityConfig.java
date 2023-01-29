@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 // TODO 로그인, 회원가입, 방 전체보기, 방 상세보기는 비회원인 상태에서도 가능함, 이후에 추가하기
-                .antMatchers("/", "/oauth/**", "/app/login", "/app/sign-up/**", "/v3/api-docs", "/swagger*/**", "/app/token-reissue").permitAll()
+                .antMatchers("/", "/oauth/**", "/app/login", "/app/sign-up/**", "/app/room/**", "/app/reviews/**",
+                        "/app/token-reissue", "/v3/api-docs", "/swagger*/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
