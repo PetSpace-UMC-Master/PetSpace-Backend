@@ -63,6 +63,9 @@ public class Reservation extends BaseTimeEntity{
     @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Column(nullable = false)
+    private boolean isReviewCreated;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
