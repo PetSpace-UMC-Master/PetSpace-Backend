@@ -48,7 +48,7 @@ public class AwsS3Uploader {
             File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
                     .orElseThrow(() -> new AwsException(POST_IMAGE_CONVERT_ERROR));
 
-            String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
+            String fileName = dirName + "/" + UUID.randomUUID();   // S3에 저장된 파일 이름
 
             amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile)   // S3에 업로드
                     .withCannedAcl(CannedAccessControlList.PublicRead));
@@ -84,8 +84,8 @@ public class AwsS3Uploader {
         return Optional.empty();
     }
 
-    public void deleteImage(String imageUrl) {
+    public void deleteReviewImage(String imageUrl) {
         log.info("deleteImage = {}", imageUrl);
-        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket,"/post/" +imageUrl));
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, imageUrl));
     }
 }

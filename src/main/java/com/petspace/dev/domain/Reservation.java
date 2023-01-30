@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
 import com.petspace.dev.util.exception.ReservationException;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,7 @@ public class Reservation extends BaseTimeEntity{
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "reservation", orphanRemoval = true)
     private Review review;
 
