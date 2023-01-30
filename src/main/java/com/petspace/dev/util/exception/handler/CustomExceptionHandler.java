@@ -30,7 +30,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({DateTimeParseException.class})
     public BaseResponse<Object> handleDateTimeException() {
-        return new BaseResponse<>(INVALID_INPUT);
+        return new BaseResponse<>(INVALID_REQUEST);
     }
 
     @ExceptionHandler({UserException.class})
