@@ -1,11 +1,11 @@
-package com.petspace.dev.dto.oauth;
+package com.petspace.dev.dto.auth;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class OauthResponseDto {
+public class LoginTokenResponseDto {
 
     private String email;
     private String accessToken;

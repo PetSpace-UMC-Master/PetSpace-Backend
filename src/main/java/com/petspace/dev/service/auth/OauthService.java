@@ -1,9 +1,9 @@
 package com.petspace.dev.service.auth;
 
-import com.petspace.dev.domain.user.oauth.OauthAttributes;
-import com.petspace.dev.dto.oauth.OauthRequestDto;
-import com.petspace.dev.dto.oauth.OauthResponseDto;
 import com.petspace.dev.domain.user.User;
+import com.petspace.dev.domain.user.oauth.OauthAttributes;
+import com.petspace.dev.dto.auth.LoginTokenResponseDto;
+import com.petspace.dev.dto.auth.OauthRequestDto;
 import com.petspace.dev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class OauthService {
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public OauthResponseDto login(String providerName, OauthRequestDto requestDto) {
+    public LoginTokenResponseDto login(String providerName, OauthRequestDto requestDto) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, requestDto);
@@ -38,7 +38,7 @@ public class OauthService {
 
         log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
 
-        return OauthResponseDto.builder()
+        return LoginTokenResponseDto.builder()
                 .email(user.getEmail())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

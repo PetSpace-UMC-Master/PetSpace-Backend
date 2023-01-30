@@ -4,9 +4,9 @@ import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
-import com.petspace.dev.dto.user.UserLoginResponseDto;
+import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
-import com.petspace.dev.dto.user.UserTokenReissueRequestDto;
+import com.petspace.dev.dto.auth.LoginTokenReissueRequestDto;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.service.auth.JwtProvider;
 import com.petspace.dev.util.exception.ReissueException;
@@ -49,7 +49,7 @@ public class UserService {
                 .build();
     }
 
-    public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto) {
+    public LoginTokenResponseDto login(UserLoginRequestDto loginRequestDto) {
         User user = userRepository.findByEmail(loginRequestDto.getEmail())
                 .filter(u -> passwordEncoder.matches(loginRequestDto.getPassword(), u.getPassword()))
                 .orElseThrow(() -> new UserException(INVALID_EMAIL_OR_PASSWORD));
@@ -60,14 +60,14 @@ public class UserService {
         redisService.save(user.getEmail(), refreshToken, Duration.ofMillis(refreshTokenExpiredIn));
         log.info("redis!=[{}][{}]", user.getEmail(), redisService.getValue(user.getEmail()));
         log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
-        return UserLoginResponseDto.builder()
+        return LoginTokenResponseDto.builder()
                 .email(user.getEmail())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public UserLoginResponseDto reissueRefreshToken(UserTokenReissueRequestDto reissueRequestDto) {
+    public LoginTokenResponseDto reissueRefreshToken(LoginTokenReissueRequestDto reissueRequestDto) {
         String oldAccessToken = reissueRequestDto.getAccessToken();
         String oldRefreshToken = reissueRequestDto.getRefreshToken();
         String email = extractUserEmailFromRequest(oldAccessToken, oldRefreshToken);
@@ -78,7 +78,7 @@ public class UserService {
 
         redisService.save(email, reissuedRefreshToken, Duration.ofMillis(refreshTokenExpiredIn));
 
-        return UserLoginResponseDto.builder()
+        return LoginTokenResponseDto.builder()
                 .email(email)
                 .accessToken(reissuedAccessToken)
                 .refreshToken(reissuedRefreshToken)
