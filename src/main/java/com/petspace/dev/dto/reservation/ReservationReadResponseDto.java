@@ -24,14 +24,17 @@ public class ReservationReadResponseDto {
     private LocalDate endDate;
     private int remainingDays;
 
+    //todo roomimage 말고 그냥 url만 넘기기
     public ReservationReadResponseDto(Reservation reservation) {
         reservationCode = reservation.getReservationCode();
         roomName = reservation.getRoom().getRoomName();
         roomImages = reservation.getRoom().getRoomImages();
         startDate = reservation.getStartDate().toLocalDate();
         endDate = reservation.getEndDate().toLocalDate();
+        //remainingDays = Period.between(LocalDate.now(), startDate).getDays();
         this.setRemainingDays();
     }
+    //생성자 안에 합치기!!
     public void setRemainingDays() {
         Period period = Period.between(LocalDate.now(), startDate);
         remainingDays = period.getDays();

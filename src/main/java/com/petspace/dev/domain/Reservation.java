@@ -55,6 +55,8 @@ public class Reservation extends BaseTimeEntity{
     private int totalGuest;
 
     @Column(nullable = false)
+    private int totalPet;
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
@@ -65,7 +67,7 @@ public class Reservation extends BaseTimeEntity{
     private Status status;
 
     @Builder
-    public Reservation(User user, Room room, String reservationCode, int totalPrice, int totalGuest, LocalDateTime startDate, LocalDateTime endDate, Status status) {
+    public Reservation(User user, Room room, String reservationCode, int totalPrice, int totalGuest, int totalPet, LocalDateTime startDate, LocalDateTime endDate, Status status) {
         this.user = user;
         user.getReservations().add(this); //연관관계 설정
         this.room = room;
@@ -73,6 +75,7 @@ public class Reservation extends BaseTimeEntity{
         this.reservationCode = reservationCode;
         this.totalPrice = totalPrice;
         this.totalGuest = totalGuest;
+        this.totalPet = totalPet;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;

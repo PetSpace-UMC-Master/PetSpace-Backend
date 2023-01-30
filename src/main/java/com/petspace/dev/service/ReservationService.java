@@ -39,6 +39,16 @@ public class ReservationService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ReservationException(GET_RESERVATION_EMPTY_ROOM));
 
+        //validation
+        if(dto.getTotalGuest() > room.getMaxGuest()) {
+            throw new ReservationException(POST_RESERVATION_OVERCAPACITY_TOTAL_GUEST);
+        }
+        if(dto.getTotalPet() > room.getMaxPet()) {
+            throw new ReservationException(POST_RESERVATION_OVERCAPACITY_TOTAL_PET);
+        }
+        if(dto.getStartDate().isBefore(LocalDate.now())) {
+            throw  new ReservationException((POST_RESERVATION_INVALID_STARTDATE));
+        }
         //Reservation 생성
         Reservation reservation = Reservation.createReservation(user, room, dto);
         reservationRepository.save(reservation);
