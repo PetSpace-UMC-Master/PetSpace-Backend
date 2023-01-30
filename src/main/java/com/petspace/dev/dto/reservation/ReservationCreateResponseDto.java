@@ -12,17 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReservationCreateResponseDto {
 
-    private String reservationCode;
-    private int totalPrice;
-    private int totalGuest;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private Long reservationId;
 
     public ReservationCreateResponseDto(Reservation reservation) {
-        reservationCode = reservation.getReservationCode();
-        totalPrice = reservation.getTotalPrice();
-        totalGuest = reservation.getTotalGuest();
-        startDate = reservation.getStartDate();
-        endDate = reservation.getEndDate();
+        reservationId = reservation.getId();
     }
 }

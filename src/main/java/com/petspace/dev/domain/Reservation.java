@@ -14,7 +14,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,12 +61,14 @@ public class Reservation extends BaseTimeEntity{
     @Column(nullable = false)
     private LocalDateTime endDate;
 
+    @Column(nullable = false)
+    private boolean isReviewCreated;
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
 
     @Builder
-    public Reservation(User user, Room room, String reservationCode, int totalPrice, int totalGuest, int totalPet, LocalDateTime startDate, LocalDateTime endDate, Status status) {
+    public Reservation(User user, Room room, String reservationCode, int totalPrice, int totalGuest, int totalPet, LocalDateTime startDate, LocalDateTime endDate, boolean isReviewCreated, Status status) {
         this.user = user;
         user.getReservations().add(this); //연관관계 설정
         this.room = room;
@@ -78,6 +79,7 @@ public class Reservation extends BaseTimeEntity{
         this.totalPet = totalPet;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.isReviewCreated = isReviewCreated;
         this.status = status;
     }
 

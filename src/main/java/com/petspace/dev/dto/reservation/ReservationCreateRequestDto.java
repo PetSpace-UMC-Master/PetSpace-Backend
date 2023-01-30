@@ -1,6 +1,5 @@
 package com.petspace.dev.dto.reservation;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.Status;
@@ -9,9 +8,7 @@ import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.UUID;
 
@@ -41,6 +38,7 @@ public class ReservationCreateRequestDto {
                 .startDate(startDate.atTime(room.getCheckinTime().toLocalTime()))
                 .endDate(endDate.atTime(room.getCheckoutTime().toLocalTime()))
                 .totalPrice(Period.between(startDate, endDate).getDays() * room.getPrice())
+                .isReviewCreated(false) // 처음 예약이 생성될 때 리뷰 생성 상태는 false
                 .status(Status.PENDING) //처음 reservation을 create할 때는 admin이 승인할 때까지 PENDING상태이다.
                 .build();
     }
