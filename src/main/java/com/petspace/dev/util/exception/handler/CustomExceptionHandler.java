@@ -7,10 +7,13 @@ import com.petspace.dev.util.exception.ReviewException;
 import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.cookie.DateParseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.format.DateTimeParseException;
 
 import static com.petspace.dev.util.BaseResponseStatus.EMPTY_REQUEST_PARAMETER;
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_INPUT;
@@ -21,6 +24,11 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public BaseResponse<Object> handleValidationException() {
+        return new BaseResponse<>(INVALID_INPUT);
+    }
+
+    @ExceptionHandler({DateTimeParseException.class})
+    public BaseResponse<Object> handleDateTimeException() {
         return new BaseResponse<>(INVALID_INPUT);
     }
 
