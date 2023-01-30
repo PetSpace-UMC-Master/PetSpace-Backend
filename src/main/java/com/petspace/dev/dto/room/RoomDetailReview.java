@@ -3,16 +3,15 @@ package com.petspace.dev.dto.room;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 public class RoomDetailReview {
 
+    // TODO user image url 추가
     private Long userId;
     private String nickname;
     private int score;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private String description;
 
 }
