@@ -51,6 +51,8 @@ public class ReviewService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
 
+        reservation.setReviewCreated(true);
+
         if (reviewRequestDto.getScore() == null) {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
         }
