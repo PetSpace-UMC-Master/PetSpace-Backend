@@ -2,6 +2,7 @@ package com.petspace.dev.dto.room;
 
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.RoomFacility;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 public class RoomFacilityResponseDto {
 
     @Getter @Setter
-    private class FacilitiesWithSameCategory{
+    @Builder // inner class 에 builder 사용 위해 static
+    private static class FacilitiesWithSameCategory{
         private String category;
         private List<RoomFacilityInfo> facilities;
     }
@@ -29,14 +31,7 @@ public class RoomFacilityResponseDto {
         // 모든 Facility 정보 가져오기 -> Category 그룹화 이전
         List<RoomFacilityInfo> facilities = room.getRoomFacilities()
                 .stream().map(RoomFacility::getFacility)
-                .map(facility -> {
-                    RoomFacilityInfo roomFacilityInfo = RoomFacilityInfo.builder()
-                            .facilityCategory(facility.getCategory())
-                            .facilityName(facility.getFacilityName())
-                            .facilityImageUrl(facility.getFacilityImageUrl())
-                            .build();
-                    return roomFacilityInfo;
-                })
+                .map(facility -> RoomFacilityInfo.of(facility))
                 .collect(Collectors.toList());
 
         // Category 별로 그룹화
@@ -58,10 +53,10 @@ public class RoomFacilityResponseDto {
                         .filter(roomFacilityInfo -> roomFacilityInfo.getFacilityCategory().equals(category))
                         .collect(Collectors.toList());
 
-                FacilitiesWithSameCategory facilitiesWithCategory = new FacilitiesWithSameCategory();
-
-                facilitiesWithCategory.setCategory(category);
-                facilitiesWithCategory.setFacilities(roomFacilityInfos);
+                FacilitiesWithSameCategory facilitiesWithCategory = FacilitiesWithSameCategory.builder()
+                        .category(category)
+                        .facilities(roomFacilityInfos)
+                        .build();
 
                 facilitiesWithSameCategories.add(facilitiesWithCategory);
             }
