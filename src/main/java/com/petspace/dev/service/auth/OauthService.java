@@ -5,6 +5,7 @@ import com.petspace.dev.domain.user.oauth.OauthAttributes;
 import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.auth.OauthRequestDto;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.Map;
 
 @Service
@@ -24,6 +26,7 @@ public class OauthService {
     private final InMemoryClientRegistrationRepository inMemoryRepository;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
 
     @Transactional
     public LoginTokenResponseDto login(String providerName, OauthRequestDto requestDto) {
@@ -40,8 +43,9 @@ public class OauthService {
 
         String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getId()));
         String refreshToken = jwtProvider.createRefreshToken();
+        long refreshTokenExpiredIn = jwtProvider.getRefreshTokenExpiredIn();
 
-        log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
+        redisService.save(email, refreshToken, Duration.ofMillis(refreshTokenExpiredIn));
 
         return LoginTokenResponseDto.builder()
                 .email(user.getEmail())
