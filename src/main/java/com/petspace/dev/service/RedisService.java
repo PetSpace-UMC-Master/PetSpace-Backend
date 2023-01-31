@@ -1,6 +1,6 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.service.auth.jwt.Token;
+import com.petspace.dev.util.jwt.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

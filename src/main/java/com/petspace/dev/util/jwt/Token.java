@@ -1,4 +1,4 @@
-package com.petspace.dev.service.auth.jwt;
+package com.petspace.dev.util.jwt;
 
 import lombok.Builder;
 import lombok.Getter;

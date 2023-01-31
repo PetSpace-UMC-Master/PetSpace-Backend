@@ -1,6 +1,6 @@
 package com.petspace.dev.config.filter;
 
-import com.petspace.dev.service.auth.JwtProvider;
+import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.util.exception.JwtNotAvailableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

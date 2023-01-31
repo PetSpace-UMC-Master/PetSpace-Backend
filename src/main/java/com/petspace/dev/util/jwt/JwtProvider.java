@@ -1,7 +1,7 @@
-package com.petspace.dev.service.auth;
+package com.petspace.dev.util.jwt;
 
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.service.auth.jwt.Token;
+import com.petspace.dev.service.auth.PrincipalDetailsService;
 import com.petspace.dev.util.exception.JwtNotAvailableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
