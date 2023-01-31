@@ -6,6 +6,7 @@ import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.auth.OauthRequestDto;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.service.RedisService;
+import com.petspace.dev.service.auth.jwt.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.Duration;
 import java.util.Map;
 
 @Service
@@ -31,7 +31,6 @@ public class OauthService {
     @Transactional
     public LoginTokenResponseDto login(String providerName, OauthRequestDto requestDto) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
-        log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, requestDto);
         log.info("user nickname={}, email={}, oauthProvider={}", user.getNickname(), user.getEmail(), user.getOauthProvider());
 
@@ -41,16 +40,13 @@ public class OauthService {
             userRepository.save(user);
         }
 
-        String accessToken = jwtProvider.createAccessToken(String.valueOf(email));
-        String refreshToken = jwtProvider.createRefreshToken();
-        long refreshTokenExpiredIn = jwtProvider.getRefreshTokenExpiredIn();
-
-        redisService.save(email, refreshToken, Duration.ofMillis(refreshTokenExpiredIn));
+        Token token = jwtProvider.createToken(email);
+        redisService.save(email, token);
 
         return LoginTokenResponseDto.builder()
-                .email(user.getEmail())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .email(email)
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
                 .build();
     }
 
