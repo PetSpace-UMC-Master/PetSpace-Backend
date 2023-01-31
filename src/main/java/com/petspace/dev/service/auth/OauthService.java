@@ -31,7 +31,12 @@ public class OauthService {
         log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, requestDto);
         log.info("user nickname={}, email={}, oauthProvider={}", user.getNickname(), user.getEmail(), user.getOauthProvider());
-        userRepository.save(user);
+
+        String email = user.getEmail();
+
+        if (!userRepository.existsByEmail(email)) {
+            userRepository.save(user);
+        }
 
         String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getId()));
         String refreshToken = jwtProvider.createRefreshToken();
