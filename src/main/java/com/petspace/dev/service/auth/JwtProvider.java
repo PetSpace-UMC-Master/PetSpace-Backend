@@ -1,6 +1,7 @@
 package com.petspace.dev.service.auth;
 
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
+import com.petspace.dev.service.auth.jwt.Token;
 import com.petspace.dev.util.exception.JwtNotAvailableException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -41,21 +42,34 @@ public class JwtProvider {
     @Value("${jwt.token.secret-key}")
     private String secretKey;
 
+    public Token createToken(String payload) {
+        return Token.builder()
+                .accessToken(createAccessToken(payload))
+                .refreshToken(createRefreshToken())
+                .refreshTokenExpiredIn(getRefreshTokenExpiredIn())
+                .build();
+    }
+
     public String createAccessToken(String payload) {
-        return createToken(payload, accessTokenExpiredIn);
+        Claims claims = Jwts.claims().setSubject(payload);
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + accessTokenExpiredIn);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
     }
 
     public String createRefreshToken() {
         byte[] array = new byte[7];
         new Random().nextBytes(array);
-        String generatedString = new String(array, StandardCharsets.UTF_8);
-        return createToken(generatedString, refreshTokenExpiredIn);
-    }
+        String randomString = new String(array, StandardCharsets.UTF_8);
 
-    public String createToken(String payload, long expireLength) {
-        Claims claims = Jwts.claims().setSubject(payload);
+        Claims claims = Jwts.claims().setSubject(randomString);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + expireLength);
+        Date validity = new Date(now.getTime() + refreshTokenExpiredIn);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
