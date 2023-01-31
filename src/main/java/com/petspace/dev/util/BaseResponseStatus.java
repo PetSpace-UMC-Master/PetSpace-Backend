@@ -36,7 +36,7 @@ public enum BaseResponseStatus {
     INVALID_CHECKED_PASSWORD(false, 2011, "비밀번호 확인 값이 다릅니다."),
     INVALID_EMAIL_OR_PASSWORD(false, 2012, "이메일 혹은 비밀번호가 잘못되었습니다."),
     NONE_USER(false, 2013, "존재하지 않는 회원입니다."),
-
+    NONE_OAUTH_PROVIDER(false, 2014, "존재하지 않는 소셜로그인 타입입니다."),
 
     // ReviewException
     POST_REVIEW_EMPTY_USER(false, 2020, "해당 사용자가 존재하지 않습니다."),

@@ -1,4 +1,4 @@
-package com.petspace.dev.dto.oauth;
+package com.petspace.dev.dto.auth;
 
 import lombok.Getter;
 
