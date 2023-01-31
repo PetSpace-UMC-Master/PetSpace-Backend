@@ -2,6 +2,7 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.dto.room.RoomDetailResponseDto;
+import com.petspace.dev.dto.room.RoomFacilityResponseDto;
 import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.input.room.CategoryType;
 import com.petspace.dev.util.input.room.SortBy;
@@ -64,5 +65,14 @@ public class RoomService {
                 .orElseThrow(()-> new RoomException(NONE_ROOM));
 
         return new RoomDetailResponseDto(room);
+    }
+
+    @Transactional(readOnly = true)
+    public RoomFacilityResponseDto getRoomFacilities(Long roomId) {
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(()-> new RoomException(NONE_ROOM));
+
+        return new RoomFacilityResponseDto(room);
     }
 }

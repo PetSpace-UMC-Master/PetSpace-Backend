@@ -1,5 +1,7 @@
 package com.petspace.dev.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.user.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,14 +34,17 @@ public class Reservation extends BaseTimeEntity{
     @Column(name = "reservation_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "reservation", orphanRemoval = true)
     private Review review;
 
@@ -57,6 +62,9 @@ public class Reservation extends BaseTimeEntity{
 
     @Column(nullable = false)
     private LocalDateTime endDate;
+
+    @Column(nullable = false)
+    private boolean isReviewCreated;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)

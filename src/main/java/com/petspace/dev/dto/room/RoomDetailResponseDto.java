@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,13 +25,13 @@ public class RoomDetailResponseDto {
     private int maxGuest;
     private int maxPet;
     private String roomDecription;
-    private LocalDateTime checkinTime;
-    private LocalDateTime checkoutTime;
+    private String checkinTime;
+    private String checkoutTime;
     private double roomAverageScore; // Review AVG
     private long reviewCount; // Review COUNT
     private List<String> roomImageUrls;
     private List<RoomDetailReview> reviewPreviews;
-    private List<RoomDetailFacility> facilities;
+    private List<RoomFacilityInfo> facilities;
 
     public RoomDetailResponseDto(Room room){
 
@@ -47,8 +48,8 @@ public class RoomDetailResponseDto {
         this.maxGuest = room.getMaxGuest();
         this.maxPet = room.getMaxPet();
         this.roomDecription = room.getDescription();
-        this.checkinTime = room.getCheckinTime();
-        this.checkoutTime = room.getCheckoutTime();
+        this.checkinTime = room.getCheckinTime().format(DateTimeFormatter.ofPattern("HH시 mm분"));;
+        this.checkoutTime = room.getCheckoutTime().format(DateTimeFormatter.ofPattern("HH시 mm분"));
         // 리뷰 평점 가져오기
         this.roomAverageScore = getRoomAverageScore(room);
         // 리뷰 개수 가져오기
@@ -96,7 +97,7 @@ public class RoomDetailResponseDto {
                             .userId(reservation.getUser().getId())
                             .nickname(reservation.getUser().getNickname())
                             .score(review.getScore())
-                            .createdAt(review.getCreatedAt())
+                            .createdAt(calculateCreatedDateFromNow(review.getCreatedAt()))
                             .description(review.getContent())
                             .build();
                     return roomDetailReviews;
@@ -106,14 +107,39 @@ public class RoomDetailResponseDto {
     }
 
     /**
-     * Room 의 편의시설 받아오기
+     * 리뷰 시간 계산
      */
-    private List<RoomDetailFacility> getRoomDetailFacilities(Room room) {
+    private String calculateCreatedDateFromNow(LocalDateTime localDateTime){
 
-        List<RoomDetailFacility> facilities = room.getRoomFacilities()
+        LocalDateTime now = LocalDateTime.now();
+
+        if(now.getYear() == localDateTime.getYear()){
+            if(now.getMonth() == localDateTime.getMonth()){
+                if(now.getDayOfMonth() == localDateTime.getDayOfMonth()){
+                    return "오늘";
+                }else{
+                    return now.getDayOfMonth() - localDateTime.getDayOfMonth() + "일 전";
+                }
+            }else{
+                return now.getMonthValue() - localDateTime.getMonthValue() + "개월 전";
+            }
+        }else{
+            return now.getYear() - localDateTime.getYear() + "년 전";
+        }
+
+    }
+
+    /**
+     * Room 의 편의시설 6개 받아오기
+     */
+    private List<RoomFacilityInfo> getRoomDetailFacilities(Room room) {
+
+        List<RoomFacilityInfo> facilities = room.getRoomFacilities()
                 .stream().map(RoomFacility::getFacility)
+                .limit(6)
                 .map(facility -> {
-                    RoomDetailFacility roomDetailFacilities = RoomDetailFacility.builder()
+                    RoomFacilityInfo roomDetailFacilities = RoomFacilityInfo.builder()
+                            .facilityCategory(facility.getCategory())
                             .facilityName(facility.getFacilityName())
                             .facilityImageUrl(facility.getFacilityImageUrl())
                             .build();

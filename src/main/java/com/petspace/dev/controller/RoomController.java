@@ -3,6 +3,7 @@ package com.petspace.dev.controller;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
 import com.petspace.dev.dto.favorite.FavoriteClickResponseDto;
 import com.petspace.dev.dto.room.RoomDetailResponseDto;
+import com.petspace.dev.dto.room.RoomFacilityResponseDto;
 import com.petspace.dev.service.FavoriteService;
 import com.petspace.dev.util.input.room.CategoryType;
 import com.petspace.dev.util.input.room.SortBy;
@@ -52,10 +53,24 @@ public class RoomController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소 정보입니다.")
     })
-    @GetMapping("/room/{id}")
-    public BaseResponse<RoomDetailResponseDto> getRoomDetail(@PathVariable("id") Long roomId){
-        RoomDetailResponseDto roomDetailResponseDto = roomService.getRoomDetail(roomId);
+    @GetMapping("/room/{roomId}")
+    public BaseResponse<RoomDetailResponseDto> getRoomDetail(@PathVariable("roomId") Long roomId){
 
+        RoomDetailResponseDto roomDetailResponseDto = roomService.getRoomDetail(roomId);
         return new BaseResponse(roomDetailResponseDto);
+
+    }
+
+    @Operation(summary = "AllFacilities Get", description = "AllFacilities Get API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소 정보입니다.")
+    })
+    @GetMapping("/room/{roomId}/facilities")
+    public BaseResponse<RoomFacilityResponseDto> getRoomFacilities(@PathVariable("roomId") Long roomId){
+
+        RoomFacilityResponseDto roomFacilitiesDto = roomService.getRoomFacilities(roomId);
+        return new BaseResponse(roomFacilitiesDto);
+
     }
 }

@@ -5,6 +5,7 @@ import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
+import com.petspace.dev.dto.user.UserTokenReissueRequestDto;
 import com.petspace.dev.service.UserService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,13 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<UserLoginResponseDto> login(@Valid @RequestBody UserLoginRequestDto loginRequestDto) {
         UserLoginResponseDto loginResponseDto = userService.login(loginRequestDto);
+        return new BaseResponse<>(loginResponseDto);
+    }
+
+    @PostMapping("/token-reissue")
+    public BaseResponse<UserLoginResponseDto> reissue(@RequestBody UserTokenReissueRequestDto reissueRequestDto) {
+        log.info("ref=[{}][{}]", reissueRequestDto.getAccessToken(), reissueRequestDto.getRefreshToken());
+        UserLoginResponseDto loginResponseDto = userService.reissueRefreshToken(reissueRequestDto);
         return new BaseResponse<>(loginResponseDto);
     }
 }

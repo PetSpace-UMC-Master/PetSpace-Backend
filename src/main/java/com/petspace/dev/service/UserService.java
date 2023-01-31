@@ -6,14 +6,18 @@ import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserLoginResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
+import com.petspace.dev.dto.user.UserTokenReissueRequestDto;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.service.auth.JwtProvider;
+import com.petspace.dev.util.exception.ReissueException;
+import com.petspace.dev.util.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
 
 import static com.petspace.dev.util.BaseResponseStatus.*;
 
@@ -25,6 +29,7 @@ public class UserService {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
+    private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
 
     public UserResponseDto join(UserJoinRequestDto joinRequestDto) {
@@ -51,11 +56,32 @@ public class UserService {
 
         String accessToken = jwtProvider.createAccessToken(user.getEmail());
         String refreshToken = jwtProvider.createRefreshToken();
+        long refreshTokenExpiredIn = jwtProvider.getRefreshTokenExpiredIn();
+        redisService.save(user.getEmail(), refreshToken, Duration.ofMillis(refreshTokenExpiredIn));
+        log.info("redis!=[{}][{}]", user.getEmail(), redisService.getValue(user.getEmail()));
         log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
         return UserLoginResponseDto.builder()
                 .email(user.getEmail())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .build();
+    }
+
+    public UserLoginResponseDto reissueRefreshToken(UserTokenReissueRequestDto reissueRequestDto) {
+        String oldAccessToken = reissueRequestDto.getAccessToken();
+        String oldRefreshToken = reissueRequestDto.getRefreshToken();
+        String email = extractUserEmailFromRequest(oldAccessToken, oldRefreshToken);
+
+        String reissuedAccessToken = jwtProvider.createAccessToken(email);
+        String reissuedRefreshToken = jwtProvider.createRefreshToken();
+        long refreshTokenExpiredIn = jwtProvider.getRefreshTokenExpiredIn();
+
+        redisService.save(email, reissuedRefreshToken, Duration.ofMillis(refreshTokenExpiredIn));
+
+        return UserLoginResponseDto.builder()
+                .email(email)
+                .accessToken(reissuedAccessToken)
+                .refreshToken(reissuedRefreshToken)
                 .build();
     }
 
@@ -83,5 +109,27 @@ public class UserService {
         if (!password.equals(checkedPassword)) {
             throw new UserException(INVALID_CHECKED_PASSWORD);
         }
+    }
+
+    private String extractUserEmailFromRequest(String oldAccessToken, String oldRefreshToken) {
+        String email;
+
+        // 잘못된 AccessToken을 요청하는 경우
+        try {
+            email = jwtProvider.getPayload(oldAccessToken);
+        } catch (Exception e) {
+            throw new ReissueException(INVALID_REQUEST);
+        }
+
+        // 요청한 Refresh 토큰이 만료된 경우
+        if (redisService.getValue(email) == null) {
+            throw new ReissueException(EXPIRED_REFRESH_TOKEN);
+        }
+
+        // 잘못된 Refresh 토큰을 요청하는 경우
+        if (!oldRefreshToken.equals(redisService.getValue(email))) {
+            throw new ReissueException(INVALID_REFRESH_TOKEN);
+        }
+        return email;
     }
 }
