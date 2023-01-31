@@ -6,6 +6,7 @@ import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
 import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
+import com.petspace.dev.dto.reservation.ReservationDeleteResponseDto;
 import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.RoomRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +48,7 @@ public class ReservationService {
         if(dto.getTotalPet() > room.getMaxPet()) {
             throw new ReservationException(POST_RESERVATION_OVERCAPACITY_TOTAL_PET);
         }
-        if(dto.getStartDate().isBefore(LocalDate.now())) {
+        if(LocalDate.parse(dto.getStartDate(), DateTimeFormatter.ISO_LOCAL_DATE).isBefore(LocalDate.now())) {
             throw  new ReservationException((POST_RESERVATION_INVALID_STARTDATE));
         }
         //Reservation 생성
@@ -83,11 +85,20 @@ public class ReservationService {
     }
 
     @Transactional
-    public Long deleteReservation(Long reservationId) {
+    public ReservationDeleteResponseDto deleteReservation(Long userId, Long reservationId) {
         //엔티티 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ReservationException(GET_RESERVATION_EMPTY_USER));
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(NONE_RESERVATION));
+
+        //validation
+        if(userId != reservation.getUser().getId()) {
+            throw new ReservationException(PATCH_RESERVATION_INVALID_USER);
+        }
+        ReservationDeleteResponseDto dto = new ReservationDeleteResponseDto(reservation);
         reservation.deleteReservation();
-        return reservation.getId();
+
+        return dto;
     }
 }

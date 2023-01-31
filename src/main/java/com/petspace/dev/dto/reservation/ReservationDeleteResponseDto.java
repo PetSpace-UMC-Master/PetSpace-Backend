@@ -6,18 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
-@Schema(description = "예약 생성 응답 dto")
+@Schema(description = "예약 삭제 응답 dto")
 @Getter
 @Builder
 @AllArgsConstructor
-public class ReservationCreateResponseDto {
-
-    @Schema(description = "생성된 reservationId")
+public class ReservationDeleteResponseDto {
+    @Schema(description = "삭제된 reservationId")
     private Long reservationId;
 
-    public ReservationCreateResponseDto(Reservation reservation) {
+    public ReservationDeleteResponseDto(Reservation reservation) {
         reservationId = reservation.getId();
     }
 }

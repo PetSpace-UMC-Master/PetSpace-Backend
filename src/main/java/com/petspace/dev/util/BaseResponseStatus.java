@@ -52,8 +52,10 @@ public enum BaseResponseStatus {
     POST_RESERVATION_OVERCAPACITY_TOTAL_GUEST(false, 2233, "숙소이용 정원이 초과되었습니다."),
     POST_RESERVATION_OVERCAPACITY_TOTAL_PET(false, 2234, "숙소 동반 가능한 반려동물 수가 초과되었습니다."),
     POST_RESERVATION_INVALID_STARTDATE(false, 2235, "예약 불가능한 날짜입니다."),
-    PATCH_RESERVATION_INVALID_RESERVATION_STATUS(false, 2233, "유효하지 않은 예약입니다."),
+    PATCH_RESERVATION_INVALID_RESERVATION_STATUS(false, 2236, "유효하지 않은 예약입니다."),
+    PATCH_RESERVATION_INVALID_USER(false, 2237, "유효하지 않은 유저의 접근입니다."),
     NONE_RESERVATION(false, 2234, "존재하지 않는 예약입니다."),
+
 
     // RoomException
     NONE_ROOM(false, 2030, "존재하지 않는 숙소입니다."),
