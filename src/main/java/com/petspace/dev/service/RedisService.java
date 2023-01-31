@@ -1,5 +1,6 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.service.auth.jwt.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,9 +16,11 @@ public class RedisService {
 
     private final RedisTemplate redisTemplate;
 
-    public void save(String email, String refreshToken, Duration expiredIn) {
+    public void save(String email, Token token) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(email, refreshToken, expiredIn);
+        String refreshToken = token.getRefreshToken();
+        Duration expired = Duration.ofMillis(token.getRefreshTokenExpiredIn());
+        valueOperations.set(email, refreshToken, expired);
     }
 
     public String getValue(String email){
