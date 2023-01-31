@@ -11,8 +11,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import static com.petspace.dev.util.BaseResponseStatus.EMPTY_REQUEST_PARAMETER;
+import static com.petspace.dev.util.BaseResponseStatus.METHOD_ARGUMENT_TYPE_MISMATCH;
 import static com.petspace.dev.util.BaseResponseStatus.INVALID_REQUEST;
 
 @RestControllerAdvice
@@ -39,6 +41,10 @@ public class CustomExceptionHandler {
         return new BaseResponse<>(e.getStatus());
     }
 
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public BaseResponse<Object> handlerRequestParam() {
+        return new BaseResponse<>(METHOD_ARGUMENT_TYPE_MISMATCH);
+    }
     @ExceptionHandler({RoomException.class})
     public BaseResponse<Object> handleUserException(RoomException e) {
         return new BaseResponse<>(e.getStatus());
@@ -48,7 +54,6 @@ public class CustomExceptionHandler {
     public BaseResponse<Object> handleRequestParameter() {
         return new BaseResponse<>(EMPTY_REQUEST_PARAMETER);
     }
-
     @ExceptionHandler(ReissueException.class)
     public BaseResponse<Object> handleRefreshTokenException(ReissueException e) {
         return new BaseResponse<>(e.getStatus());
