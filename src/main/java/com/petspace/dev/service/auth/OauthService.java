@@ -41,7 +41,7 @@ public class OauthService {
             userRepository.save(user);
         }
 
-        String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getId()));
+        String accessToken = jwtProvider.createAccessToken(String.valueOf(email));
         String refreshToken = jwtProvider.createRefreshToken();
         long refreshTokenExpiredIn = jwtProvider.getRefreshTokenExpiredIn();
 
