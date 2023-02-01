@@ -90,6 +90,7 @@ public class RoomDetailResponseDto {
         List<RoomDetailReview> reviewPreview = room.getReservation()
                 .stream().map(Reservation::getReview)
                 .filter(Objects::nonNull)
+                .filter(review -> review.getStatus().equals(Status.ACTIVE))
                 .sorted(Comparator.comparing(Review::getId).reversed())
                 .limit(5)
                 .map(review ->{
