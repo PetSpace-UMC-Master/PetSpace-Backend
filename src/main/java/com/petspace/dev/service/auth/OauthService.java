@@ -1,10 +1,13 @@
 package com.petspace.dev.service.auth;
 
-import com.petspace.dev.domain.user.oauth.OauthAttributes;
-import com.petspace.dev.dto.oauth.OauthRequestDto;
-import com.petspace.dev.dto.oauth.OauthResponseDto;
 import com.petspace.dev.domain.user.User;
+import com.petspace.dev.domain.user.oauth.OauthAttributes;
+import com.petspace.dev.dto.auth.LoginTokenResponseDto;
+import com.petspace.dev.dto.auth.OauthRequestDto;
 import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.service.RedisService;
+import com.petspace.dev.util.jwt.JwtProvider;
+import com.petspace.dev.util.jwt.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -24,24 +27,27 @@ public class OauthService {
     private final InMemoryClientRegistrationRepository inMemoryRepository;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
 
     @Transactional
-    public OauthResponseDto login(String providerName, OauthRequestDto requestDto) {
+    public LoginTokenResponseDto login(String providerName, OauthRequestDto requestDto) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
-        log.info("provider name={}, id={}", provider.getClientName(), provider.getClientId());
         User user = getUserProfile(provider, requestDto);
         log.info("user nickname={}, email={}, oauthProvider={}", user.getNickname(), user.getEmail(), user.getOauthProvider());
-        userRepository.save(user);
 
-        String accessToken = jwtProvider.createAccessToken(String.valueOf(user.getId()));
-        String refreshToken = jwtProvider.createRefreshToken();
+        String email = user.getEmail();
 
-        log.info("accessToken={}, refreshToken={}", accessToken, refreshToken);
+        if (!userRepository.existsByEmail(email)) {
+            userRepository.save(user);
+        }
 
-        return OauthResponseDto.builder()
-                .email(user.getEmail())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+        Token token = jwtProvider.createToken(email);
+        redisService.save(email, token);
+
+        return LoginTokenResponseDto.builder()
+                .email(email)
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
                 .build();
     }
 

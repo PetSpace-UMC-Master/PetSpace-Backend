@@ -1,13 +1,13 @@
-package com.petspace.dev.dto.user;
+package com.petspace.dev.util.jwt;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class UserLoginResponseDto {
+public class Token {
 
-    private String email;
     private String accessToken;
     private String refreshToken;
+    private long refreshTokenExpiredIn;
 }
