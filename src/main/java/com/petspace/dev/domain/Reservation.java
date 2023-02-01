@@ -97,6 +97,10 @@ public class Reservation extends BaseTimeEntity{
                 .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().isBefore(endDate))
                 .collect(Collectors.toList());
 
+        if(roomAvailables.isEmpty()) {
+            throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_DATE);
+        }
+
         for(RoomAvailable roomAvailable : roomAvailables) {
             if(roomAvailable.getStatus() != Status.ACTIVE) {
                 throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_STATUS);

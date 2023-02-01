@@ -54,7 +54,8 @@ public enum BaseResponseStatus {
     POST_RESERVATION_INVALID_STARTDATE(false, 2235, "예약 불가능한 날짜입니다."),
     PATCH_RESERVATION_INVALID_RESERVATION_STATUS(false, 2236, "유효하지 않은 예약입니다."),
     PATCH_RESERVATION_INVALID_USER(false, 2237, "유효하지 않은 유저의 접근입니다."),
-    NONE_RESERVATION(false, 2234, "존재하지 않는 예약입니다."),
+    NONE_RESERVATION(false, 2238, "존재하지 않는 예약입니다."),
+    POST_RESERVATION_INVALID_ROOM_AVAILABLE_DATE(false, 2239, "유효하지 않은 예약 날짜입니다."),
 
 
     // RoomException
