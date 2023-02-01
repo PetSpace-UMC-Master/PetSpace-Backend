@@ -53,10 +53,18 @@ public class RoomController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소 정보입니다.")
     })
-    @GetMapping("/room/{roomId}")
-    public BaseResponse<RoomDetailResponseDto> getRoomDetail(@PathVariable("roomId") Long roomId){
+    @GetMapping("/rooms/{roomId}")
+    public BaseResponse<RoomDetailResponseDto> getRoomDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("roomId") Long roomId){
 
-        RoomDetailResponseDto roomDetailResponseDto = roomService.getRoomDetail(roomId);
+        RoomDetailResponseDto roomDetailResponseDto;
+
+        if(principalDetails == null){
+            roomDetailResponseDto = roomService.getRoomDetail(roomId, null);
+        }else{
+            Long userId = principalDetails.getId();
+            roomDetailResponseDto = roomService.getRoomDetail(roomId, userId);
+        }
+
         return new BaseResponse(roomDetailResponseDto);
 
     }
