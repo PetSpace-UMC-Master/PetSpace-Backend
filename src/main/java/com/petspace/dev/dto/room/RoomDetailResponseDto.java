@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @Getter @Setter
 public class RoomDetailResponseDto {
 
-    // TODO isFavorite 추가 필요
     private Long roomId;
+    private boolean isFavorite;
     private Long hostId;
     private String hostName;
     private String address;
@@ -57,6 +57,7 @@ public class RoomDetailResponseDto {
                 .stream().map(Reservation::getReview)
                 .count();
         // Room 의 Image 리스트에서 URL 만을 List<String> 으로 받아오기
+        // TODO 추후 RoomImage Entity List 로 변경. 순환참조 문제 해결. Room Entity 내 List<String> 으로 갖는 것과 다를 바 없다.
         this.roomImageUrls = room.getRoomImages()
                 .stream().map(RoomImage::getRoomImageUrl)
                 .collect(Collectors.toList());
