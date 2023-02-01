@@ -35,7 +35,6 @@ public class ReservationController {
     })
     @PostMapping("/app/reservations")
     public BaseResponse<ReservationCreateResponseDto> createReservation(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                                                        //todo 정확하게 뭔지 알아보고 api 명세서에 정리하기
                                                                         @Parameter(name = "roomId", description = "room 의 id", in = ParameterIn.QUERY) @RequestParam("roomId") Long roomId,
                                                                         @RequestBody ReservationCreateRequestDto dto) {
         Long userId = principalDetail.getId();
