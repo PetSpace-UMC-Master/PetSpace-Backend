@@ -4,7 +4,9 @@ import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,14 +19,15 @@ import java.util.UUID;
 
 @Schema(description = "예약 생성 요청 dto")
 @Getter
+@Data
 public class ReservationCreateRequestDto {
 
     @NotBlank(message = "인원수를 입력해주세요.")
-    @Schema(description = "숙소 이용객 수")
+    @Schema(description = "숙소 이용객 수", example = "4")
     private int totalGuest;
 
     @NotBlank(message = "반려동물수를 입력해주세요.")
-    @Schema(description = "숙소 동반 반려견 수")
+    @Schema(description = "숙소 동반 반려견 수", example = "2")
     private int totalPet;
 
     @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$")

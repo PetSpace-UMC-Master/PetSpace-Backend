@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReservationCreateResponseDto {
 
-    @Schema(description = "생성된 reservationId")
+    @Schema(description = "생성된 reservationId", example = "1")
     private Long reservationId;
 
     public ReservationCreateResponseDto(Reservation reservation) {

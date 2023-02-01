@@ -17,21 +17,21 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ReservationReadResponseDto {
 
-    @Schema(description = "reservation 코드")
+    @Schema(description = "reservation 코드", example = "3d51258e-0584-4a55-8ee1-057fa4e30bde")
     private String reservationCode;
-    @Schema(description = "roomId")
+    @Schema(description = "roomId", example = "1")
     private Long roomId;
-    @Schema(description = "reservation 에 대한 review 생성 여부(true 면 생성, false 면 생성 안됨")
+    @Schema(description = "reservation 에 대한 review 생성 여부(true 면 생성, false 면 생성 안됨", example = "false")
     private boolean reviewCreated;
-    @Schema(description = "숙소 이름")
+    @Schema(description = "숙소 이름", example = "테스트룸")
     private String roomName;
-    @Schema(description = "숙소 이미지 리스트(최대 5개의 이미지만 가져온다)")
+    @Schema(description = "숙소 이미지 리스트(최대 5개의 이미지만 가져온다)", example = "[테스트룸이미지1, 테스트룸이미지2]")
     private List<String> roomImageUrls;
-    @Schema(description = "예약 시작 날짜")
+    @Schema(description = "예약 시작 날짜", example = "yyyy-mm-dd")
     private LocalDate startDate;
-    @Schema(description = "예약 종료 날짜")
+    @Schema(description = "예약 종료 날짜", example = "yyyy-mm-dd")
     private LocalDate endDate;
-    @Schema(description = "현재 날짜를 기준으로 예약 시작 날짜가 얼마나 남았는가를 의미함(음수일때 완료된 예약, 0 또는 양수일때 다가오는 예약)")
+    @Schema(description = "현재 날짜를 기준으로 예약 시작 날짜가 얼마나 남았는가를 의미함(음수일때 완료된 예약, 0 또는 양수일때 다가오는 예약)", example = "4")
     private int remainingDays;
 
     public ReservationReadResponseDto(Reservation reservation) {

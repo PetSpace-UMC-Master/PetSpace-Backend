@@ -11,7 +11,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class ReservationDeleteResponseDto {
-    @Schema(description = "삭제된 reservationId")
+    @Schema(description = "삭제된 reservationId", example = "1")
     private Long reservationId;
 
     public ReservationDeleteResponseDto(Reservation reservation) {
