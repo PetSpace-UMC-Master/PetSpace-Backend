@@ -1,5 +1,6 @@
 package com.petspace.dev.domain.image;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.petspace.dev.domain.Room;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class RoomImage {
     @Column(name = "room_image_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;

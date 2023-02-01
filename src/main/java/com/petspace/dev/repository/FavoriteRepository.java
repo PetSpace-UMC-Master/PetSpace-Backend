@@ -15,4 +15,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
             "join fetch f.user u " +
             "join fetch f.room r " +
             "where u.id = :userId and r.address.region = :region and f.isClicked = true")
-    List<Favorite> findAllFavoritesByUserIdAndRegion(Long userId, String region);}
+    List<Favorite> findAllFavoritesByUserIdAndRegion(Long userId, String region);
+}

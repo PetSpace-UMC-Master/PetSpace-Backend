@@ -1,7 +1,7 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.dto.oauth.OauthRequestDto;
-import com.petspace.dev.dto.oauth.OauthResponseDto;
+import com.petspace.dev.dto.auth.LoginTokenResponseDto;
+import com.petspace.dev.dto.auth.OauthRequestDto;
 import com.petspace.dev.service.auth.OauthService;
 import com.petspace.dev.util.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,10 @@ public class OauthController {
     private final OauthService oauthService;
 
     @PostMapping("/oauth/{provider}")
-    public BaseResponse<OauthResponseDto> OauthLoginRequest(@PathVariable String provider,
-                                                            @RequestBody OauthRequestDto requestDto) {
+    public BaseResponse<LoginTokenResponseDto> OauthLoginRequest(@PathVariable String provider,
+                                                                 @RequestBody OauthRequestDto requestDto) {
         log.info("provider={}, accessToken={}", provider, requestDto.getAccessToken());
-        OauthResponseDto oauthResponseDto = oauthService.login(provider, requestDto);
-        return new BaseResponse<>(oauthResponseDto);
+        LoginTokenResponseDto loginTokenResponseDto = oauthService.login(provider, requestDto);
+        return new BaseResponse<>(loginTokenResponseDto);
     }
 }

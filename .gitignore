@@ -28,6 +28,8 @@ out/
 
 **/src/main/resources/application.yml
 **/src/main/resources/application-oauth.yml
+**/src/test/resources/application.yml
+**/src/test/resources/application-oauth.yml
 
 
 ### NetBeans ###
@@ -39,3 +41,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Mustache ###
+**/src/main/resources/templates/**
+**/src/main/resources/static/js/**
+**/src/main/java/com/petspace/dev/controller/IndexController.java
+**/src/test/java/com/petspace/dev/controller/IndexControllerTest.java

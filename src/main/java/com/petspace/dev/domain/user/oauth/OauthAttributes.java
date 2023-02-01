@@ -1,11 +1,14 @@
 package com.petspace.dev.domain.user.oauth;
 
-import com.petspace.dev.domain.user.Role;
 import com.petspace.dev.domain.Status;
+import com.petspace.dev.domain.user.Role;
 import com.petspace.dev.domain.user.User;
+import com.petspace.dev.util.exception.UserException;
 
 import java.util.Arrays;
 import java.util.Map;
+
+import static com.petspace.dev.util.BaseResponseStatus.NONE_OAUTH_PROVIDER;
 
 public enum OauthAttributes {
     KAKAO("kakao") {
@@ -33,7 +36,7 @@ public enum OauthAttributes {
         return Arrays.stream(values())
                 .filter(provider -> providerName.equals(provider.providerName))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new)
+                .orElseThrow(() -> new UserException(NONE_OAUTH_PROVIDER))
                 .of(userAttributes);
     }
 

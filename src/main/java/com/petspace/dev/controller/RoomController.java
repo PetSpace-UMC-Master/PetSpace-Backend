@@ -5,6 +5,9 @@ import com.petspace.dev.dto.favorite.FavoriteClickResponseDto;
 import com.petspace.dev.dto.room.RoomDetailResponseDto;
 import com.petspace.dev.dto.room.RoomFacilityResponseDto;
 import com.petspace.dev.service.FavoriteService;
+import com.petspace.dev.util.input.room.CategoryType;
+import com.petspace.dev.util.input.room.SortBy;
+import com.petspace.dev.dto.room.RoomListResponseDto;
 import com.petspace.dev.service.RoomService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,14 +18,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
+@Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/app")
-@RequiredArgsConstructor
-@Slf4j
 public class RoomController {
-
     private final FavoriteService favoriteService;
     private final RoomService roomService;
+
+    @GetMapping("/rooms")
+    public BaseResponse<List<RoomListResponseDto>> get(@RequestParam Optional<Integer> page,
+                                                       @RequestParam Optional<SortBy> sortBy,
+                                                       @RequestParam Optional<CategoryType> categoryType) {
+        if (!categoryType.isEmpty()) {
+            return new BaseResponse<>(roomService.findAllDescByCategory(page, sortBy, categoryType.get()));
+        }
+        return new BaseResponse<>(roomService.findAllDesc(page, sortBy));
+    }
 
     @PostMapping("/rooms/{roomId}/favorites")
     public BaseResponse<FavoriteClickResponseDto> addFavorite(@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -66,5 +81,4 @@ public class RoomController {
         return new BaseResponse(roomFacilitiesDto);
 
     }
-
 }
