@@ -6,11 +6,10 @@ import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
-import com.petspace.dev.dto.review.ReviewResponseDto;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewListResponseDto;
+import com.petspace.dev.dto.review.ReviewResponseDto;
 import com.petspace.dev.dto.review.ReviewUpdateRequestDto;
-import com.petspace.dev.dto.review.ReviewUpdateResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
@@ -69,11 +68,7 @@ public class ReviewService {
 
         reviewRepository.save(review);
 
-        return ReviewResponseDto.builder()
-                .id(review.getId())
-                .score(review.getScore())
-                .content(review.getContent())
-                .build();
+        return ReviewResponseDto.of(review);
     }
 
     public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
@@ -101,7 +96,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewUpdateResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
+    public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
@@ -122,9 +117,7 @@ public class ReviewService {
             updateReviewImages(reviewRequestDto, reviewId, review);
         }
 
-        return ReviewUpdateResponseDto.builder()
-                .id(review.getId())
-                .build();
+        return ReviewResponseDto.of(review);
     }
 
     @Transactional
