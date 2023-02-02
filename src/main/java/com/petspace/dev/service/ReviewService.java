@@ -47,23 +47,20 @@ public class ReviewService {
     @Transactional
     public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
-        userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
 
-        reservation.setReviewCreated(true);
+        reservation.changeReviewCreated();
 
         if (reviewRequestDto.getScore() == null) {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
         }
 
-        String content = reviewRequestDto.getContent();
-
         Review review = Review.builder()
                 .reservation(reservation)
                 .status(Status.ACTIVE)
                 .score(reviewRequestDto.getScore())
-                .content(content)
+                .content(reviewRequestDto.getContent())
                 .build();
 
         uploadReviewImages(reviewRequestDto, review);
