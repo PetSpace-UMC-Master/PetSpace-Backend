@@ -1,11 +1,10 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewListResponseDto;
+import com.petspace.dev.dto.review.ReviewRequestDto;
 import com.petspace.dev.dto.review.ReviewResponseDto;
-import com.petspace.dev.dto.review.ReviewUpdateRequestDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +47,7 @@ public class ReviewController {
     @PostMapping("/reviews")
     public BaseResponse<ReviewResponseDto> createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @RequestParam("reservationId") Long reservationId,
-                                     @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+                                     @ModelAttribute ReviewRequestDto reviewCreateRequestDto) {
 
         Long userId = principalDetail.getId();
         ReviewResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
@@ -76,7 +75,7 @@ public class ReviewController {
     @PatchMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewResponseDto> updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long reviewId,
-                                     @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
+                                     @ModelAttribute ReviewRequestDto reviewUpdateRequestDto) {
         Long userId = principalDetail.getId();
         ReviewResponseDto responseDto = reviewService.updateReview(userId, reviewId, reviewUpdateRequestDto);
 
