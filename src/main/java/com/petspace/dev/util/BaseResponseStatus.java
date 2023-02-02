@@ -42,8 +42,9 @@ public enum BaseResponseStatus {
     POST_REVIEW_EMPTY_USER(false, 2020, "해당 사용자가 존재하지 않습니다."),
     POST_REVIEW_EMPTY_RESERVATION(false, 2021, "해당 예약이 존재하지 않습니다."),
     POST_REVIEW_EMPTY_SCORE(false, 2022, "score를 입력해주세요."),
-    UPDATE_REVIEW_INVALID_REVIEW(false, 2023, "유효하지 않은 리뷰입니다."),
-    UPDATE_REVIEW_INVALID_USER(false, 2023, "유효하지 않은 유저의 접근입니다."),
+    POST_REVIEW_ALREADY_CREATED(false, 2023, "이미 리뷰를 작성하였습니다."),
+    UPDATE_REVIEW_INVALID_REVIEW(false, 2024, "유효하지 않은 리뷰입니다."),
+    UPDATE_REVIEW_INVALID_USER(false, 2025, "유효하지 않은 유저의 접근입니다."),
 
     // ReservationException
     GET_RESERVATION_EMPTY_USER(false, 2230, "해당 사용자가 존재하지 않습니다."),
