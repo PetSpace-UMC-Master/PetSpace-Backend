@@ -5,6 +5,7 @@ import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewListResponseDto;
 import com.petspace.dev.dto.review.ReviewRequestDto;
 import com.petspace.dev.dto.review.ReviewResponseDto;
+import com.petspace.dev.dto.review.ReviewsResponseDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,9 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/app")
@@ -59,13 +59,11 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
     })
-    @GetMapping("/reviews")
-    public BaseResponse findAllReview(@RequestParam int page, @RequestParam int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReviewListResponseDto> responseDtos = reviewService.findAllReview(pageable);
-        return new BaseResponse(responseDtos);
+    @GetMapping("/reviews/{roomId}")
+    public BaseResponse<List<ReviewsResponseDto>> getAllReview(@PathVariable Long roomId) {
+        List<ReviewsResponseDto> reviews = reviewService.findAllReviews(roomId);
+        return new BaseResponse<>(reviews);
     }
-
 
     @Operation(summary = "Updating Review", description = "Review Update API Doc")
     @ApiResponses({
