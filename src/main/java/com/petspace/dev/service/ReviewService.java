@@ -4,7 +4,6 @@ import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.ReviewImage;
-import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewListResponseDto;
@@ -97,23 +96,19 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review review = reviewRepository.findById(reviewId)
+
+        Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
                 .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
-        if(review.getReservation().getUser().getId().equals(user.getId())) {
-            new ReviewException(UPDATE_REVIEW_INVALID_USER);
-        }
-
-        if(reviewRequestDto.getScore() != null) {
+        if (reviewRequestDto.getScore() != null) {
             review.setScore(reviewRequestDto.getScore());
         }
 
-        if(reviewRequestDto.getContent() != null) {
+        if (reviewRequestDto.getContent() != null) {
             review.setContent(reviewRequestDto.getContent());
         }
 
-        if(!reviewRequestDto.getReviewImages().isEmpty()) {
+        if (!reviewRequestDto.getReviewImages().isEmpty()) {
             updateReviewImages(reviewRequestDto, reviewId, review);
         }
 
