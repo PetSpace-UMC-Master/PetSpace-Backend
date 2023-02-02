@@ -17,4 +17,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "join fetch r.reservation rs " +
             "where r.id = :reviewId and rs.user.id = :userId")
     Optional<Review> findByIdAndUserId(Long reviewId, Long userId);
+
+    @Query("select r from Review r " +
+            "join fetch r.reservation rs " +
+            "where r.status = 'ACTIVE' and rs.room.id = :roomId")
+    List<Review> findAllRoomId(Long roomId);
 }
