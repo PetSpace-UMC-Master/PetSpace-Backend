@@ -5,9 +5,9 @@ import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
-import com.petspace.dev.dto.review.ReviewListResponseDto;
 import com.petspace.dev.dto.review.ReviewRequestDto;
 import com.petspace.dev.dto.review.ReviewResponseDto;
+import com.petspace.dev.dto.review.ReviewsResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
@@ -17,13 +17,9 @@ import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,28 +59,11 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
-        List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
-        List<ReviewListResponseDto> dtos = new ArrayList<>();
-
-        for (Review review : reviewGroup) {
-            List<ReviewImage> reviewImages = review.getReviewImages();
-
-            ReviewListResponseDto responseDto = ReviewListResponseDto.builder()
-                    .id(review.getId())
-                    .nickName(review.getReservation().getUser().getNickname())
-                    .reviewImage(reviewImages)
-                    .score(review.getScore())
-                    .content(review.getContent())
-                    .createdDate(review.getCreatedAt().toString().substring(0, 10))
-                    .createdTime(review.getCreatedAt().toString().substring(11, 19))
-                    .status(review.getStatus())
-                    .build();
-
-            dtos.add(responseDto);
-        }
-
-        return new PageImpl<>(dtos, pageable, dtos.size());
+    public List<ReviewsResponseDto> findAllReviews(Long roomId) {
+        List<Review> reviews = reviewRepository.findAllRoomId(roomId);
+        return reviews.stream()
+                .map(ReviewsResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
