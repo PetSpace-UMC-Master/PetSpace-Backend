@@ -5,7 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReviewCreateResponseDto {
+public class ReviewResponseDto {
 
     private Long id;
+    private Integer score;
+    private String content;
 }
