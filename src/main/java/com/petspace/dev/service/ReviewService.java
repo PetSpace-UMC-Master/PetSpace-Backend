@@ -54,15 +54,9 @@ public class ReviewService {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
         }
 
-        Review review = Review.builder()
-                .reservation(reservation)
-                .status(Status.ACTIVE)
-                .score(reviewRequestDto.getScore())
-                .content(reviewRequestDto.getContent())
-                .build();
+        Review review = reviewRequestDto.toEntity(reservation);
 
         uploadReviewImages(reviewRequestDto, review);
-
         reviewRepository.save(review);
 
         return ReviewResponseDto.of(review);
