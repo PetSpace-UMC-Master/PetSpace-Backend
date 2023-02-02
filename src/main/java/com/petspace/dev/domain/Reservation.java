@@ -86,10 +86,6 @@ public class Reservation extends BaseTimeEntity{
         this.status = status;
     }
 
-    public void changeReviewCreated() {
-        this.isReviewCreated = true;
-    }
-
     //==생성 메서드==//
     public static Reservation createReservation(User user, Room room, ReservationCreateRequestDto dto) {
         Reservation reservation = dto.toEntity(user, room);
@@ -140,5 +136,6 @@ public class Reservation extends BaseTimeEntity{
 
     public void addReview(Review review) {
         this.review = review;
+        this.isReviewCreated = true;
     }
 }
