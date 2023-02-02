@@ -6,7 +6,7 @@ import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.review.ReviewCreateRequestDto;
-import com.petspace.dev.dto.review.ReviewCreateResponseDto;
+import com.petspace.dev.dto.review.ReviewResponseDto;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewListResponseDto;
 import com.petspace.dev.dto.review.ReviewUpdateRequestDto;
@@ -45,7 +45,7 @@ public class ReviewService {
     private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
-    public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
+    public ReviewResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
 
         Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
@@ -53,8 +53,6 @@ public class ReviewService {
         if (reservation.isReviewCreated()) {
             throw new ReviewException(POST_REVIEW_ALREADY_CREATED);
         }
-        
-        reservation.changeReviewCreated();
 
         if (reviewRequestDto.getScore() == null) {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
@@ -69,8 +67,12 @@ public class ReviewService {
 
         uploadReviewImages(reviewRequestDto, review);
 
-        return ReviewCreateResponseDto.builder()
+        reviewRepository.save(review);
+
+        return ReviewResponseDto.builder()
                 .id(review.getId())
+                .score(review.getScore())
+                .content(review.getContent())
                 .build();
     }
 
