@@ -74,7 +74,7 @@ public class RoomController {
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
             @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소 정보입니다.")
     })
-    @GetMapping("/room/{roomId}/facilities")
+    @GetMapping("/rooms/{roomId}/facilities")
     public BaseResponse<RoomFacilityResponseDto> getRoomFacilities(@PathVariable("roomId") Long roomId){
 
         RoomFacilityResponseDto roomFacilitiesDto = roomService.getRoomFacilities(roomId);
