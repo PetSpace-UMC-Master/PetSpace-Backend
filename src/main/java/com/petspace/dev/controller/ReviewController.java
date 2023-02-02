@@ -1,7 +1,11 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.dto.review.*;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
+import com.petspace.dev.dto.review.ReviewCreateRequestDto;
+import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
+import com.petspace.dev.dto.review.ReviewListResponseDto;
+import com.petspace.dev.dto.review.ReviewResponseDto;
+import com.petspace.dev.dto.review.ReviewUpdateRequestDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +19,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/app")
@@ -36,12 +46,12 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "score를 입력해주세요.")
     })
     @PostMapping("/reviews")
-    public BaseResponse createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+    public BaseResponse<ReviewResponseDto> createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @RequestParam("reservationId") Long reservationId,
-                                     @Valid @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+                                     @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+
         Long userId = principalDetail.getId();
-        ReviewCreateResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
-        log.info("score={}", reviewCreateRequestDto.getScore());
+        ReviewResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
 
         return new BaseResponse<>(createResponseDto);
     }
@@ -64,11 +74,11 @@ public class ReviewController {
                     content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class))),
     })
     @PatchMapping("/reviews/{roomId}")
-    public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+    public BaseResponse<ReviewResponseDto> updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @PathVariable Long roomId,
-                                     @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
+                                     @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
         Long userId = principalDetail.getId();
-        ReviewUpdateResponseDto responseDto = reviewService.updateReview(userId, roomId, reviewUpdateRequestDto);
+        ReviewResponseDto responseDto = reviewService.updateReview(userId, roomId, reviewUpdateRequestDto);
 
         return new BaseResponse<>(responseDto);
     }
