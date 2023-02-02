@@ -50,4 +50,20 @@ public class Review extends BaseTimeEntity{
         this.content = content;
         this.status = status;
     }
+
+    public void updateScore(int score) {
+        this.score = score;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateReviewImages(List<ReviewImage> reviewImages) {
+        this.reviewImages = reviewImages;
+    }
+
+    public void clearReviewImages() {
+        this.reviewImages.clear();
+    }
 }
