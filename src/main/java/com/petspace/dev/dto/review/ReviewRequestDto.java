@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class ReviewCreateRequestDto {
+public class ReviewRequestDto {
     private List<MultipartFile> reviewImages = new ArrayList<>();
     private Integer score;
     private String content;
