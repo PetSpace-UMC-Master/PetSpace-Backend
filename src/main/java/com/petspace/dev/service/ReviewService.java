@@ -31,7 +31,7 @@ import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Slf4j
 public class ReviewService {
 
@@ -41,7 +41,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    @Transactional
     public ReviewResponseDto save(Long userId, Long reservationId, ReviewRequestDto reviewRequestDto) {
 
         Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
@@ -69,6 +68,7 @@ public class ReviewService {
         return ReviewResponseDto.of(review);
     }
 
+    @Transactional(readOnly = true)
     public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
         List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
         List<ReviewListResponseDto> dtos = new ArrayList<>();
@@ -93,7 +93,6 @@ public class ReviewService {
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
-    @Transactional
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
 
         Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
@@ -118,8 +117,7 @@ public class ReviewService {
         }
     }
 
-    @Transactional
-    public List<ReviewImage> deleteExistedImagesAndUploadNewImages(ReviewRequestDto reviewRequestDto, Review review) {
+    private List<ReviewImage> deleteExistedImagesAndUploadNewImages(ReviewRequestDto reviewRequestDto, Review review) {
         deleteExistedImages(review);
         return uploadReviewImages(reviewRequestDto, review);
     }
@@ -138,7 +136,6 @@ public class ReviewService {
         }
     }
 
-    @Transactional
     public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
         userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
         Review review = reviewRepository.findById(reviewId)
