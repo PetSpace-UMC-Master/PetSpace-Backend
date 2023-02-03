@@ -68,6 +68,7 @@ public class ReservationService {
                 .filter(r -> r.getStartDate().toLocalDate().compareTo(LocalDate.now()) >= 0) //예약이 현재보다 나중에 있으면 ture
                 .filter(r -> r.getStatus() == Status.ACTIVE) //예약의 Status가 ACTIVE이면 true
                 .map(ReservationReadResponseDto :: new)
+                .sorted()
                 .collect(Collectors.toList());
     }
 
