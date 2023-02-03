@@ -138,4 +138,10 @@ public class Reservation extends BaseTimeEntity{
         this.review = review;
         this.isReviewCreated = true;
     }
+
+    // TODO 상의 후 수정 필요
+    public void deleteReview() {
+        this.review.changeStatus();
+        this.isReviewCreated = false;
+    }
 }
