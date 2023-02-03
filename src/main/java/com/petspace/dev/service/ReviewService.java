@@ -2,7 +2,6 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Review;
-import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewRequestDto;
@@ -69,7 +68,7 @@ public class ReviewService {
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
 
         Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
-                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+                .orElseThrow(() -> new ReviewException(INVALID_REVIEW));
 
         updateEachReviewItem(reviewRequestDto, review);
 
@@ -109,15 +108,16 @@ public class ReviewService {
         }
     }
 
+    // TODO Soft delete 관련 상의 후 로직 변경하기
     public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
-        userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
 
-        review.setStatus(Status.valueOf("INACTIVE"));
+        Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
+                .orElseThrow(() -> new ReviewException(INVALID_REVIEW));
 
+        Reservation reservation = review.getReservation();
+        reservation.deleteReview();
         return ReviewDeleteResponseDto.builder()
-                .id(review.getId())
+                .id(reviewId)
                 .build();
     }
 
