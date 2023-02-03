@@ -87,12 +87,12 @@ public class ReviewController {
                     content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class))),
     })
     @DeleteMapping("/reviews/{reviewId}")
-    public BaseResponse deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @PathVariable Long reviewId) {
+    public BaseResponse<ReviewDeleteResponseDto> deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                                              @PathVariable Long reviewId) {
         Long userId = principalDetail.getId();
-        ReviewDeleteResponseDto responseDto = reviewService.deleteReview(userId, reviewId);
+        ReviewDeleteResponseDto deleteResponseDto = reviewService.deleteReview(userId, reviewId);
 
-        return new BaseResponse(responseDto);
+        return new BaseResponse<>(deleteResponseDto);
     }
 }
 
