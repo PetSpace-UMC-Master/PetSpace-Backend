@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.petspace.dev.domain.Status.*;
+
 @Entity
 @Getter
 @Setter
@@ -61,6 +63,10 @@ public class Review extends BaseTimeEntity{
 
     public void updateReviewImages(List<ReviewImage> reviewImages) {
         this.reviewImages = reviewImages;
+    }
+
+    public void changeStatus() {
+        this.status = INACTIVE;
     }
 
     public void clearReviewImages() {
