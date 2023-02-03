@@ -130,10 +130,14 @@ public class Reservation extends BaseTimeEntity{
             }
             roomAvailable.updateStatus(Status.ACTIVE);
         }
-        this.setStatus(Status.INACTIVE);
+        this.updateStatus(Status.INACTIVE);
     }
 
     public void addReview(Review review) {
         this.review = review;
+    }
+
+    public void updateStatus(Status status) {
+        this.status = status;
     }
 }
