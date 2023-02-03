@@ -40,4 +40,8 @@ public class RoomAvailable {
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }
