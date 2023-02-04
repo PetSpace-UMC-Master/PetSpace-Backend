@@ -13,7 +13,6 @@ import static com.petspace.dev.domain.Status.*;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends BaseTimeEntity{
