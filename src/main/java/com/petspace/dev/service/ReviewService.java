@@ -70,6 +70,7 @@ public class ReviewService {
 
         return ReviewsSliceResponseDto.builder()
                 .reviews(reviews)
+                .page(allReviewsSliceBy.getPageable().getPageNumber())
                 .isLast(allReviewsSliceBy.isLast())
                 .build();
     }
