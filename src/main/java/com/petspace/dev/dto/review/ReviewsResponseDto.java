@@ -1,6 +1,5 @@
 package com.petspace.dev.dto.review;
 
-
 import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.image.ReviewImage;
 import com.petspace.dev.util.formatter.DayAfterFormatter;
