@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Builder
 public class FavoritesSliceResponseDto {
-    List<FavoriteResponseDto> favorites;
+    List<FavoritesResponseDto> favorites;
 
     private long page;
     @JsonProperty(value = "isLast")
