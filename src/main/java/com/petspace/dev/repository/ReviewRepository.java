@@ -1,10 +1,11 @@
 package com.petspace.dev.repository;
 
 import com.petspace.dev.domain.Review;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
@@ -15,7 +16,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByIdAndUserId(Long reviewId, Long userId);
 
     @Query("select r from Review r " +
-            "join fetch r.reservation rs " +
-            "where r.status = 'ACTIVE' and rs.room.id = :roomId")
-    List<Review> findAllRoomId(Long roomId);
+            "left join fetch r.reservation " +
+            "left join fetch r.reviewImages " +
+            "where r.status = 'ACTIVE' and r.reservation.room.id = :roomId " +
+            "order by r.id desc")
+    Slice<Review> findAllReviewsSliceBy(Long roomId, Pageable pageable);
 }
