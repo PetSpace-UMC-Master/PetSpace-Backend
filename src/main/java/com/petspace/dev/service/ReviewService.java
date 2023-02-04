@@ -7,6 +7,7 @@ import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewRequestDto;
 import com.petspace.dev.dto.review.ReviewResponseDto;
 import com.petspace.dev.dto.review.ReviewsResponseDto;
+import com.petspace.dev.dto.review.ReviewsSliceResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
@@ -16,6 +17,8 @@ import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +53,7 @@ public class ReviewService {
         }
 
         Review review = reviewRequestDto.toEntity(reservation);
-
+        log.info("review =[{}][{}][{}]", review.getScore(), review.getContent(), review.getReviewImages().toString());
         uploadReviewImages(reviewRequestDto, review);
         reviewRepository.save(review);
 
@@ -58,11 +61,17 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewsResponseDto> findAllReviews(Long roomId) {
-        List<Review> reviews = reviewRepository.findAllRoomId(roomId);
-        return reviews.stream()
-                .map(ReviewsResponseDto::of)
+    public ReviewsSliceResponseDto findAllReviewsByPage(Long roomId, Pageable pageable) {
+        Slice<Review> allReviewsSliceBy = reviewRepository.findAllReviewsSliceBy(roomId, pageable);
+
+        List<ReviewsResponseDto> reviews = allReviewsSliceBy.getContent().stream()
+                .map((ReviewsResponseDto::of))
                 .collect(Collectors.toList());
+
+        return ReviewsSliceResponseDto.builder()
+                .reviews(reviews)
+                .isLast(allReviewsSliceBy.isLast())
+                .build();
     }
 
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
@@ -129,6 +138,7 @@ public class ReviewService {
     }
 
     private ReviewImage createPostImage(Review review, String url) {
+        log.info("url = {}", url);
         review.clearReviewImages();
         
         return reviewImageRepository.save(ReviewImage.builder()
