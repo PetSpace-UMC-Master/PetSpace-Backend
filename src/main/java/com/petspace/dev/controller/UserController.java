@@ -42,6 +42,7 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<LoginTokenResponseDto> login(@Valid @RequestBody UserLoginRequestDto loginRequestDto) {
         LoginTokenResponseDto loginResponseDto = userService.login(loginRequestDto);
+        log.info("로그인 : [{}]", loginResponseDto.getEmail());
         return new BaseResponse<>(loginResponseDto);
     }
 

@@ -9,9 +9,10 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.petspace.dev.domain.Status.*;
+
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review extends BaseTimeEntity{
@@ -41,14 +42,33 @@ public class Review extends BaseTimeEntity{
     private Status status;
 
     @Builder
-    public Review(Reservation reservation, List<ReviewImage> reviewImages, int score, String content, Status status) {
+    public Review(Reservation reservation, int score, String content, Status status) {
         this.reservation = reservation;
         if (reservation != null) {
             reservation.addReview(this);
         }
-        this.reviewImages = reviewImages;
         this.score = score;
         this.content = content;
         this.status = status;
+    }
+
+    public void updateScore(int score) {
+        this.score = score;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateReviewImages(List<ReviewImage> reviewImages) {
+        this.reviewImages = reviewImages;
+    }
+
+    public void changeStatus() {
+        this.status = INACTIVE;
+    }
+
+    public void clearReviewImages() {
+        this.reviewImages.clear();
     }
 }

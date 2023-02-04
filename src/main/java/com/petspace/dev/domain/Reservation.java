@@ -65,6 +65,7 @@ public class Reservation extends BaseTimeEntity{
 
     @Column(nullable = false)
     private boolean isReviewCreated;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
@@ -135,5 +136,12 @@ public class Reservation extends BaseTimeEntity{
 
     public void addReview(Review review) {
         this.review = review;
+        this.isReviewCreated = true;
+    }
+
+    // TODO 상의 후 수정 필요
+    public void deleteReview() {
+        this.review.changeStatus();
+        this.isReviewCreated = false;
     }
 }

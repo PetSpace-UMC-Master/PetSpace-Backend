@@ -29,6 +29,9 @@ public class ReviewImage {
     @Builder
     public ReviewImage(Review review, String reviewImageUrl) {
         this.review = review;
+        if (review != null) {
+            review.getReviewImages().add(this);
+        }
         this.reviewImageUrl = reviewImageUrl;
     }
 }
