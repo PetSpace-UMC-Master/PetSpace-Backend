@@ -30,9 +30,12 @@ public class Room extends BaseTimeEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "room")
+    private List<Review> reviews = new ArrayList<>();
+
     @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<Reservation> reservation;
+    private List<Reservation> reservation = new ArrayList<>();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomCategory> roomCategories = new ArrayList<>();
