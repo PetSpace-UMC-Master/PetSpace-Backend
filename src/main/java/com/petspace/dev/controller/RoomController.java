@@ -1,22 +1,25 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.dto.favorite.FavoriteClickResponseDto;
 import com.petspace.dev.dto.room.RoomDetailResponseDto;
 import com.petspace.dev.dto.room.RoomFacilityResponseDto;
-import com.petspace.dev.service.FavoriteService;
-import com.petspace.dev.util.input.room.CategoryType;
-import com.petspace.dev.util.input.room.SortBy;
 import com.petspace.dev.dto.room.RoomListResponseDto;
+import com.petspace.dev.service.FavoriteService;
 import com.petspace.dev.service.RoomService;
 import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.input.room.CategoryType;
+import com.petspace.dev.util.input.room.SortBy;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,15 +40,6 @@ public class RoomController {
             return new BaseResponse<>(roomService.findAllDescByCategory(page, sortBy, categoryType.get()));
         }
         return new BaseResponse<>(roomService.findAllDesc(page, sortBy));
-    }
-
-    @PostMapping("/rooms/{roomId}/favorites")
-    public BaseResponse<FavoriteClickResponseDto> addFavorite(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                              @PathVariable Long roomId) {
-        Long userId = principalDetails.getId();
-        log.info("user=[{}][{}]", principalDetails.getId(), principalDetails.getUsername());
-        FavoriteClickResponseDto roomResponseDto = favoriteService.clickFavorite(userId, roomId);
-        return new BaseResponse<>(roomResponseDto);
     }
 
     @Operation(summary = "RoomDetail Get", description = "RoomDetail Get API Doc")
