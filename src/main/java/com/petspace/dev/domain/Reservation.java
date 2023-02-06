@@ -106,7 +106,7 @@ public class Reservation extends BaseTimeEntity{
             if(roomAvailable.getStatus() != Status.ACTIVE) {
                 throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_STATUS);
             }
-            roomAvailable.updateStatus(Status.INACTIVE);
+            roomAvailable.changeStatus(Status.INACTIVE);
         }
         return reservation;
     }
@@ -129,9 +129,9 @@ public class Reservation extends BaseTimeEntity{
             if(roomAvailable.getStatus() == Status.ACTIVE) {
                 throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_STATUS);
             }
-            roomAvailable.updateStatus(Status.ACTIVE);
+            roomAvailable.changeStatus(Status.ACTIVE);
         }
-        this.updateStatus(Status.INACTIVE);
+        this.changeStatus(Status.INACTIVE);
     }
 
     public void addReview(Review review) {
@@ -145,7 +145,7 @@ public class Reservation extends BaseTimeEntity{
         this.isReviewCreated = false;
     }
 
-    public void updateStatus(Status status) {
+    public void changeStatus(Status status) {
         this.status = status;
     }
 }

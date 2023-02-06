@@ -41,7 +41,7 @@ public class RoomAvailable {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    public void updateStatus(Status status) {
+    public void changeStatus(Status status) {
         this.status = status;
     }
 }
