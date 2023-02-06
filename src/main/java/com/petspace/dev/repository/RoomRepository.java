@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
@@ -27,4 +28,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             "WHERE r.status = 'ACTIVE' and rc.category.id = :id " +
             "group by r.id")
     List<Room> findAllDescByCategory(Pageable pageable, @Param("id") Long categoryId);
+
+    @Query("SELECT r From Room r where r.user.id = :id")
+    List<Room> findAllDescByUserId(Pageable pageable, @Param("id") Long userId);
 }
