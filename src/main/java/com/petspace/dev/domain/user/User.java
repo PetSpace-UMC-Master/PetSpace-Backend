@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.BaseTimeEntity;
 import com.petspace.dev.domain.Favorite;
 import com.petspace.dev.domain.Reservation;
+import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.Status;
 import lombok.AccessLevel;
@@ -25,6 +26,9 @@ public class User extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Room> rooms = new ArrayList<>();
