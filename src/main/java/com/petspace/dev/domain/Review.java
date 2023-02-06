@@ -3,6 +3,7 @@ package com.petspace.dev.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.image.ReviewImage;
+import com.petspace.dev.domain.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,6 +27,14 @@ public class Review extends BaseTimeEntity{
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
