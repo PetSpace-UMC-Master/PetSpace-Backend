@@ -44,4 +44,5 @@ public class RoomAvailable {
     public void changeStatus(Status status) {
         this.status = status;
     }
+
 }
