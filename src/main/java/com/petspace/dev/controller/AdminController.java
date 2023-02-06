@@ -1,6 +1,7 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.dto.user.UserJoinRequestDto;
+
 import com.petspace.dev.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +26,14 @@ public class AdminController {
     }
 
     /** 회원 가입 **/
-    @GetMapping("/members/new")
-    public String createMemberDto(Model model){
+    @GetMapping("/users/new")
+    public String createUserDto(Model model){
         model.addAttribute("userJoinRequestDto", new UserJoinRequestDto());
-        return "members/createUserJoinRequestDto";
+        return "users/createUserJoinRequestDto";
     }
 
-    @PostMapping("/members/new")
-    public String createMember(@Valid UserJoinRequestDto userJoinRequestDto, BindingResult result){
+    @PostMapping("/users/new")
+    public String createUser(@Valid UserJoinRequestDto userJoinRequestDto, BindingResult result){
         userService.join(userJoinRequestDto);
         return "redirect:/admin";
     }

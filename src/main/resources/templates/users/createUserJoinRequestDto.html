@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <form role="form" action="/admin/members/new" th:object="${userJoinRequestDto}"
+    <form role="form" action="/admin/users/new" th:object="${userJoinRequestDto}"
           method="post">
         <div class="form-group">
             <label th:for="email">이메일</label>
