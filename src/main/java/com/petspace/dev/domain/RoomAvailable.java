@@ -40,4 +40,9 @@ public class RoomAvailable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    public void changeStatus(Status status) {
+        this.status = status;
+    }
+
 }

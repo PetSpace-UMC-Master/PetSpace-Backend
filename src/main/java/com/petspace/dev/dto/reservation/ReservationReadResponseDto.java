@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ReservationReadResponseDto {
+public class ReservationReadResponseDto implements Comparable<ReservationReadResponseDto>{
 
     @Schema(description = "reservation 코드", example = "3d51258e-0584-4a55-8ee1-057fa4e30bde")
     private String reservationCode;
@@ -49,6 +49,11 @@ public class ReservationReadResponseDto {
         startDate = reservation.getStartDate().toLocalDate();
         endDate = reservation.getEndDate().toLocalDate();
         remainingDays = Period.between(LocalDate.now(), startDate).getDays();
+    }
+
+    @Override
+    public int compareTo(ReservationReadResponseDto dto) {
+        return ((Integer)(this.remainingDays)).compareTo(dto.remainingDays);
     }
 }
 
