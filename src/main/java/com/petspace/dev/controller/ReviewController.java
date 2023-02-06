@@ -1,7 +1,11 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.dto.review.*;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
+import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
+import com.petspace.dev.dto.review.ReviewListResponseDto;
+import com.petspace.dev.dto.review.ReviewRequestDto;
+import com.petspace.dev.dto.review.ReviewResponseDto;
+import com.petspace.dev.dto.review.ReviewsSliceResponseDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,13 +15,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/app")
@@ -36,12 +44,12 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "score를 입력해주세요.")
     })
     @PostMapping("/reviews")
-    public BaseResponse createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+    public BaseResponse<ReviewResponseDto> createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                      @RequestParam("reservationId") Long reservationId,
-                                     @Valid @ModelAttribute ReviewCreateRequestDto reviewCreateRequestDto) {
+                                     @ModelAttribute ReviewRequestDto reviewCreateRequestDto) {
+
         Long userId = principalDetail.getId();
-        ReviewCreateResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
-        log.info("score={}", reviewCreateRequestDto.getScore());
+        ReviewResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
 
         return new BaseResponse<>(createResponseDto);
     }
@@ -50,25 +58,27 @@ public class ReviewController {
     @ApiResponses({
             @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
     })
-    @GetMapping("/reviews")
-    public BaseResponse findAllReview(@RequestParam int page, @RequestParam int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReviewListResponseDto> responseDtos = reviewService.findAllReview(pageable);
-        return new BaseResponse(responseDtos);
-    }
+    @GetMapping("/reviews/{roomId}")
+    public BaseResponse getAllReviews(@PathVariable Long roomId,
+                                            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
 
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ReviewsSliceResponseDto responseDto = reviewService.findAllReviewsByPage(roomId, pageRequest);
+        return new BaseResponse<>(responseDto);
+    }
 
     @Operation(summary = "Updating Review", description = "Review Update API Doc")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.",
                     content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class))),
     })
-    @PatchMapping("/reviews/{roomId}")
-    public BaseResponse updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @PathVariable Long roomId,
-                                     @Valid @ModelAttribute ReviewUpdateRequestDto reviewUpdateRequestDto) {
+    @PatchMapping("/reviews/{reviewId}")
+    public BaseResponse<ReviewResponseDto> updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                     @PathVariable Long reviewId,
+                                     @ModelAttribute ReviewRequestDto reviewUpdateRequestDto) {
         Long userId = principalDetail.getId();
-        ReviewUpdateResponseDto responseDto = reviewService.updateReview(userId, roomId, reviewUpdateRequestDto);
+        ReviewResponseDto responseDto = reviewService.updateReview(userId, reviewId, reviewUpdateRequestDto);
 
         return new BaseResponse<>(responseDto);
     }
@@ -79,13 +89,13 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.",
                     content = @Content(schema = @Schema(implementation = ReviewListResponseDto.class))),
     })
-    @DeleteMapping("/reviews/{roomId}")
-    public BaseResponse deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @PathVariable Long roomId) {
+    @DeleteMapping("/reviews/{reviewId}")
+    public BaseResponse<ReviewDeleteResponseDto> deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                                              @PathVariable Long reviewId) {
         Long userId = principalDetail.getId();
-        ReviewDeleteResponseDto responseDto = reviewService.deleteReview(userId, roomId);
+        ReviewDeleteResponseDto deleteResponseDto = reviewService.deleteReview(userId, reviewId);
 
-        return new BaseResponse(responseDto);
+        return new BaseResponse<>(deleteResponseDto);
     }
 }
 

@@ -1,17 +1,21 @@
 package com.petspace.dev.util.exception.handler;
 
 import com.petspace.dev.util.BaseResponse;
+import com.petspace.dev.util.exception.ReservationException;
 import com.petspace.dev.util.exception.AwsException;
 import com.petspace.dev.util.exception.ReissueException;
 import com.petspace.dev.util.exception.ReviewException;
 import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.cookie.DateParseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.time.format.DateTimeParseException;
 
 import static com.petspace.dev.util.BaseResponseStatus.EMPTY_REQUEST_PARAMETER;
 import static com.petspace.dev.util.BaseResponseStatus.METHOD_ARGUMENT_TYPE_MISMATCH;
@@ -23,6 +27,11 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public BaseResponse<Object> handleValidationException() {
+        return new BaseResponse<>(INVALID_REQUEST);
+    }
+
+    @ExceptionHandler({DateTimeParseException.class})
+    public BaseResponse<Object> handleDateTimeException() {
         return new BaseResponse<>(INVALID_REQUEST);
     }
 
@@ -41,10 +50,16 @@ public class CustomExceptionHandler {
         return new BaseResponse<>(e.getStatus());
     }
 
+    @ExceptionHandler({ReservationException.class})
+    public BaseResponse<Object> handleUserException(ReservationException e) {
+        return new BaseResponse<>(e.getStatus());
+    }
+
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public BaseResponse<Object> handlerRequestParam() {
         return new BaseResponse<>(METHOD_ARGUMENT_TYPE_MISMATCH);
     }
+
     @ExceptionHandler({RoomException.class})
     public BaseResponse<Object> handleUserException(RoomException e) {
         return new BaseResponse<>(e.getStatus());

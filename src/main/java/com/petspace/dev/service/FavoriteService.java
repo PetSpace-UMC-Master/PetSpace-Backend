@@ -4,7 +4,8 @@ import com.petspace.dev.domain.Favorite;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.favorite.FavoriteClickResponseDto;
-import com.petspace.dev.dto.favorite.FavoriteResponseDto;
+import com.petspace.dev.dto.favorite.FavoritesResponseDto;
+import com.petspace.dev.dto.favorite.FavoritesSliceResponseDto;
 import com.petspace.dev.repository.FavoriteRepository;
 import com.petspace.dev.repository.RoomRepository;
 import com.petspace.dev.repository.UserRepository;
@@ -12,6 +13,8 @@ import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,14 +47,18 @@ public class FavoriteService {
         return addOrChangeFavoriteStatus(favorite, user, room);
     }
 
-    public List<FavoriteResponseDto> showFavoritesByRegion(Long userId, String region) {
-        List<Favorite> favorites = favoriteRepository.findAllFavoritesByUserIdAndRegion(userId, region);
+    public FavoritesSliceResponseDto showFavoritesSliceByRegion(Long userId, String region, Pageable pageable) {
+        Slice<Favorite> allFavoritesSliceBy = favoriteRepository.findAllFavoritesSliceBy(userId, region, pageable);
 
-        List<FavoriteResponseDto> favoriteResponseDtos = favorites.stream()
-                .map(FavoriteResponseDto::of)
+        List<FavoritesResponseDto> favorites = allFavoritesSliceBy.getContent().stream()
+                .map((FavoritesResponseDto::of))
                 .collect(Collectors.toList());
 
-        return favoriteResponseDtos;
+        return FavoritesSliceResponseDto.builder()
+                .favorites(favorites)
+                .page(allFavoritesSliceBy.getPageable().getPageNumber())
+                .isLast(allFavoritesSliceBy.isLast())
+                .build();
     }
 
     private FavoriteClickResponseDto addOrChangeFavoriteStatus(Favorite favorite, User user, Room room) {

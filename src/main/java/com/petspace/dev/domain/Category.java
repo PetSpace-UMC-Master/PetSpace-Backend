@@ -26,12 +26,13 @@ public class Category {
     @Column(name = "category_id")
     private Long id;
 
-    @OneToMany(mappedBy = "category")
-    private List<RoomCategory> roomCategory;
-
     @Column(length = 10, nullable = false)
     private String categoryName;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String categoryImageUrl;
+
+    @OneToMany(mappedBy = "category")
+    private List<RoomCategory> roomCategory;
+
 }
