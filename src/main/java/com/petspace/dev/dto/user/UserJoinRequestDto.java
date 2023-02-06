@@ -4,13 +4,13 @@ import com.petspace.dev.domain.user.OauthProvider;
 import com.petspace.dev.domain.user.Role;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@Getter
+@Getter @Setter
 public class UserJoinRequestDto {
 
     @NotBlank(message = "이메일을 입력해주세요.")
