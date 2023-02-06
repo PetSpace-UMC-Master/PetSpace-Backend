@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import com.petspace.dev.domain.user.User;
+import com.petspace.dev.service.AdminService;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -19,6 +22,7 @@ import javax.validation.Valid;
 public class AdminController {
 
     private final UserService userService;
+    private final AdminService adminService;
 
     @RequestMapping("")
     public String home(){
@@ -36,6 +40,15 @@ public class AdminController {
     public String createUser(@Valid UserJoinRequestDto userJoinRequestDto, BindingResult result){
         userService.join(userJoinRequestDto);
         return "redirect:/admin";
+    }
+
+
+    /** 회원 조회 **/
+    @GetMapping("/users")
+    public String list(Model model){
+        List<User> users = adminService.findUsers();
+        model.addAttribute("users", users);
+        return "users/userList";
     }
 
 }
