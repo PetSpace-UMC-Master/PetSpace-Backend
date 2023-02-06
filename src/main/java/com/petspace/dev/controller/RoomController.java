@@ -39,6 +39,13 @@ public class RoomController {
         return new BaseResponse<>(roomService.findAllDesc(page, sortBy));
     }
 
+    @GetMapping("/rooms/{userId}")
+    public BaseResponse<List<RoomListResponseDto>> getById(@PathVariable Long userId,
+                                                           @RequestParam Optional<Integer> page) {
+        log.info("user =[{}]", userId);
+        return new BaseResponse<>(roomService.findAllDescByUserId(userId, page));
+    }
+
     @PostMapping("/rooms/{roomId}/favorites")
     public BaseResponse<FavoriteClickResponseDto> addFavorite(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                               @PathVariable Long roomId) {
