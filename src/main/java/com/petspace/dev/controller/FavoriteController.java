@@ -59,7 +59,7 @@ public class FavoriteController {
                                                               @RequestParam Long roomId) {
         Long userId = principalDetails.getId();
         log.info("user=[{}][{}]", principalDetails.getId(), principalDetails.getUsername());
-        FavoriteClickResponseDto roomResponseDto = favoriteService.clickFavorite(userId, roomId);
-        return new BaseResponse<>(roomResponseDto);
+        FavoriteClickResponseDto responseDto = favoriteService.clickFavorite(userId, roomId);
+        return new BaseResponse<>(responseDto);
     }
 }
