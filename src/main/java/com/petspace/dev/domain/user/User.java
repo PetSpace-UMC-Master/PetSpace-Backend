@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.BaseTimeEntity;
 import com.petspace.dev.domain.Favorite;
 import com.petspace.dev.domain.Reservation;
+import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.Status;
 import lombok.AccessLevel;
@@ -12,7 +13,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,16 +34,6 @@ public class User extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Room> rooms = new ArrayList<>();
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Reservation> reservations = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    List<Favorite> favorites = new ArrayList<>();
 
     @Column(length = 45)
     private String username;
@@ -64,6 +63,19 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Room> rooms = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Reservation> reservations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Favorite> favorites = new ArrayList<>();
 
     @Builder
     public User(String username, String nickname, String birth, String email, String password,

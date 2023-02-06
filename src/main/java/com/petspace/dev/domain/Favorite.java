@@ -27,6 +27,8 @@ public class Favorite {
     @Column(name = "favorite_id")
     private Long id;
 
+    private boolean isClicked;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -34,8 +36,6 @@ public class Favorite {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    private boolean isClicked;
 
     @Builder
     public Favorite(User user, Room room, boolean isClicked) {

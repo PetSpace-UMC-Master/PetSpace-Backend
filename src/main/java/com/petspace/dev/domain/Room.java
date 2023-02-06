@@ -9,7 +9,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,30 +37,6 @@ public class Room extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<Reservation> reservation;
-
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<RoomCategory> roomCategories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "room")
-    private List<RoomFacility> roomFacilities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "room")
-    private List<RoomAvailable> roomAvailables = new ArrayList<>();
-
-    @OneToMany(mappedBy = "room")
-    List<Favorite> favorites = new ArrayList<>();
-
-    @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
-    @OneToMany(mappedBy = "room")
-    List<RoomImage> roomImages = new ArrayList<>();
 
     @Embedded
     private Address address;
@@ -79,4 +67,30 @@ public class Room extends BaseTimeEntity{
     @Column(length = 45, nullable = false)
     private Status status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "room")
+    private List<Review> reviews = new ArrayList<>();
+
+    @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Reservation> reservation = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<RoomCategory> roomCategories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<RoomFacility> roomFacilities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<RoomAvailable> roomAvailables = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<Favorite> favorites = new ArrayList<>();
+
+    @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
+    @OneToMany(mappedBy = "room")
+    List<RoomImage> roomImages = new ArrayList<>();
 }

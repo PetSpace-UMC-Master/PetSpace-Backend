@@ -30,16 +30,16 @@ public class RoomAvailable {
     @Column(name = "room_available_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
-
     @Column(nullable = false)
     private LocalDateTime availableDay;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     public void updateStatus(Status status) {
         this.status = status;

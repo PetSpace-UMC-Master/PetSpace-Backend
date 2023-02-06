@@ -2,15 +2,12 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Review;
-import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.ReviewImage;
-import com.petspace.dev.domain.user.User;
-import com.petspace.dev.dto.review.ReviewCreateRequestDto;
-import com.petspace.dev.dto.review.ReviewCreateResponseDto;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
-import com.petspace.dev.dto.review.ReviewListResponseDto;
-import com.petspace.dev.dto.review.ReviewUpdateRequestDto;
-import com.petspace.dev.dto.review.ReviewUpdateResponseDto;
+import com.petspace.dev.dto.review.ReviewRequestDto;
+import com.petspace.dev.dto.review.ReviewResponseDto;
+import com.petspace.dev.dto.review.ReviewsResponseDto;
+import com.petspace.dev.dto.review.ReviewsSliceResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
@@ -20,13 +17,11 @@ import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +29,7 @@ import static com.petspace.dev.util.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Slf4j
 public class ReviewService {
 
@@ -44,123 +39,78 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    @Transactional
-    public ReviewCreateResponseDto save(Long userId, Long reservationId, ReviewCreateRequestDto reviewRequestDto) {
+    public ReviewResponseDto save(Long userId, Long reservationId, ReviewRequestDto reviewRequestDto) {
 
-        userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Reservation reservation = reservationRepository.findById(reservationId)
+        Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
 
-        reservation.setReviewCreated(true);
+        if (reservation.isReviewCreated()) {
+            throw new ReviewException(POST_REVIEW_ALREADY_CREATED);
+        }
 
         if (reviewRequestDto.getScore() == null) {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
         }
 
-        String content = reviewRequestDto.getContent();
-
-        Review review = Review.builder()
-                .reservation(reservation)
-                .status(Status.ACTIVE)
-                .score(reviewRequestDto.getScore())
-                .content(content)
-                .build();
-
+        Review review = reviewRequestDto.toEntity(reservation);
+        log.info("review =[{}][{}][{}]", review.getScore(), review.getContent(), review.getReviewImages().toString());
         uploadReviewImages(reviewRequestDto, review);
+        reviewRepository.save(review);
 
-        return ReviewCreateResponseDto.builder()
-                .id(review.getId())
-                .build();
+        return ReviewResponseDto.of(review);
     }
 
-    public Page<ReviewListResponseDto> findAllReview(Pageable pageable) {
-        List<Review> reviewGroup = reviewRepository.findAllDesc(pageable);
-        List<ReviewListResponseDto> dtos = new ArrayList<>();
+    @Transactional(readOnly = true)
+    public ReviewsSliceResponseDto findAllReviewsByPage(Long roomId, Pageable pageable) {
+        Slice<Review> allReviewsSliceBy = reviewRepository.findAllReviewsSliceBy(roomId, pageable);
 
-        for (Review review : reviewGroup) {
-            List<ReviewImage> reviewImages = review.getReviewImages();
-
-            ReviewListResponseDto responseDto = ReviewListResponseDto.builder()
-                    .id(review.getId())
-                    .nickName(review.getReservation().getUser().getNickname())
-                    .reviewImage(reviewImages)
-                    .score(review.getScore())
-                    .content(review.getContent())
-                    .createdDate(review.getCreatedAt().toString().substring(0, 10))
-                    .createdTime(review.getCreatedAt().toString().substring(11, 19))
-                    .status(review.getStatus())
-                    .build();
-
-            dtos.add(responseDto);
-        }
-
-        return new PageImpl<>(dtos, pageable, dtos.size());
-    }
-
-    @Transactional
-    public ReviewUpdateResponseDto updateReview(Long userId, Long reviewId, ReviewUpdateRequestDto reviewRequestDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
-
-        if(review.getReservation().getUser().getId().equals(user.getId())) {
-            new ReviewException(UPDATE_REVIEW_INVALID_USER);
-        }
-
-        if(reviewRequestDto.getScore() != null) {
-            review.setScore(reviewRequestDto.getScore());
-        }
-
-        if(reviewRequestDto.getContent() != null) {
-            review.setContent(reviewRequestDto.getContent());
-        }
-
-        if(!reviewRequestDto.getReviewImages().isEmpty()) {
-            updateReviewImages(reviewRequestDto, reviewId, review);
-        }
-
-        return ReviewUpdateResponseDto.builder()
-                .id(review.getId())
-                .build();
-    }
-
-    @Transactional
-    public List<ReviewImage> updateReviewImages(ReviewUpdateRequestDto reviewRequestDto, Long reviewId, Review review) {
-
-        deleteImages(reviewId);
-
-        return reviewRequestDto.getReviewImages().stream()
-                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
-                .map(url -> createPostImage(review, url))
+        List<ReviewsResponseDto> reviews = allReviewsSliceBy.getContent().stream()
+                .map((ReviewsResponseDto::of))
                 .collect(Collectors.toList());
-    }
 
-    @Transactional
-    public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
-        userRepository.findById(userId).orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_USER));
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
-
-        review.setStatus(Status.valueOf("INACTIVE"));
-
-        return ReviewDeleteResponseDto.builder()
-                .id(review.getId())
+        return ReviewsSliceResponseDto.builder()
+                .reviews(reviews)
+                .page(allReviewsSliceBy.getPageable().getPageNumber())
+                .isLast(allReviewsSliceBy.isLast())
                 .build();
     }
 
-    private void deleteImages(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(UPDATE_REVIEW_INVALID_REVIEW));
+    public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewRequestDto reviewRequestDto) {
 
-        if (review.getReviewImages().size() != 0) {
-            reviewImageRepository.deleteAllByIdInBatch(reviewId);
+        Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
+                .orElseThrow(() -> new ReviewException(INVALID_REVIEW));
+
+        updateEachReviewItem(reviewRequestDto, review);
+
+        return ReviewResponseDto.of(review);
+    }
+
+    private void updateEachReviewItem(ReviewRequestDto reviewRequestDto, Review review) {
+        if (reviewRequestDto.getScore() != null) {
+            review.updateScore(reviewRequestDto.getScore());
         }
 
+        if (reviewRequestDto.getContent() != null) {
+            review.updateContent(reviewRequestDto.getContent());
+        }
+
+        if (!reviewRequestDto.getReviewImages().isEmpty()) {
+            review.updateReviewImages(deleteExistedImagesAndUploadNewImages(reviewRequestDto, review));
+        }
+    }
+
+    private List<ReviewImage> deleteExistedImagesAndUploadNewImages(ReviewRequestDto reviewRequestDto, Review review) {
+        deleteExistedImages(review);
+        return uploadReviewImages(reviewRequestDto, review);
+    }
+
+    private void deleteExistedImages(Review review) {
+        reviewImageRepository.deleteAllByIdInBatch(review.getId());
         deleteS3Images(review);
     }
 
-    private void deleteS3Images(Review getReview) {
-        List<ReviewImage> reviewImages = getReview.getReviewImages();
+    private void deleteS3Images(Review review) {
+        List<ReviewImage> reviewImages = review.getReviewImages();
 
         for (ReviewImage reviewImage : reviewImages) {
             String imageKey = reviewImage.getReviewImageUrl().substring(49);
@@ -168,7 +118,20 @@ public class ReviewService {
         }
     }
 
-    private List<ReviewImage> uploadReviewImages(ReviewCreateRequestDto reviewRequestDto, Review review) {
+    // TODO Soft delete 관련 상의 후 로직 변경하기
+    public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
+
+        Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
+                .orElseThrow(() -> new ReviewException(INVALID_REVIEW));
+
+        Reservation reservation = review.getReservation();
+        reservation.deleteReview();
+        return ReviewDeleteResponseDto.builder()
+                .id(reviewId)
+                .build();
+    }
+
+    private List<ReviewImage> uploadReviewImages(ReviewRequestDto reviewRequestDto, Review review) {
         return reviewRequestDto.getReviewImages().stream()
                 .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
                 .map(url -> createPostImage(review, url))
@@ -176,6 +139,9 @@ public class ReviewService {
     }
 
     private ReviewImage createPostImage(Review review, String url) {
+        log.info("url = {}", url);
+        review.clearReviewImages();
+        
         return reviewImageRepository.save(ReviewImage.builder()
                 .reviewImageUrl(url)
                 .review(review)

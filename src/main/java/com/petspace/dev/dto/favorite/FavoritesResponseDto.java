@@ -20,7 +20,7 @@ import static com.petspace.dev.domain.Status.ACTIVE;
 @Getter
 @Builder
 @Slf4j
-public class FavoriteResponseDto {
+public class FavoritesResponseDto {
 
     private Long id;
     private List<String> roomImages;
@@ -30,7 +30,7 @@ public class FavoriteResponseDto {
     private int numberOfReview;
     private List<LocalDateTime> availableDays;
 
-    public static FavoriteResponseDto of(Favorite favorite) {
+    public static FavoritesResponseDto of(Favorite favorite) {
 
         // TODO Favorite을 Room으로 묶어서 리팩토링을 진행해야되나? 하나의 DTO / Service가 너무 많은 역할
         Room room = favorite.getRoom();
@@ -51,7 +51,7 @@ public class FavoriteResponseDto {
                 .map(RoomAvailable::getAvailableDay)
                 .collect(Collectors.toList());
 
-        return FavoriteResponseDto.builder()
+        return FavoritesResponseDto.builder()
                 .id(room.getId())
                 .roomImages(room.getRoomImages().stream().map(RoomImage::getRoomImageUrl).collect(Collectors.toList()))
                 .roomAddress(room.getAddress().getDistrict() + ", " + room.getAddress().getCity())

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,8 +40,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 // TODO 로그인, 회원가입, 방 전체보기, 방 상세보기는 비회원인 상태에서도 가능함, 이후에 추가하기
-                .antMatchers("/", "/app/oauth/**", "/app/login", "/app/sign-up/**", "/app/reviews/**",
+                .antMatchers("/", "/app/oauth/**", "/app/login", "/app/sign-up/**",
                         "/app/token-reissue", "/app/room/**", "/v3/api-docs", "/swagger*/**", "/app/rooms/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/app/reviews/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
