@@ -39,7 +39,7 @@ public class RoomController {
         return new BaseResponse<>(roomService.findAllDesc(page, sortBy));
     }
 
-    @GetMapping("/rooms/{userId}")
+    @GetMapping("/rooms/host/{userId}")
     public BaseResponse<List<RoomListResponseDto>> getById(@PathVariable Long userId,
                                                            @RequestParam Optional<Integer> page) {
         log.info("user =[{}]", userId);
