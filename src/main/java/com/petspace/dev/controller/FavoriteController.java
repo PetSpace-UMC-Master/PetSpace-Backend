@@ -39,12 +39,14 @@ public class FavoriteController {
                                                                  @RequestParam RegionType region,
                                                                  @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                                                  @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        log.info("input region={}", region.getKorRegionName());
         Long userId = principalDetails.getId();
         PageRequest pageRequest = PageRequest.of(page, size);
+        log.info("favorite 통신 [{}][{}]", region.getKorRegionName(), page);
         FavoritesSliceResponseDto responseDto = favoriteService.showFavoritesSliceByRegion(userId, region.getKorRegionName(), pageRequest);
+        log.info("favorite 통신 성공!!");
         return new BaseResponse<>(responseDto);
     }
-
 
     @Operation(summary = "Favorite POST", description = "Favorite POST API Doc")
     @ApiResponses({

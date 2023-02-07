@@ -9,8 +9,9 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     Optional<Reservation> findById(Long id);
 
-    @Query("select rs from Reservation  rs " +
-            "join fetch rs.user u " +
-            "where rs.id = :reservationId and u.id = :userId")
+    @Query("select rs from Reservation rs " +
+            "join fetch rs.user " +
+            "join fetch rs.room " +
+            "where rs.id = :reservationId and rs.user.id = :userId")
     Optional<Reservation> findByIdAndUserId(Long reservationId, Long userId);
 }
