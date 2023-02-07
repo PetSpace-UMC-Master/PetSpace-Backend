@@ -18,6 +18,13 @@ public class AdminService {
     private final UserRepository userRepository;
 
     public List<User> findUsers() {
+        log.info("@@ findUsers");
         return userRepository.findAll();
+    }
+
+    public User findUserById(Long userId){
+        log.info("@@ findUserById");
+        // 있는 유저 기준으로 출력하고, 해당 유저 id 로 받아오는 것이므로, null 없다 가정
+        return userRepository.findById(userId).get();
     }
 }

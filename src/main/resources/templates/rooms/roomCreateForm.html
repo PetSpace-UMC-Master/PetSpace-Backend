@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form role="form" action="/admin/rooms/new" th:object="${roomCreateRequestDto}"
+          method="post">
+
+        <div class="form-group">
+            <label for="user">유저</label>
+            <select name="userId" id="user" class="form-control">
+                <option value="">회원선택</option>
+                <option th:each="user : ${users}"
+                        th:value="${user.id}"
+                        th:text="${user.username}" />
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label th:for="region">region</label>
+            <input type="text" th:field="*{region}" class="form-control"
+                   placeholder="광역시/도 입력. (ex. 서울특별시, 경상도, 경기도)"
+                   th:class="${#fields.hasErrors('region')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('region')}"
+               th:errors="*{region}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="city">city</label>
+            <input type="text" th:field="*{city}" class="form-control"
+                   placeholder="시/군 단위. 행정구분 단위 제외. (ex. 서울, 인천, 홍천)"
+                   th:class="${#fields.hasErrors('city')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('city')}"
+               th:errors="*{city}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="district">district</label>
+            <input type="text" th:field="*{district}" class="form-control"
+                   placeholder="구/읍/면 단위. 행정구분 단위 포함. (ex. 광진구, 관악구, 오포읍)"
+                   th:class="${#fields.hasErrors('district')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('district')}"
+               th:errors="*{district}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="addressDetail">addressDetail</label>
+            <input type="text" th:field="*{addressDetail}" class="form-control"
+                   placeholder="상위 행정지역구분 제외 상세 주소. (ex. 성현로 80 166-1701)"
+                   th:class="${#fields.hasErrors('addressDetail')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('addressDetail')}"
+               th:errors="*{addressDetail}">Incorrect data</p>
+        </div>
+
+        <div><a href="https://address.dawul.co.kr/">주소로 위도 경도 찾기</a></div>
+
+        <div class="form-group">
+            <label th:for="latitude">latitude</label>
+            <input type="text" th:field="*{latitude}" class="form-control"
+                   placeholder="위도를 입력해주세요. (소수점 6자리 이하까지 입력해야 정확합니다.)"
+                   th:class="${#fields.hasErrors('latitude')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('latitude')}"
+               th:errors="*{latitude}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="longitude">longitude</label>
+            <input type="text" th:field="*{longitude}" class="form-control"
+                   placeholder="경도를 입력해주세요. (소수점 6자리 이하까지 입력해야 정확합니다.)"
+                   th:class="${#fields.hasErrors('longitude')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('longitude')}"
+               th:errors="*{longitude}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="roomName">roomName</label>
+            <input type="text" th:field="*{roomName}" class="form-control"
+                   placeholder="숙소 이름을 입력해주세요."
+                   th:class="${#fields.hasErrors('roomName')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('roomName')}"
+               th:errors="*{roomName}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label for="price">price</label>
+            <input type="number" name="price" class="form-control" id="price" placeholder="가격을 입력하세요.">
+        </div>
+        <div class="form-group">
+            <label for="maxGuest">maxGuest</label>
+            <input type="number" name="maxGuest" class="form-control" id="maxGuest" placeholder="최대 인원 수를 입력하세요.">
+        </div>
+
+        <div class="form-group">
+            <label for="maxPet">maxPet</label>
+            <input type="number" name="maxPet" class="form-control" id="maxPet" placeholder="최대 반려동물 수를 입력하세요.">
+        </div>
+        <div class="form-group">
+            <label th:for="description">description</label>
+            <input type="text" th:field="*{description}" class="form-control"
+                   placeholder="숙소 상세설명을 입력해주세요."
+                   th:class="${#fields.hasErrors('description')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('description')}"
+               th:errors="*{description}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="checkinTime">checkinTime</label>
+            <input type="time" th:field="*{checkinTime}" class="form-control"
+                   th:class="${#fields.hasErrors('checkinTime')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('checkinTime')}"
+               th:errors="*{checkinTime}">Incorrect data</p>
+        </div>
+
+        <div class="form-group">
+            <label th:for="checkoutTime">checkoutTime</label>
+            <input type="time" th:field="*{checkoutTime}" class="form-control"
+                   th:class="${#fields.hasErrors('checkoutTime')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('checkoutTime')}"
+               th:errors="*{checkoutTime}">Incorrect data</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>
