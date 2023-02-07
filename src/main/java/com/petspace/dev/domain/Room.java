@@ -93,4 +93,8 @@ public class Room extends BaseTimeEntity{
     @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
     @OneToMany(mappedBy = "room")
     List<RoomImage> roomImages = new ArrayList<>();
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+    }
 }

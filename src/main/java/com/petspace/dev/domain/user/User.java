@@ -97,4 +97,8 @@ public class User extends BaseTimeEntity {
     public void encodePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+    }
 }

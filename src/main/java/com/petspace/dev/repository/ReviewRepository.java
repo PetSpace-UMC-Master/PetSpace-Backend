@@ -16,9 +16,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByIdAndUserId(Long reviewId, Long userId);
 
     @Query("select r from Review r " +
-            "left join fetch r.reservation " +
-            "left join fetch r.reviewImages " +
-            "where r.status = 'ACTIVE' and r.reservation.room.id = :roomId " +
+            "join fetch r.reservation " +
+            "join fetch r.reviewImages " +
+            "join fetch r.user " +
+            "join fetch r.room " +
+            "where r.status = 'ACTIVE' and r.room.id = :roomId " +
             "order by r.id desc")
     Slice<Review> findAllReviewsSliceBy(Long roomId, Pageable pageable);
 }
