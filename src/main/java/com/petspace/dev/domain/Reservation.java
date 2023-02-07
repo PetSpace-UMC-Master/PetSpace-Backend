@@ -86,31 +86,6 @@ public class Reservation extends BaseTimeEntity{
         this.status = status;
     }
 
-    //==생성 메서드==//
-    public static Reservation createReservation(User user, Room room, ReservationCreateRequestDto dto) {
-        Reservation reservation = dto.toEntity(user, room);
-        //startDate부터 endDate까지 Room의 RoomAvailable을 INACTIVE로 변경
-        LocalDate startDate = reservation.getStartDate().toLocalDate();
-        LocalDate endDate = reservation.getEndDate().toLocalDate();
-
-        List<RoomAvailable> roomAvailables = reservation.getRoom().getRoomAvailables().stream()
-                .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().compareTo(startDate) >= 0)
-                .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().isBefore(endDate))
-                .collect(Collectors.toList());
-
-        if(roomAvailables.isEmpty()) {
-            throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_DATE);
-        }
-
-        for(RoomAvailable roomAvailable : roomAvailables) {
-            if(roomAvailable.getStatus() != Status.ACTIVE) {
-                throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_STATUS);
-            }
-            roomAvailable.changeStatus(Status.INACTIVE);
-        }
-        return reservation;
-    }
-
     //==삭제 메서드==//
     public void deleteReservation() {
         if(this.getStatus() != Status.ACTIVE) {
