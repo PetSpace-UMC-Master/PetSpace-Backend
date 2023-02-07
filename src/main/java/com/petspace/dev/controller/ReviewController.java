@@ -43,10 +43,10 @@ public class ReviewController {
             @ApiResponse(responseCode = "200", description = "해당 예약이 존재하지 않습니다."),
             @ApiResponse(responseCode = "200", description = "score를 입력해주세요.")
     })
-    @PostMapping("/reviews")
+    @PostMapping( "/reviews")
     public BaseResponse<ReviewResponseDto> createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @RequestParam("reservationId") Long reservationId,
-                                     @ModelAttribute ReviewRequestDto reviewCreateRequestDto) {
+                                                        @RequestParam("reservationId") Long reservationId,
+                                                        @ModelAttribute ReviewRequestDto reviewCreateRequestDto) {
 
         Long userId = principalDetail.getId();
         ReviewResponseDto createResponseDto = reviewService.save(userId, reservationId, reviewCreateRequestDto);
