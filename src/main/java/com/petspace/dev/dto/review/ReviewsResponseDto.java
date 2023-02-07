@@ -22,7 +22,7 @@ public class ReviewsResponseDto {
 
         return ReviewsResponseDto.builder()
                 .id(review.getId())
-                .nickName(review.getReservation().getUser().getNickname())
+                .nickName(review.getUser().getNickname())
                 .reviewImage(review.getReviewImages())
                 .score(review.getScore())
                 .dayAfterCreated(DayAfterFormatter.formattingDayAfter(review.getCreatedAt()))

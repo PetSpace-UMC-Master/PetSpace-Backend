@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class ReviewService {
     private final AwsS3Uploader awsS3Uploader;
 
     public ReviewResponseDto save(Long userId, Long reservationId, ReviewRequestDto reviewRequestDto) {
+        log.info("Review create ! userId={}, reservationId={}", userId, reservationId);
 
         Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
@@ -52,9 +54,18 @@ public class ReviewService {
             throw new UserException(POST_REVIEW_EMPTY_SCORE);
         }
 
+        for (MultipartFile file : reviewRequestDto.getReviewImages()) {
+            log.info("beforeImage name = [{}]", file.getOriginalFilename());
+        }
+
         Review review = reviewRequestDto.toEntity(reservation);
-        log.info("review =[{}][{}][{}]", review.getScore(), review.getContent(), review.getReviewImages().toString());
-        uploadReviewImages(reviewRequestDto, review);
+
+        log.info("review=[{}][{}]", review.getScore(), review.getContent());
+        List<ReviewImage> reviewImages = uploadReviewImages(reviewRequestDto, review);
+
+        for (ReviewImage reviewImage : reviewImages) {
+            log.info("reviewImage={}", reviewImage.getReviewImageUrl());
+        }
         reviewRepository.save(review);
 
         return ReviewResponseDto.of(review);
@@ -146,6 +157,13 @@ public class ReviewService {
                 .reviewImageUrl(url)
                 .review(review)
                 .build());
+    }
+
+    private List<ReviewImage> uploadReviewImagesV2(List<MultipartFile> reviewImages, Review review) {
+        return reviewImages.stream()
+                .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
+                .map(url -> createPostImage(review, url))
+                .collect(Collectors.toList());
     }
 }
 
