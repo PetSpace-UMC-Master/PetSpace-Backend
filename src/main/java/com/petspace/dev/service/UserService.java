@@ -8,12 +8,13 @@ import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
 import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.jwt.JwtProvider;
-import com.petspace.dev.util.jwt.Token;
 import com.petspace.dev.util.exception.ReissueException;
 import com.petspace.dev.util.exception.UserException;
+import com.petspace.dev.util.jwt.JwtProvider;
+import com.petspace.dev.util.jwt.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +32,14 @@ public class UserService {
     private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${default.image.url}")
+    private final String defaultProfileImage;
+
     public UserResponseDto join(UserJoinRequestDto joinRequestDto) {
 
         validateSignupDto(joinRequestDto);
 
-        User user = joinRequestDto.toEntity();
+        User user = joinRequestDto.toEntity(defaultProfileImage);
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
         userRepository.save(user);
