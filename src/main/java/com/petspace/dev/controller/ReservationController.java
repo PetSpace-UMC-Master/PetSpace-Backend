@@ -1,10 +1,8 @@
 package com.petspace.dev.controller;
 
+import com.petspace.dev.domain.user.User;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
-import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
-import com.petspace.dev.dto.reservation.ReservationDeleteResponseDto;
-import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
+import com.petspace.dev.dto.reservation.*;
 import com.petspace.dev.service.ReservationService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,31 +40,6 @@ public class ReservationController {
         return new BaseResponse<>(responseDto);
     }
 
-    @Operation(summary = "Reservation 조회", description = "principalDetail 을 이용해 현재날짜를 기준으로 다가오는 reservation 을 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "400", description = "해당 사용자가 존재하지 않습니다."),
-    })
-    @GetMapping("/app/reservations")
-    public BaseResponse<List<ReservationReadResponseDto>> readReservationByUserId(@AuthenticationPrincipal PrincipalDetails principalDetail) {
-        Long userId = principalDetail.getId();
-        List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readUpComingReservation(userId);
-        return new BaseResponse<>(reservationReadResponseDtoList);
-    }
-
-
-    @Operation(summary = "Reservation 조회", description = "principalDetail 을 이용해 현재날짜를 기준으로 완료된 reservation 을 조회합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "200", description = "해당 사용자가 존재하지 않습니다."),
-    })
-    @GetMapping("/app/reservations/terminate")
-    public BaseResponse<Object> readTerminateReservationByUserId(@AuthenticationPrincipal PrincipalDetails principalDetail) {
-        Long userId = principalDetail.getId();
-        List<ReservationReadResponseDto> reservationReadResponseDtoList = reservationService.readTerminateReservation(userId);
-        return new BaseResponse<>(reservationReadResponseDtoList);
-    }
-
     @Operation(summary = "Reservation 삭제", description = "Soft Delete Reservation API Doc")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다."),
@@ -77,5 +51,37 @@ public class ReservationController {
         Long userId = principalDetail.getId();
         ReservationDeleteResponseDto dto = reservationService.deleteReservation(userId, reservationId);
         return new BaseResponse<>(dto);
+    }
+
+    @Operation(summary = "Reservation 조회", description = "principalDetail 을 이용해 현재날짜를 기준으로 다가오는 reservation 을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2230", description = "해당 사용자가 존재하지 않습니다."),
+    })
+    @GetMapping("app/reservations")
+    public BaseResponse readAllUpcomingReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                            @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
+
+        Long userId = principalDetail.getId();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ReservationSliceResponseDto responseDto = reservationService.findAllUpcomingReservationByPage(userId, pageRequest);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @Operation(summary = "Reservation 조회", description = "principalDetail 을 이용해 현재날짜를 기준으로 완료된 reservation 을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "2230", description = "해당 사용자가 존재하지 않습니다."),
+    })
+    @GetMapping("app/reservations/terminate")
+    public BaseResponse readAllTerminateReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,
+                                            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                            @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
+
+        Long userId = principalDetail.getId();
+        PageRequest pageRequest = PageRequest.of(page, size);
+        ReservationSliceResponseDto responseDto = reservationService.findAllTerminateReservationByPage(userId, pageRequest);
+        return new BaseResponse<>(responseDto);
     }
 }
