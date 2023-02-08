@@ -33,7 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Value("${default.image.url}")
-    private final String defaultProfileImage;
+    private String defaultProfileImage;
 
     public UserResponseDto join(UserJoinRequestDto joinRequestDto) {
 
