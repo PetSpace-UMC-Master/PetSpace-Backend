@@ -48,6 +48,7 @@ public class UserService {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
                 .birth(user.getBirth())
                 .build();
     }
