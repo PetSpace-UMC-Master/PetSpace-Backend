@@ -15,7 +15,7 @@ public class ReviewsResponseDto {
     private Long id;
     private String nickName;
     private String profileImage;
-    private List<String> reviewImage;
+    private List<String> reviewImages;
     private int score;
     private String dayAfterCreated;
     private String content;
@@ -30,7 +30,7 @@ public class ReviewsResponseDto {
                 .id(review.getId())
                 .nickName(review.getUser().getNickname())
                 .profileImage(review.getUser().getProfileImage())
-                .reviewImage(reviewImageUrls)
+                .reviewImages(reviewImageUrls)
                 .score(review.getScore())
                 .dayAfterCreated(DayAfterFormatter.formattingDayAfter(review.getCreatedAt()))
                 .content(review.getContent())
