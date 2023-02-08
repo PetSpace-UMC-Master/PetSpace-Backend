@@ -10,6 +10,7 @@ import com.petspace.dev.util.jwt.JwtProvider;
 import com.petspace.dev.util.jwt.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -28,6 +29,9 @@ public class OauthService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+
+    @Value("${default.image.url}")
+    private String defaultProfileImage;
 
     @Transactional
     public LoginTokenResponseDto login(String providerName, OauthRequestDto requestDto) {
@@ -56,6 +60,7 @@ public class OauthService {
      */
     private User getUserProfile(ClientRegistration provider, OauthRequestDto requestDto) {
         Map<String, Object> userAttributes = getUserAttributes(provider, requestDto);
+        addDefaultProfileImage(userAttributes);
         User extract = OauthAttributes.extract(provider.getClientName(), userAttributes);
         log.info("user=[{}][{}][{}]", extract.getEmail(), extract.getNickname(), extract.getOauthProvider());
         return extract;
@@ -74,5 +79,9 @@ public class OauthService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
+    }
+
+    private void addDefaultProfileImage(Map<String, Object> userAttributes) {
+        userAttributes.put("default_profile_image", defaultProfileImage);
     }
 }
