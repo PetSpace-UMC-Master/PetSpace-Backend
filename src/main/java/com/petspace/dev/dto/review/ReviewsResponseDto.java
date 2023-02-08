@@ -13,6 +13,7 @@ import java.util.List;
 public class ReviewsResponseDto {
     private Long id;
     private String nickName;
+    private String profileImage;
     private List<ReviewImage> reviewImage;
     private int score;
     private String dayAfterCreated;
@@ -23,6 +24,7 @@ public class ReviewsResponseDto {
         return ReviewsResponseDto.builder()
                 .id(review.getId())
                 .nickName(review.getUser().getNickname())
+                .profileImage(review.getUser().getProfileImage())
                 .reviewImage(review.getReviewImages())
                 .score(review.getScore())
                 .dayAfterCreated(DayAfterFormatter.formattingDayAfter(review.getCreatedAt()))
