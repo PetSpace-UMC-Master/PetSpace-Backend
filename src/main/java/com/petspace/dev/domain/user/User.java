@@ -104,4 +104,8 @@ public class User extends BaseTimeEntity {
     public void addReview(Review review) {
         this.reviews.add(review);
     }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }
