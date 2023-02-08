@@ -1,7 +1,7 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.Address;
-import com.petspace.dev.domain.Room;
+import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomCreateRequestDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 
@@ -154,5 +154,26 @@ public class AdminController {
 
         return "redirect:/admin";
     }
+
+    /** 편의시설 추가 */
+    @GetMapping("/facilities/new")
+    public String addFacility(Model model){
+
+        model.addAttribute("facilityCreateRequestDto", new FacilityCreateRequestDto());
+        return "facilities/addFacilityForm";
+    }
+
+    @PostMapping("/facilities/new")
+    public String addFacility(@Valid FacilityCreateRequestDto facilityCreateRequestDto){
+
+        log.info("getCategory = {}", facilityCreateRequestDto.getCategory());
+        log.info("getFacilityName = {}", facilityCreateRequestDto.getFacilityName());
+        log.info("getFacilityImage = {}", facilityCreateRequestDto.getFacilityImage());
+
+        String result = adminService.addFacility(facilityCreateRequestDto);
+
+        return result;
+    }
+
 
 }

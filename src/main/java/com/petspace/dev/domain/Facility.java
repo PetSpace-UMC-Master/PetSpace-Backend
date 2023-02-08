@@ -29,4 +29,11 @@ public class Facility {
     @Column(nullable = false)
     private String category;
 
+    @Builder
+    public Facility(String facilityName, String facilityImageUrl, String category) {
+        this.facilityName = facilityName;
+        this.facilityImageUrl = facilityImageUrl;
+        this.category = category;
+    }
+
 }
