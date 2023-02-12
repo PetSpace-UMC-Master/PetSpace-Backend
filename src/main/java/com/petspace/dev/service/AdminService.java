@@ -2,14 +2,12 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.domain.Category;
 import com.petspace.dev.domain.Facility;
+import com.petspace.dev.domain.RoomCategory;
 import com.petspace.dev.domain.RoomFacility;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
-import com.petspace.dev.repository.CategoryRepository;
-import com.petspace.dev.repository.FacilityRepository;
-import com.petspace.dev.repository.RoomFacilityRepository;
-import com.petspace.dev.repository.UserRepository;
+import com.petspace.dev.repository.*;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +29,7 @@ public class AdminService {
     private final FacilityRepository facilityRepository;
     private final RoomFacilityRepository roomFacilityRepository;
     private final CategoryRepository categoryRepository;
+    private final RoomCategoryRepository roomCategoryRepository;
     private final AwsS3Uploader awsS3Uploader;
 
     public List<User> findUsers() {
@@ -116,5 +115,14 @@ public class AdminService {
         categoryRepository.save(category);
 
         return "redirect:/admin";
+    }
+
+    public Category findCategory(Long categoryId) {
+        // 있는 category 기준으로 출력하고, 해당 category id 로 받아오는 것이므로, null 없다 가정
+        return categoryRepository.findById(categoryId).get();
+    }
+
+    public void saveRoomCategory(RoomCategory roomCategory) {
+        roomCategoryRepository.save(roomCategory);
     }
 }

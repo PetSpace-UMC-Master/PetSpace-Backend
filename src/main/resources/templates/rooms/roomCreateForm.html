@@ -30,6 +30,18 @@
         </div>
 
         <div class="form-group">
+            <label th:for="category">카테고리</label>
+            <div>
+                <!-- TODO checkbox dropdown or checkbox -->
+                <select name ="categoriesId" multiple="multiple">
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.categoryName}">
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label th:for="region">region</label>
             <input type="text" th:field="*{region}" class="form-control"
                    placeholder="광역시/도 입력. (ex. 서울특별시, 경상도, 경기도)">

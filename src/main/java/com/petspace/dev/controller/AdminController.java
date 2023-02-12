@@ -86,15 +86,17 @@ public class AdminController {
         // 유저
         List<User> users = adminService.findUsers();
         List<Facility> facilities = adminService.findAllFacilities();
+        List<Category> categories = adminService.findAllCategories();
         model.addAttribute("users", users);
         model.addAttribute("facilities", facilities);
+        model.addAttribute("categories", categories);
         model.addAttribute("roomCreateRequestDto", new RoomCreateRequestDto());
 
         return "rooms/roomCreateForm";
     }
 
     @PostMapping("/rooms/new")
-    public String createRoom(@RequestParam("userId") Long userId, @RequestParam("facilitiesId") List<Long> facilitiesId, @Valid RoomCreateRequestDto roomCreateRequestDto, BindingResult result){
+    public String createRoom(@RequestParam("userId") Long userId, @RequestParam("facilitiesId") List<Long> facilitiesId, @RequestParam("categoriesId") List<Long> categoriesId, @Valid RoomCreateRequestDto roomCreateRequestDto, BindingResult result){
         log.info("@@ selected userId is {}", userId);
         log.info("@@ RoomCreatedRequest : region is a{}a", roomCreateRequestDto.getRegion());
         log.info("@@ RoomCreatedRequest : city is {}", roomCreateRequestDto.getCity());
@@ -183,7 +185,24 @@ public class AdminController {
             log.info("저장 성공");
         }
 
-        // TODO 카테고리
+        // 카테고리 중간테이블 RoomCategory save
+        List<Category> categories = categoriesId.stream()
+                .map(categoryId -> adminService.findCategory(categoryId))
+                .collect(Collectors.toList());
+
+        for(Category category : categories){
+            RoomCategory roomCategory = RoomCategory.builder()
+                    .room(room)
+                    .category(category)
+                    .build();
+            log.info("roomCategory id : {}", roomCategory.getId());
+            log.info("roomCategory room name : {}", roomCategory.getRoom().getRoomName());
+            log.info("roomCategory category name : {}", roomCategory.getCategory().getCategoryName());
+            adminService.saveRoomCategory(roomCategory);
+            log.info("저장 성공");
+        }
+
+
         return "redirect:/admin";
     }
 
@@ -222,5 +241,7 @@ public class AdminController {
 
         return result;
     }
+
+
 
 }
