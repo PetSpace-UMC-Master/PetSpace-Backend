@@ -6,6 +6,7 @@ import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
+import com.petspace.dev.dto.user.UserLogoutResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.service.UserService;
 import com.petspace.dev.util.BaseResponse;
@@ -62,6 +63,13 @@ public class UserController {
                                                 @RequestParam("profileImage") MultipartFile image) {
         Long userId = principalDetails.getId();
         UserResponseDto responseDto = userService.updateProfileImage(userId, image);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @PostMapping("/logout")
+    public BaseResponse<UserLogoutResponseDto> logout(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        String email = principalDetails.getUsername();
+        UserLogoutResponseDto responseDto = userService.logout(email);
         return new BaseResponse<>(responseDto);
     }
 }
