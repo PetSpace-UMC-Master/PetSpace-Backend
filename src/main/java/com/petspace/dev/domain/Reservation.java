@@ -1,24 +1,35 @@
 package com.petspace.dev.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
-import com.petspace.dev.util.exception.ReservationException;
-import lombok.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.user.User;
+import com.petspace.dev.util.exception.ReservationException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.petspace.dev.util.BaseResponseStatus.*;
+import static com.petspace.dev.util.BaseResponseStatus.PATCH_RESERVATION_INVALID_RESERVATION_STATUS;
+import static com.petspace.dev.util.BaseResponseStatus.POST_RESERVATION_INVALID_ROOM_AVAILABLE_STATUS;
 
 @Entity
 @Getter
@@ -114,10 +125,8 @@ public class Reservation extends BaseTimeEntity{
         this.isReviewCreated = true;
     }
 
-    // TODO 상의 후 수정 필요
     public void deleteReview() {
         this.review.changeStatus();
-        this.isReviewCreated = false;
     }
 
     public void changeStatus(Status status) {

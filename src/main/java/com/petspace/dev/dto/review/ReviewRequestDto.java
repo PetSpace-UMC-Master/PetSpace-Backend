@@ -14,6 +14,7 @@ import java.util.List;
 @Slf4j
 @Builder
 public class ReviewRequestDto {
+
     private List<MultipartFile> reviewImages;
     private Integer score;
     private String content;
@@ -24,6 +25,14 @@ public class ReviewRequestDto {
                 .reservation(reservation)
                 .room(reservation.getRoom())
                 .status(Status.ACTIVE)
+                .score(score)
+                .content(content)
+                .build();
+    }
+
+    public static ReviewRequestDto of(List<MultipartFile> reviewImages, int score, String content) {
+        return ReviewRequestDto.builder()
+                .reviewImages(reviewImages)
                 .score(score)
                 .content(content)
                 .build();
