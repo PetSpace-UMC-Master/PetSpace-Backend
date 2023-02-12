@@ -1,6 +1,7 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.*;
+import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomCreateRequestDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
@@ -149,7 +150,6 @@ public class AdminController {
         log.info("checkinTime {}", checkinTime);
         log.info("checkoutTime {}", checkoutTime);
 
-        // TODO 카테고리 -> 체크박스
         // TODO 가능한 시간 -> 달력
         // TODO 룸 이미지 -> 파일 업로드 및 S3 저장
 
@@ -183,6 +183,7 @@ public class AdminController {
             log.info("저장 성공");
         }
 
+        // TODO 카테고리
         return "redirect:/admin";
     }
 
@@ -206,5 +207,20 @@ public class AdminController {
         return result;
     }
 
+    /** 숙소 카테고리 추가 */
+    @GetMapping("/categories/new")
+    public String addCategory(Model model){
+
+        model.addAttribute("categoryCreateRequestDto", new CategoryCreateRequestDto());
+        return "categories/addCategoryForm";
+    }
+
+    @PostMapping("/categories/new")
+    public String addCategory(@Valid CategoryCreateRequestDto categoryCreateRequestDto){
+
+        String result = adminService.addCategory(categoryCreateRequestDto);
+
+        return result;
+    }
 
 }

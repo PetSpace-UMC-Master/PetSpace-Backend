@@ -1,9 +1,12 @@
 package com.petspace.dev.service;
 
+import com.petspace.dev.domain.Category;
 import com.petspace.dev.domain.Facility;
 import com.petspace.dev.domain.RoomFacility;
 import com.petspace.dev.domain.user.User;
+import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
+import com.petspace.dev.repository.CategoryRepository;
 import com.petspace.dev.repository.FacilityRepository;
 import com.petspace.dev.repository.RoomFacilityRepository;
 import com.petspace.dev.repository.UserRepository;
@@ -27,6 +30,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final FacilityRepository facilityRepository;
     private final RoomFacilityRepository roomFacilityRepository;
+    private final CategoryRepository categoryRepository;
     private final AwsS3Uploader awsS3Uploader;
 
     public List<User> findUsers() {
@@ -80,5 +84,37 @@ public class AdminService {
 
     public void saveRoomFacility(RoomFacility roomFacility) {
         roomFacilityRepository.save(roomFacility);
+    }
+
+    /** 카테고리 */
+    public List<Category> findAllCategories(){
+        log.info("@@ findAllCategories");
+        return categoryRepository.findAll();
+    }
+
+    public String addCategory(CategoryCreateRequestDto categoryCreateRequestDto) {
+
+        // 이미 존재하는 카테고리라면 추가 X // TODO nonNull 적절한 위치인지 체크 필요
+        List<String> currentCategories = findAllCategories().stream()
+                .filter(Objects::nonNull)
+                .map(Category::getCategoryName)
+                .distinct()
+                .collect(Collectors.toList());
+        if(currentCategories.contains(categoryCreateRequestDto.getCategoryName())){
+            return "redirect:/admin";
+        }
+
+        // 이미지를 S3 에 추가
+        MultipartFile image = categoryCreateRequestDto.getCategoryImage();
+        String imageUrl = awsS3Uploader.upload(image, "category");
+
+        // Category 저장 TODO 따로 뺄까
+        Category category = Category.builder()
+                .categoryName(categoryCreateRequestDto.getCategoryName())
+                .categoryImageUrl(imageUrl)
+                .build();
+        categoryRepository.save(category);
+
+        return "redirect:/admin";
     }
 }

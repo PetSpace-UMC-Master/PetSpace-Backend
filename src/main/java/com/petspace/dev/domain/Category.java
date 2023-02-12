@@ -1,10 +1,6 @@
 package com.petspace.dev.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,4 +30,11 @@ public class Category {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String categoryImageUrl;
+
+    @Builder
+    public Category(String categoryName, String categoryImageUrl) {
+        this.categoryName = categoryName;
+        this.categoryImageUrl = categoryImageUrl;
+    }
+
 }
