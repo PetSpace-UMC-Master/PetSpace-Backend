@@ -1,6 +1,6 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.domain.Address;
+import com.petspace.dev.domain.*;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomCreateRequestDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -68,6 +70,7 @@ public class AdminController {
          * 편의시설 ?
          * 가능한 시간 ?
          * 룸 이미지 ?
+         *
          * 주소 Address 타입 -> 완
          * 숙소 이름 -> 완
          * 가격 -> 완
@@ -81,14 +84,16 @@ public class AdminController {
         log.info("@@ createRoomReq");
         // 유저
         List<User> users = adminService.findUsers();
+        List<Facility> facilities = adminService.findAllFacilities();
         model.addAttribute("users", users);
+        model.addAttribute("facilities", facilities);
         model.addAttribute("roomCreateRequestDto", new RoomCreateRequestDto());
 
         return "rooms/roomCreateForm";
     }
 
     @PostMapping("/rooms/new")
-    public String createRoom(@RequestParam("userId") Long userId, @Valid RoomCreateRequestDto roomCreateRequestDto, BindingResult result){
+    public String createRoom(@RequestParam("userId") Long userId, @RequestParam("facilitiesId") List<Long> facilitiesId, @Valid RoomCreateRequestDto roomCreateRequestDto, BindingResult result){
         log.info("@@ selected userId is {}", userId);
         log.info("@@ RoomCreatedRequest : region is a{}a", roomCreateRequestDto.getRegion());
         log.info("@@ RoomCreatedRequest : city is {}", roomCreateRequestDto.getCity());
@@ -104,6 +109,8 @@ public class AdminController {
         log.info("@@ RoomCreatedRequest : description is {}", roomCreateRequestDto.getDescription());
         log.info("@@ RoomCreatedRequest : checkinTime is {}", roomCreateRequestDto.getCheckinTime());
         log.info("@@ RoomCreatedRequest : checkoutTime is {}", roomCreateRequestDto.getCheckoutTime());
+
+        log.info("@@ RoomCreatedRequest : facilitiesId is {}", Arrays.toString(facilitiesId.toArray()));
 
         // 유저
         User user = adminService.findUserById(userId);
@@ -139,18 +146,42 @@ public class AdminController {
 
         LocalDateTime checkinTime = LocalDateTime.parse(roomCreateRequestDto.getCheckinTime(), formatter);
         LocalDateTime checkoutTime = LocalDateTime.parse(roomCreateRequestDto.getCheckoutTime(), formatter);
-
-        log.info("!!!!!!! {}", checkinTime);
-        log.info("!!!!!!! {}", checkoutTime);
+        log.info("checkinTime {}", checkinTime);
+        log.info("checkoutTime {}", checkoutTime);
 
         // TODO 카테고리 -> 체크박스
-        // TODO 편의시설 -> 체크박스
         // TODO 가능한 시간 -> 달력
         // TODO 룸 이미지 -> 파일 업로드 및 S3 저장
-        // TODO 숙소 상태 -> 하드코딩
 
-        // TODO 생성자에 파라미터로 필요한 정보들 넘겨주기
-//        Room room = new Room();
+        Room room = Room.builder()
+                .user(user)
+                .address(address)
+                .roomName(roomName)
+                .price(price)
+                .maxGuest(maxGuest)
+                .maxPet(maxPet)
+                .description(description)
+                .checkinTime(checkinTime)
+                .checkoutTime(checkoutTime)
+                .status(Status.ACTIVE)
+                .build();
+
+        // 편의시설 중간테이블 RoomFacility save
+        List<Facility> facilities = facilitiesId.stream()
+                .map(facilityId -> adminService.findFacility(facilityId))
+                .collect(Collectors.toList());
+
+        for(Facility facility : facilities){
+            RoomFacility roomFacility = RoomFacility.builder()
+                    .room(room)
+                    .facility(facility)
+                    .build();
+            log.info("roomFacility id : {}", roomFacility.getId());
+            log.info("roomFacility room name : {}", roomFacility.getRoom().getRoomName());
+            log.info("roomFacility facility name : {}", roomFacility.getFacility().getFacilityName());
+            adminService.saveRoomFacility(roomFacility);
+            log.info("저장 성공");
+        }
 
         return "redirect:/admin";
     }

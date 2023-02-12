@@ -18,6 +18,18 @@
         </div>
 
         <div class="form-group">
+            <label th:for="facility">편의시설</label>
+            <div>
+                <!-- TODO checkbox dropdown or checkbox -->
+                <select name ="facilitiesId" multiple="multiple">
+                    <option th:each="facility : ${facilities}"
+                            th:value="${facility.id}"
+                            th:text="${facility.facilityName}">
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label th:for="region">region</label>
             <input type="text" th:field="*{region}" class="form-control"
                    placeholder="광역시/도 입력. (ex. 서울특별시, 경상도, 경기도)">
