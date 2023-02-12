@@ -3,11 +3,7 @@ package com.petspace.dev.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.image.RoomImage;
 import com.petspace.dev.domain.user.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,7 +33,7 @@ public class Room extends BaseTimeEntity{
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomCategory> roomCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomFacility> roomFacilities = new ArrayList<>();
 
     @OneToMany(mappedBy = "room")
@@ -79,4 +75,17 @@ public class Room extends BaseTimeEntity{
     @Column(length = 45, nullable = false)
     private Status status;
 
+    @Builder
+    public Room(User user, Address address, String roomName, int price, int maxGuest, int maxPet, String description, LocalDateTime checkinTime, LocalDateTime checkoutTime, Status status){
+        this.user = user;
+        this.address = address;
+        this.roomName = roomName;
+        this.price = price;
+        this.maxGuest = maxGuest;
+        this.maxPet = maxPet;
+        this.description = description;
+        this.checkinTime = checkinTime;
+        this.checkoutTime = checkoutTime;
+        this.status = status;
+    }
 }
