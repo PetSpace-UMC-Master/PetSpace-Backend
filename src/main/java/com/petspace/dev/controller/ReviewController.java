@@ -4,13 +4,10 @@ import com.petspace.dev.domain.user.auth.PrincipalDetails;
 import com.petspace.dev.dto.review.ReviewDeleteResponseDto;
 import com.petspace.dev.dto.review.ReviewRequestDto;
 import com.petspace.dev.dto.review.ReviewResponseDto;
-import com.petspace.dev.dto.review.ReviewsResponseDto;
 import com.petspace.dev.dto.review.ReviewsSliceResponseDto;
 import com.petspace.dev.service.ReviewService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +35,12 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @Operation(summary = "Review Post", description = "Review Post API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @PostMapping(value = "/reviews")
     public BaseResponse<ReviewResponseDto> createReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                                           @RequestParam("reservationId") Long reservationId,
@@ -52,9 +55,11 @@ public class ReviewController {
     }
 
 
-    @Operation(summary = "Getting All Reviews", description = "Review Read API Doc")
+    @Operation(summary = "Getting All Reviews", description = "Review Get API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/reviews/{roomId}")
     public BaseResponse getAllReviews(@PathVariable Long roomId,
@@ -68,8 +73,9 @@ public class ReviewController {
 
     @Operation(summary = "Updating Review", description = "Review Update API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.",
-                    content = @Content(schema = @Schema(implementation = ReviewsResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PatchMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewResponseDto> updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
@@ -84,8 +90,9 @@ public class ReviewController {
 
     @Operation(summary = "Updating Review", description = "Review Update API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다.",
-                    content = @Content(schema = @Schema(implementation = ReviewsResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @DeleteMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewDeleteResponseDto> deleteReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
