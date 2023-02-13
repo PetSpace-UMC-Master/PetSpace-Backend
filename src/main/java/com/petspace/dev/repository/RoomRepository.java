@@ -35,6 +35,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query("SELECT r, count(rv.id) as review_count, avg(rv.score) as average_review_score From Room r " +
             "left outer join fetch r.reviews rv " +
             "where (SELECT count(ra.room.id) FROM r.roomAvailables ra where ra.availableDay >= :startDay and ra.availableDay < :endDay) = :days " +
+            "and r.maxGuest >= :people and r.maxPet >= :pets " +
             "group by r.id")
-    List<Room> findAllDescByFilter(Pageable pageable, @Param("startDay") LocalDate startDay, @Param("endDay") LocalDate endDay, @Param("days") long days);
+    List<Room> findAllDescByFilter(Pageable pageable, @Param("startDay") LocalDate startDay, @Param("endDay") LocalDate endDay,
+                                   @Param("days") long days, @Param("people") Integer people, @Param("pets") Integer pets);
 }
