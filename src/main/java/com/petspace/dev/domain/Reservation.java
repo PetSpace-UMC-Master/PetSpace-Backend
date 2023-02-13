@@ -94,8 +94,8 @@ public class Reservation extends BaseTimeEntity{
         LocalDate endDate = reservation.getEndDate().toLocalDate();
 
         List<RoomAvailable> roomAvailables = reservation.getRoom().getRoomAvailables().stream()
-                .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().compareTo(startDate) >= 0)
-                .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().isBefore(endDate))
+                .filter(roomAvailable -> roomAvailable.getAvailableDay().compareTo(startDate) >= 0)
+                .filter(roomAvailable -> roomAvailable.getAvailableDay().isBefore(endDate))
                 .collect(Collectors.toList());
 
         if(roomAvailables.isEmpty()) {
@@ -121,8 +121,8 @@ public class Reservation extends BaseTimeEntity{
         LocalDate endDate = this.getEndDate().toLocalDate();
 
         List<RoomAvailable> roomAvailables = this.getRoom().getRoomAvailables().stream()
-                .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().compareTo(startDate) >= 0)
-                .filter(roomAvailable -> roomAvailable.getAvailableDay().toLocalDate().isBefore(endDate))
+                .filter(roomAvailable -> roomAvailable.getAvailableDay().compareTo(startDate) >= 0)
+                .filter(roomAvailable -> roomAvailable.getAvailableDay().isBefore(endDate))
                 .collect(Collectors.toList());
 
         for(RoomAvailable roomAvailable : roomAvailables) {

@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public class FavoritesResponseDto {
     private int price;
     private double averageReviewScore;
     private int numberOfReview;
-    private List<LocalDateTime> availableDays;
+    private List<LocalDate> availableDays;
 
     public static FavoritesResponseDto of(Favorite favorite) {
 
@@ -46,7 +47,7 @@ public class FavoritesResponseDto {
                 .average()
                 .orElse(0);
 
-        List<LocalDateTime> availableDays = room.getRoomAvailables().stream()
+        List<LocalDate> availableDays = room.getRoomAvailables().stream()
                 .filter(roomAvailable -> roomAvailable.getStatus().equals(ACTIVE))
                 .map(RoomAvailable::getAvailableDay)
                 .collect(Collectors.toList());

@@ -16,7 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -31,7 +31,7 @@ public class RoomAvailable {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime availableDay;
+    private LocalDate availableDay;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
