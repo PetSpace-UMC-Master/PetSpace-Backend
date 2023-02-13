@@ -70,6 +70,7 @@ public class RoomService {
                                                          LocalDate endDay,
                                                          Optional<Integer> people,
                                                          Optional<Integer> pets,
+                                                         Optional<String> keyword,
                                                          Optional<Integer> page,
                                                          Optional<SortBy> sortBy) {
         Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
@@ -77,8 +78,10 @@ public class RoomService {
 
         long days = (long) Duration.between(startDay.atStartOfDay(), endDay.atStartOfDay()).toDays();
 
-        return roomRepository.findAllDescByFilter(pageable, startDay, endDay, days,
-                        people.orElse(0), pets.orElse(0)).stream()
+        return roomRepository.findAllDescByFilter(pageable,
+                        startDay, endDay, days,
+                        people.orElse(0), pets.orElse(0),
+                        keyword.orElse("")).stream()
                 .map(RoomListResponseDto::new)
                 .collect(Collectors.toList());
 
