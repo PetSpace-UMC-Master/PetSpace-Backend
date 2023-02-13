@@ -6,6 +6,7 @@ import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
+import com.petspace.dev.dto.user.UserLogoutResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.service.UserService;
 import com.petspace.dev.util.BaseResponse;
@@ -37,14 +38,6 @@ public class UserController {
         return new BaseResponse<>(responseDto);
     }
 
-    @PatchMapping("/users")
-    public BaseResponse<UserResponseDto> update(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                               @RequestParam("profileImage") MultipartFile image) {
-        Long userId = principalDetails.getId();
-        UserResponseDto responseDto = userService.updateProfileImage(userId, image);
-        return new BaseResponse<>(responseDto);
-    }
-
     @GetMapping("/sign-up/email-check")
     public BaseResponse<UserCheckEmailResponseDto> checkEmail(@RequestParam String email) {
         UserCheckEmailResponseDto checkEmailResponseDto = userService.checkEmailDuplicate(email);
@@ -63,5 +56,20 @@ public class UserController {
         log.info("ref=[{}][{}]", reissueRequestDto.getAccessToken(), reissueRequestDto.getRefreshToken());
         LoginTokenResponseDto loginResponseDto = userService.reissueRefreshToken(reissueRequestDto);
         return new BaseResponse<>(loginResponseDto);
+    }
+
+    @PatchMapping("/users")
+    public BaseResponse<UserResponseDto> update(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                @RequestParam("profileImage") MultipartFile image) {
+        Long userId = principalDetails.getId();
+        UserResponseDto responseDto = userService.updateProfileImage(userId, image);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @PostMapping("/logout")
+    public BaseResponse<UserLogoutResponseDto> logout(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        String email = principalDetails.getUsername();
+        UserLogoutResponseDto responseDto = userService.logout(email);
+        return new BaseResponse<>(responseDto);
     }
 }

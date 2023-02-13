@@ -6,6 +6,7 @@ import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
+import com.petspace.dev.dto.user.UserLogoutResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.ReissueException;
@@ -88,6 +89,13 @@ public class UserService {
                 .email(user.getEmail())
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
+                .build();
+    }
+
+    public UserLogoutResponseDto logout(String email) {
+        redisService.delete(email);
+        return UserLogoutResponseDto.builder()
+                .email(email)
                 .build();
     }
 
