@@ -15,9 +15,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +46,16 @@ public class RoomController {
                                                            @RequestParam Optional<Integer> page) {
         log.info("user =[{}]", userId);
         return new BaseResponse<>(roomService.findAllDescByUserId(userId, page));
+    }
+
+    @GetMapping("/rooms/filtering")
+    public BaseResponse<List<RoomListResponseDto>> getByFilter(@RequestParam("startDay") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDay,
+                                                         @RequestParam("endDay") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDay,
+                                                         @RequestParam Optional<Integer> page,
+                                                         @RequestParam Optional<SortBy> sortBy,
+                                                         @RequestParam Optional<CategoryType> categoryType) {
+        log.info("startDay={}, endDay={}", startDay, endDay);
+        return new BaseResponse<>(roomService.findAllDescByFilter(startDay, endDay, page, sortBy));
     }
 
     @PostMapping("/rooms/{roomId}/favorites")
@@ -86,6 +98,5 @@ public class RoomController {
 
         RoomFacilityResponseDto roomFacilitiesDto = roomService.getRoomFacilities(roomId);
         return new BaseResponse(roomFacilitiesDto);
-
     }
 }
