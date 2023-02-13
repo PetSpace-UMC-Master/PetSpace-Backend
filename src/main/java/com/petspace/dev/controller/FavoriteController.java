@@ -29,10 +29,9 @@ public class FavoriteController {
 
     @Operation(summary = "Favorite Get", description = "Favorite GET API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2013", description = "존재하지 않는 회원입니다."),
-            @ApiResponse(responseCode = "2098", description = "Request Parameter가 존재하지 않습니다."),
-            @ApiResponse(responseCode = "2099", description = "Request Parameter의 유형이 불일치합니다.")
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/favorites")
     public BaseResponse<FavoritesSliceResponseDto> showFavorites(@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -50,11 +49,9 @@ public class FavoriteController {
 
     @Operation(summary = "Favorite POST", description = "Favorite POST API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2013", description = "존재하지 않는 회원입니다."),
-            @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소입니다."),
-            @ApiResponse(responseCode = "2098", description = "Request Parameter가 존재하지 않습니다."),
-            @ApiResponse(responseCode = "2099", description = "Request Parameter의 유형이 불일치합니다.")
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/favorites")
     public BaseResponse<FavoriteClickResponseDto> addFavorite(@AuthenticationPrincipal PrincipalDetails principalDetails,
