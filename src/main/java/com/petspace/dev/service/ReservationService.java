@@ -5,16 +5,15 @@ import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.RoomAvailable;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
-import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
-import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
-import com.petspace.dev.dto.reservation.ReservationDeleteResponseDto;
-import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
+import com.petspace.dev.dto.reservation.*;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.RoomRepository;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.ReservationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,5 +123,35 @@ public class ReservationService {
         reservation.deleteReservation();
 
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationSliceResponseDto findAllUpcomingReservationByPage(Long userId, Pageable pageable) {
+        Slice<Reservation> allReservationsSliceBy = reservationRepository.findAllReservationsSliceByStartDateAfter(userId, pageable);
+
+        List<ReservationReadResponseDto> reservations = allReservationsSliceBy.getContent().stream()
+                .map((ReservationReadResponseDto::new))
+                .collect(Collectors.toList());
+
+        return ReservationSliceResponseDto.builder()
+                .reservations(reservations)
+                .page(allReservationsSliceBy.getPageable().getPageNumber())
+                .isLast(allReservationsSliceBy.isLast())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationSliceResponseDto findAllTerminateReservationByPage(Long userId, Pageable pageable) {
+        Slice<Reservation> allReservationsSliceBy = reservationRepository.findAllReservationsSliceByStartDateBefore(userId, pageable);
+
+        List<ReservationReadResponseDto> reservations = allReservationsSliceBy.getContent().stream()
+                .map((ReservationReadResponseDto::new))
+                .collect(Collectors.toList());
+
+        return ReservationSliceResponseDto.builder()
+                .reservations(reservations)
+                .page(allReservationsSliceBy.getPageable().getPageNumber())
+                .isLast(allReservationsSliceBy.isLast())
+                .build();
     }
 }
