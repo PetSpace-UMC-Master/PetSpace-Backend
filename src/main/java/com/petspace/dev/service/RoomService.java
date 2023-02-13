@@ -10,7 +10,6 @@ import com.petspace.dev.util.exception.RoomException;
 import com.petspace.dev.util.input.room.CategoryType;
 import com.petspace.dev.util.input.room.SortBy;
 import com.petspace.dev.dto.room.RoomListResponseDto;
-import com.petspace.dev.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,6 +63,22 @@ public class RoomService {
         return roomRepository.findAllDescByUserId(pageable, userId).stream()
                 .map(RoomListResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoomListResponseDto> findAllDescByFilter(LocalDate startDay,
+                                                         LocalDate endDay,
+                                                         Optional<Integer> page,
+                                                         Optional<SortBy> sortBy) {
+        Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
+        Pageable pageable = PageRequest.of(page.orElse(0), DEFAULT_PAGE_SIZE, sort);
+
+        long days = (long) Duration.between(startDay.atStartOfDay(), endDay.atStartOfDay()).toDays();
+
+        return roomRepository.findAllDescByFilter(pageable, startDay, endDay, days).stream()
+                .map(RoomListResponseDto::new)
+                .collect(Collectors.toList());
+
     }
 
     public Sort getSortBy(SortBy sortBy) {
