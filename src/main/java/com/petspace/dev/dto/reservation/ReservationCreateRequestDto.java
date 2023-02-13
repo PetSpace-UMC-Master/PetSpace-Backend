@@ -52,7 +52,7 @@ public class ReservationCreateRequestDto {
                 .endDate(endDate.atTime(room.getCheckoutTime().toLocalTime()))
                 .totalPrice(Period.between(startDate, endDate).getDays() * room.getPrice())
                 .isReviewCreated(false) // 처음 예약이 생성될 때 리뷰 생성 상태는 false
-                .status(Status.PENDING) //처음 reservation을 create할 때는 admin이 승인할 때까지 PENDING상태이다.
+                .status(Status.ACTIVE) //처음 reservation을 create할 때는 ACTIVE상태이다.
                 .build();
     }
 }
