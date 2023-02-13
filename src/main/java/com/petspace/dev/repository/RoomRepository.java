@@ -36,7 +36,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             "left outer join fetch r.reviews rv " +
             "where (SELECT count(ra.room.id) FROM r.roomAvailables ra where ra.availableDay >= :startDay and ra.availableDay < :endDay) = :days " +
             "and r.maxGuest >= :people and r.maxPet >= :pets " +
+            "and (r.address.city LIKE %:keyword% or r.address.district LIKE %:keyword%) " +
             "group by r.id")
     List<Room> findAllDescByFilter(Pageable pageable, @Param("startDay") LocalDate startDay, @Param("endDay") LocalDate endDay,
-                                   @Param("days") long days, @Param("people") Integer people, @Param("pets") Integer pets);
+                                   @Param("days") long days, @Param("people") Integer people, @Param("pets") Integer pets, @Param("keyword") String keyword);
 }
