@@ -35,6 +35,8 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long id;
 
+    private String profileImage;
+
     @Column(length = 45)
     private String username;
 
@@ -78,9 +80,10 @@ public class User extends BaseTimeEntity {
     List<Favorite> favorites = new ArrayList<>();
 
     @Builder
-    public User(String username, String nickname, String birth, String email, String password,
+    public User(String profileImage, String username, String nickname, String birth, String email, String password,
                 boolean privacyAgreement, boolean marketingAgreement, boolean hostPermission,
                 OauthProvider oauthProvider, Status status, Role role) {
+        this.profileImage = profileImage;
         this.username = username;
         this.nickname = nickname;
         this.birth = birth;
@@ -96,5 +99,13 @@ public class User extends BaseTimeEntity {
 
     public void encodePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+    }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

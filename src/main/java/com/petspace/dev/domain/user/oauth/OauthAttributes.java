@@ -18,6 +18,7 @@ public enum OauthAttributes {
                     .nickname(kakaoUserInfo.getNickName())
                     .email(kakaoUserInfo.getEmail())
                     .oauthProvider(kakaoUserInfo.getProvider())
+                    .profileImage(kakaoUserInfo.getDefaultProfileImage())
                     .privacyAgreement(true)
                     .hostPermission(false)
                     .status(Status.ACTIVE)

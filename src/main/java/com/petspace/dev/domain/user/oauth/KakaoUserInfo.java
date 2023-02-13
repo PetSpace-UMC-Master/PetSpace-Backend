@@ -30,6 +30,10 @@ public class KakaoUserInfo implements OauthUserInfo {
         return (String) getProfile().get("nickname");
     }
 
+    public String getDefaultProfileImage() {
+        return (String) attributes.get("default_profile_image");
+    }
+
     public Map<String, Object> getKakaoAccount() {
         return (Map<String, Object>) attributes.get("kakao_account");
     }

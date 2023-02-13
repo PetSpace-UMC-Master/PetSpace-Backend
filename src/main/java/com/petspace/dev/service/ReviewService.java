@@ -11,9 +11,7 @@ import com.petspace.dev.dto.review.ReviewsSliceResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.ReviewImageRepository;
 import com.petspace.dev.repository.ReviewRepository;
-import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.ReviewException;
-import com.petspace.dev.util.exception.UserException;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +31,13 @@ import static com.petspace.dev.util.BaseResponseStatus.*;
 @Slf4j
 public class ReviewService {
 
-    private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final ReviewRepository reviewRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public ReviewResponseDto save(Long userId, Long reservationId, ReviewRequestDto reviewRequestDto) {
+    public ReviewResponseDto save(Long userId, Long reservationId, ReviewRequestDto requestDto) {
+        log.info("Review create ! userId={}, reservationId={}", userId, reservationId);
 
         Reservation reservation = reservationRepository.findByIdAndUserId(reservationId, userId)
                 .orElseThrow(() -> new ReviewException(POST_REVIEW_EMPTY_RESERVATION));
@@ -48,17 +46,13 @@ public class ReviewService {
             throw new ReviewException(POST_REVIEW_ALREADY_CREATED);
         }
 
-        if (reviewRequestDto.getScore() == null) {
-            throw new UserException(POST_REVIEW_EMPTY_SCORE);
-        }
-
-        Review review = reviewRequestDto.toEntity(reservation);
-        log.info("review =[{}][{}][{}]", review.getScore(), review.getContent(), review.getReviewImages().toString());
-        uploadReviewImages(reviewRequestDto, review);
+        Review review = requestDto.toEntity(reservation);
+        uploadReviewImages(requestDto, review);
         reviewRepository.save(review);
 
         return ReviewResponseDto.of(review);
     }
+
 
     @Transactional(readOnly = true)
     public ReviewsSliceResponseDto findAllReviewsByPage(Long roomId, Pageable pageable) {
@@ -118,7 +112,6 @@ public class ReviewService {
         }
     }
 
-    // TODO Soft delete 관련 상의 후 로직 변경하기
     public ReviewDeleteResponseDto deleteReview(Long userId, Long reviewId) {
 
         Review review = reviewRepository.findByIdAndUserId(reviewId, userId)
@@ -131,8 +124,8 @@ public class ReviewService {
                 .build();
     }
 
-    private List<ReviewImage> uploadReviewImages(ReviewRequestDto reviewRequestDto, Review review) {
-        return reviewRequestDto.getReviewImages().stream()
+    private List<ReviewImage> uploadReviewImages(ReviewRequestDto requestDto, Review review) {
+        return requestDto.getReviewImages().stream()
                 .map(reviewImage -> awsS3Uploader.upload(reviewImage, "review"))
                 .map(url -> createPostImage(review, url))
                 .collect(Collectors.toList());

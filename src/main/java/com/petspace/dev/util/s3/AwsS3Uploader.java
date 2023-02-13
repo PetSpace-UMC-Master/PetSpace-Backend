@@ -54,7 +54,7 @@ public class AwsS3Uploader {
                     .withCannedAcl(CannedAccessControlList.PublicRead));
 
             removeNewFile(uploadFile);
-
+            log.info("S3 upload complete!");
             return amazonS3Client.getUrl(bucket, fileName).toString();
 
         } catch (IOException e) {
