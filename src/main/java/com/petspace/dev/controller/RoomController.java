@@ -56,11 +56,13 @@ public class RoomController {
     @GetMapping("/rooms/filtering")
     public BaseResponse<List<RoomListResponseDto>> getByFilter(@RequestParam("startDay") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDay,
                                                          @RequestParam("endDay") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDay,
+                                                         @RequestParam Optional<Integer> people,
+                                                         @RequestParam Optional<Integer> pets,
                                                          @RequestParam Optional<Integer> page,
                                                          @RequestParam Optional<SortBy> sortBy,
                                                          @RequestParam Optional<CategoryType> categoryType) {
         log.info("startDay={}, endDay={}", startDay, endDay);
-        return new BaseResponse<>(roomService.findAllDescByFilter(startDay, endDay, page, sortBy));
+        return new BaseResponse<>(roomService.findAllDescByFilter(startDay, endDay, people, pets, page, sortBy));
     }
 
     @PostMapping("/rooms/{roomId}/favorites")
