@@ -61,7 +61,7 @@ public class ReservationController {
     @GetMapping("app/reservations")
     public BaseResponse readAllUpcomingReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                                            @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
+                                            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
 
         Long userId = principalDetail.getId();
         PageRequest pageRequest = PageRequest.of(page, size);

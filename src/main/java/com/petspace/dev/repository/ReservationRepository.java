@@ -20,7 +20,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select rs from Reservation rs " +
             "join fetch rs.user " +
             "join fetch rs.room  ro " +
-            "left join fetch ro.roomImages " +
             "left join fetch rs.review " +
             "where rs.status = 'ACTIVE' " +
             "and rs.user.id = :userId " +
@@ -31,7 +30,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select rs from Reservation rs " +
             "join fetch rs.user " +
             "join fetch rs.room  ro " +
-            "left join fetch ro.roomImages " +
             "left join fetch rs.review " +
             "where rs.status = 'ACTIVE'" +
             "and rs.user.id = :userId " +
