@@ -18,7 +18,6 @@ public class RoomListResponseDto {
     private int price;
     private double averageReviewScore;
     private int numberOfReview;
-    private List<LocalDateTime> availableDays;
 
     public RoomListResponseDto(Room entity) {
         List<Integer> reviewScores = entity.getReservation()
@@ -37,9 +36,5 @@ public class RoomListResponseDto {
         this.city = entity.getAddress().getCity();
         this.district = entity.getAddress().getDistrict();
         this.price = entity.getPrice();
-        this.availableDays = entity.getRoomAvailables()
-                .stream().filter(d -> d.getStatus().equals(Status.ACTIVE))
-                .map(RoomAvailable::getAvailableDay)
-                .collect(Collectors.toList());
     }
 }
