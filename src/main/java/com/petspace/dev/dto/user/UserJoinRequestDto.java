@@ -39,13 +39,14 @@ public class UserJoinRequestDto {
     private boolean marketingAgreement;
 
     // dto -> entity
-    public User toEntity() {
+    public User toEntity(String defaultProfileImage) {
         return User.builder()
                 .email(email)
                 .password(password)
                 .username(username)
                 .nickname(nickname)
                 .birth(birth)
+                .profileImage(defaultProfileImage)
                 .marketingAgreement(marketingAgreement)
                 .privacyAgreement(true)
                 .hostPermission(false)

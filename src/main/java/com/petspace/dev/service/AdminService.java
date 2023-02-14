@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -238,11 +239,11 @@ public class AdminService {
         return roomRepository.findAll();
     }
 
-    public void saveRoomAvailable(Long roomId, LocalDateTime available) {
+    public void saveRoomAvailable(Long roomId, LocalDate available) {
 
         Room room = roomRepository.findById(roomId).get();
 
-        List<LocalDateTime> localDateTimes = roomAvailableRepository.findAllByRoom(room)
+        List<LocalDate> localDateTimes = roomAvailableRepository.findAllByRoom(room)
                 .stream().map(RoomAvailable::getAvailableDay).collect(Collectors.toList());
 
         if(localDateTimes.contains(available)) {

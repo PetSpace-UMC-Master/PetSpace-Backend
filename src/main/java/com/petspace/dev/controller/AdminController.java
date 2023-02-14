@@ -152,7 +152,7 @@ public class AdminController {
         log.info("date is {}", date);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDateTime available = LocalDate.parse(date, formatter).atStartOfDay();
+        LocalDate available = LocalDate.parse(date, formatter);
 
         log.info("available date is {}", available);
 

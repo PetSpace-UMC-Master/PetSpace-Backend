@@ -26,13 +26,13 @@ public class RoomImage {
     @Column(name = "room_image_id")
     private Long id;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String roomImageUrl;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String roomImageUrl;
 
     @Builder
     public RoomImage(Room room, String roomImageUrl) {

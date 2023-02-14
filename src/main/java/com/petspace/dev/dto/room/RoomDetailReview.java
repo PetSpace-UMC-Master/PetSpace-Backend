@@ -7,8 +7,8 @@ import lombok.Getter;
 @Builder
 public class RoomDetailReview {
 
-    // TODO user image url 추가
     private Long userId;
+    private String profileImage;
     private String nickname;
     private int score;
     private String createdAt;

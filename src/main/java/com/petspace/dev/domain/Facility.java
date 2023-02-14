@@ -2,7 +2,12 @@ package com.petspace.dev.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 @Entity
@@ -17,9 +22,6 @@ public class Facility {
     @Column(name = "facility_id")
     private Long id;
 
-    @OneToMany(mappedBy = "facility")
-    private List<RoomFacility> roomFacilities;
-
     @Column(length = 45, nullable = false)
     private String facilityName;
 
@@ -29,11 +31,13 @@ public class Facility {
     @Column(nullable = false)
     private String category;
 
+    @OneToMany(mappedBy = "facility")
+    private List<RoomFacility> roomFacilities;
+
     @Builder
     public Facility(String facilityName, String facilityImageUrl, String category) {
         this.facilityName = facilityName;
         this.facilityImageUrl = facilityImageUrl;
         this.category = category;
     }
-
 }

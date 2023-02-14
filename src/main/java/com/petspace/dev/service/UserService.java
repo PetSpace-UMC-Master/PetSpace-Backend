@@ -6,17 +6,21 @@ import com.petspace.dev.dto.auth.LoginTokenResponseDto;
 import com.petspace.dev.dto.user.UserCheckEmailResponseDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.dto.user.UserLoginRequestDto;
+import com.petspace.dev.dto.user.UserLogoutResponseDto;
 import com.petspace.dev.dto.user.UserResponseDto;
 import com.petspace.dev.repository.UserRepository;
-import com.petspace.dev.util.jwt.JwtProvider;
-import com.petspace.dev.util.jwt.Token;
 import com.petspace.dev.util.exception.ReissueException;
 import com.petspace.dev.util.exception.UserException;
+import com.petspace.dev.util.jwt.JwtProvider;
+import com.petspace.dev.util.jwt.Token;
+import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.petspace.dev.util.BaseResponseStatus.*;
 
@@ -26,16 +30,21 @@ import static com.petspace.dev.util.BaseResponseStatus.*;
 @Slf4j
 public class UserService {
 
-    private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
-    private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+    private final RedisService redisService;
+    private final AwsS3Uploader awsS3Uploader;
+    private final UserRepository userRepository;
+
+
+    @Value("${default.image.url}")
+    private String defaultProfileImage;
 
     public UserResponseDto join(UserJoinRequestDto joinRequestDto) {
 
         validateSignupDto(joinRequestDto);
 
-        User user = joinRequestDto.toEntity();
+        User user = joinRequestDto.toEntity(defaultProfileImage);
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.encodePassword(encodedPassword);
         userRepository.save(user);
@@ -44,6 +53,24 @@ public class UserService {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .birth(user.getBirth())
+                .build();
+    }
+
+    public UserResponseDto updateProfileImage(Long userId, MultipartFile image) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(NONE_USER));
+        String profileUrl = awsS3Uploader.upload(image, "profile");
+
+        user.updateProfileImage(profileUrl);
+
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
                 .birth(user.getBirth())
                 .build();
     }
@@ -62,6 +89,13 @@ public class UserService {
                 .email(user.getEmail())
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
+                .build();
+    }
+
+    public UserLogoutResponseDto logout(String email) {
+        redisService.delete(email);
+        return UserLogoutResponseDto.builder()
+                .email(email)
                 .build();
     }
 

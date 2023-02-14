@@ -2,18 +2,18 @@ package com.petspace.dev.service;
 
 import com.petspace.dev.domain.Reservation;
 import com.petspace.dev.domain.Room;
+import com.petspace.dev.domain.RoomAvailable;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
-import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
-import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
-import com.petspace.dev.dto.reservation.ReservationDeleteResponseDto;
-import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
+import com.petspace.dev.dto.reservation.*;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.RoomRepository;
 import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.exception.ReservationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,8 +51,30 @@ public class ReservationService {
         if(LocalDate.parse(dto.getStartDate(), DateTimeFormatter.ISO_LOCAL_DATE).isBefore(LocalDate.now())) {
             throw  new ReservationException((POST_RESERVATION_INVALID_STARTDATE));
         }
+
         //Reservation 생성
-        Reservation reservation = Reservation.createReservation(user, room, dto);
+        Reservation reservation = dto.toEntity(user, room);
+
+        //startDate부터 endDate까지 Room의 RoomAvailable을 INACTIVE로 변경
+        LocalDate startDate = reservation.getStartDate().toLocalDate();
+        LocalDate endDate = reservation.getEndDate().toLocalDate();
+
+        List<RoomAvailable> roomAvailables = reservation.getRoom().getRoomAvailables().stream()
+                .filter(roomAvailable -> roomAvailable.getAvailableDay().compareTo(startDate) >= 0)
+                .filter(roomAvailable -> roomAvailable.getAvailableDay().isBefore(endDate))
+                .collect(Collectors.toList());
+
+        if(roomAvailables.isEmpty()) {
+            throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_DATE);
+        }
+
+        for(RoomAvailable roomAvailable : roomAvailables) {
+            if(roomAvailable.getStatus() != Status.ACTIVE) {
+                throw new ReservationException(POST_RESERVATION_INVALID_ROOM_AVAILABLE_STATUS);
+            }
+            roomAvailable.changeStatus(Status.INACTIVE);
+        }
+
         reservationRepository.save(reservation);
 
         return new ReservationCreateResponseDto(reservation);
@@ -68,6 +90,7 @@ public class ReservationService {
                 .filter(r -> r.getStartDate().toLocalDate().compareTo(LocalDate.now()) >= 0) //예약이 현재보다 나중에 있으면 ture
                 .filter(r -> r.getStatus() == Status.ACTIVE) //예약의 Status가 ACTIVE이면 true
                 .map(ReservationReadResponseDto :: new)
+                .sorted()
                 .collect(Collectors.toList());
     }
 
@@ -100,5 +123,35 @@ public class ReservationService {
         reservation.deleteReservation();
 
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationSliceResponseDto findAllUpcomingReservationByPage(Long userId, Pageable pageable) {
+        Slice<Reservation> allReservationsSliceBy = reservationRepository.findAllReservationsSliceByStartDateAfter(userId, pageable);
+
+        List<ReservationReadResponseDto> reservations = allReservationsSliceBy.getContent().stream()
+                .map((ReservationReadResponseDto::new))
+                .collect(Collectors.toList());
+
+        return ReservationSliceResponseDto.builder()
+                .reservations(reservations)
+                .page(allReservationsSliceBy.getPageable().getPageNumber())
+                .isLast(allReservationsSliceBy.isLast())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationSliceResponseDto findAllTerminateReservationByPage(Long userId, Pageable pageable) {
+        Slice<Reservation> allReservationsSliceBy = reservationRepository.findAllReservationsSliceByStartDateBefore(userId, pageable);
+
+        List<ReservationReadResponseDto> reservations = allReservationsSliceBy.getContent().stream()
+                .map((ReservationReadResponseDto::new))
+                .collect(Collectors.toList());
+
+        return ReservationSliceResponseDto.builder()
+                .reservations(reservations)
+                .page(allReservationsSliceBy.getPageable().getPageNumber())
+                .isLast(allReservationsSliceBy.isLast())
+                .build();
     }
 }

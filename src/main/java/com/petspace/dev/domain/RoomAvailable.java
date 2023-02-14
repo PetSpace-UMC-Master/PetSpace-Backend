@@ -12,7 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -26,19 +26,23 @@ public class RoomAvailable {
     @Column(name = "room_available_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
-
     @Column(nullable = false)
-    private LocalDateTime availableDay;
+    private LocalDate availableDay;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 45, nullable = false)
     private Status status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+
+    public void changeStatus(Status status) {
+        this.status = status;
+    }
+
     @Builder
-    public RoomAvailable(Room room, LocalDateTime availableDay, Status status){
+    public RoomAvailable(Room room, LocalDate availableDay, Status status){
         this.room = room;
         this.availableDay = availableDay;
         this.status = status;
