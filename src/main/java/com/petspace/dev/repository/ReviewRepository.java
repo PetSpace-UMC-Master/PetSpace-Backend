@@ -17,7 +17,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("select r from Review r " +
             "join fetch r.reservation " +
-            "join fetch r.reviewImages " +
             "join fetch r.user " +
             "join fetch r.room " +
             "where r.status = 'ACTIVE' and r.room.id = :roomId " +
