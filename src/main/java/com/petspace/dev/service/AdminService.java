@@ -1,9 +1,6 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.domain.Category;
-import com.petspace.dev.domain.Facility;
-import com.petspace.dev.domain.RoomCategory;
-import com.petspace.dev.domain.RoomFacility;
+import com.petspace.dev.domain.*;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
@@ -15,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,6 +29,8 @@ public class AdminService {
     private final RoomFacilityRepository roomFacilityRepository;
     private final CategoryRepository categoryRepository;
     private final RoomCategoryRepository roomCategoryRepository;
+    private final RoomRepository roomRepository;
+    private final RoomAvailableRepository roomAvailableRepository;
     private final AwsS3Uploader awsS3Uploader;
 
     public List<User> findUsers() {
@@ -122,7 +123,34 @@ public class AdminService {
         return categoryRepository.findById(categoryId).get();
     }
 
+    // TODO saveRoomFacility 시에는 RoomFacility 의 room 컬럼 CascadeType ALL 안주면 에러났는데, 여긴 왜 되지
     public void saveRoomCategory(RoomCategory roomCategory) {
         roomCategoryRepository.save(roomCategory);
+    }
+
+    public List<Room> findAllRooms(){
+        return roomRepository.findAll();
+    }
+
+    public void saveRoomAvailable(Long roomId, LocalDateTime available) {
+
+        Room room = roomRepository.findById(roomId).get();
+
+        List<LocalDateTime> localDateTimes = roomAvailableRepository.findAllByRoom(room)
+                .stream().map(RoomAvailable::getAvailableDay).collect(Collectors.toList());
+
+        if(localDateTimes.contains(available)) {
+            log.info("이미 존재하는 정보");
+            return;
+        }
+
+        RoomAvailable roomAvailable = RoomAvailable.builder()
+                .room(room)
+                .availableDay(available)
+                .status(Status.ACTIVE)
+                .build();
+
+        roomAvailableRepository.save(roomAvailable);
+
     }
 }

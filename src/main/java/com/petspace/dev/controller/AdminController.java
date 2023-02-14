@@ -9,6 +9,7 @@ import com.petspace.dev.dto.user.UserJoinRequestDto;
 import com.petspace.dev.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.service.AdminService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,10 +70,10 @@ public class AdminController {
 
         /**
          * 유저 선택해야하고, -> 완
-         * 카테고리 ?
-         * 편의시설 ?
-         * 가능한 시간 ?
-         * 룸 이미지 ?
+         * 카테고리 -> 완
+         * 편의시설 -> 완
+         *
+         * TODO 룸 이미지
          *
          * 주소 Address 타입 -> 완
          * 숙소 이름 -> 완
@@ -152,7 +155,6 @@ public class AdminController {
         log.info("checkinTime {}", checkinTime);
         log.info("checkoutTime {}", checkoutTime);
 
-        // TODO 가능한 시간 -> 달력
         // TODO 룸 이미지 -> 파일 업로드 및 S3 저장
 
         Room room = Room.builder()
@@ -202,7 +204,6 @@ public class AdminController {
             log.info("저장 성공");
         }
 
-
         return "redirect:/admin";
     }
 
@@ -242,6 +243,30 @@ public class AdminController {
         return result;
     }
 
+    /** 숙소 가능한 시간 추가 */
+    @GetMapping("/rooms/availables")
+    public String addAvailables(Model model){
 
+        List<Room> rooms = adminService.findAllRooms();
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("date", new String());
+
+        return "rooms/roomAvailableForm";
+    }
+
+    @PostMapping("/rooms/availables")
+    public String addAvailables(@RequestParam("roomId") Long roomId, @RequestParam("date") @DateTimeFormat(pattern = "MM-dd-yyyy") String date){
+
+        log.info("date is {}", date);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime available = LocalDate.parse(date, formatter).atStartOfDay();
+
+        log.info("available date is {}", available);
+
+        adminService.saveRoomAvailable(roomId, available);
+
+        return "redirect:/admin/rooms/availables";
+    }
 
 }
