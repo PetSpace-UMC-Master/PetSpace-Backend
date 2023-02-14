@@ -4,8 +4,8 @@
 <body>
 <div class="container">
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <form role="form" action="/admin/rooms/availables" th:object="${date}"
-          method="post">
+    <form role="form" action="/admin/rooms/image" th:object="${roomImageAddRequestDto}"
+          method="post" enctype="multipart/form-data">
 
         <div class="form-group">
             <label for="room">숙소</label>
@@ -17,10 +17,11 @@
             </select>
         </div>
 
-        <!--  date      -->
+        <!--  image  -->
         <div class="form-group">
-            <label th:for="date">가능한 날짜</label>
-            <input type="date" name="date" class="form-control" multiple="multiple">
+            <label th:for="roomImage">숙소 이미지</label><br/>
+            <!-- JPEG|JPG|HEIC|PNG|-->
+            <input type="file" th:field="*{roomImage}" accept="image/jpeg, image/jpg, image/heic, image/png" />
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>

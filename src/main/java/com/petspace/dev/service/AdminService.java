@@ -1,9 +1,11 @@
 package com.petspace.dev.service;
 
 import com.petspace.dev.domain.*;
+import com.petspace.dev.domain.image.RoomImage;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
+import com.petspace.dev.dto.admin.RoomImageAddRequestDto;
 import com.petspace.dev.repository.*;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class AdminService {
     private final RoomCategoryRepository roomCategoryRepository;
     private final RoomRepository roomRepository;
     private final RoomAvailableRepository roomAvailableRepository;
+    private final RoomImageRepository roomImageRepository;
     private final AwsS3Uploader awsS3Uploader;
 
     public List<User> findUsers() {
@@ -152,5 +155,25 @@ public class AdminService {
 
         roomAvailableRepository.save(roomAvailable);
 
+    }
+
+    public void addRoomImage(Long roomId, RoomImageAddRequestDto roomImageAddRequestDto) {
+
+        log.info("@@@@@ 1");
+        Room room = roomRepository.findById(roomId).get();
+
+        log.info("@@@@@ 2");
+        // 이미지를 S3 에 추가
+        MultipartFile image = roomImageAddRequestDto.getRoomImage();
+        log.info("@@@@@ 3");
+        String imageUrl = awsS3Uploader.upload(image, "rooms/"+roomId);
+        log.info("@@@@@ 4");
+
+        RoomImage roomImage = RoomImage.builder()
+                .room(room)
+                .roomImageUrl(imageUrl)
+                .build();
+
+        roomImageRepository.save(roomImage);
     }
 }

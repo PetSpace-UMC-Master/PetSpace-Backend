@@ -4,6 +4,7 @@ import com.petspace.dev.domain.*;
 import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomCreateRequestDto;
+import com.petspace.dev.dto.admin.RoomImageAddRequestDto;
 import com.petspace.dev.dto.user.UserJoinRequestDto;
 
 import com.petspace.dev.service.UserService;
@@ -16,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.service.AdminService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -267,6 +269,25 @@ public class AdminController {
         adminService.saveRoomAvailable(roomId, available);
 
         return "redirect:/admin/rooms/availables";
+    }
+
+    /** 숙소 이미지 추가 */
+    @GetMapping("/rooms/image")
+    public String addRoomImage(Model model){
+
+        List<Room> rooms = adminService.findAllRooms();
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("roomImageAddRequestDto", new RoomImageAddRequestDto());
+
+        return "rooms/roomImageAddForm";
+    }
+
+    @PostMapping("/rooms/image")
+    public String addRoomImage(@RequestParam("roomId") Long roomId, RoomImageAddRequestDto roomImageAddRequestDto){
+
+        adminService.addRoomImage(roomId, roomImageAddRequestDto);
+
+        return "redirect:/admin/rooms/image";
     }
 
 }
