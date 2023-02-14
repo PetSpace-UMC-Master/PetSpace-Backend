@@ -62,8 +62,10 @@ public class RoomController {
                                                          @RequestParam Optional<Integer> page,
                                                          @RequestParam Optional<SortBy> sortBy,
                                                          @RequestParam Optional<CategoryType> categoryType) {
-        log.info("startDay={}, endDay={}", startDay, endDay);
-        log.info("keyword={}", keyword);
+        log.info("startDay={}, endDay={}, keyword={}", startDay, endDay, keyword);
+        if (!categoryType.isEmpty()) {
+            return new BaseResponse<>(roomService.findAllDescByFilterAndCategory(startDay, endDay, people, pets, keyword, page, sortBy, categoryType.get()));
+        }
         return new BaseResponse<>(roomService.findAllDescByFilter(startDay, endDay, people, pets, keyword, page, sortBy));
     }
 

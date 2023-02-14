@@ -87,6 +87,28 @@ public class RoomService {
 
     }
 
+    public List<RoomListResponseDto> findAllDescByFilterAndCategory(LocalDate startDay,
+                                                                    LocalDate endDay,
+                                                                    Optional<Integer> people,
+                                                                    Optional<Integer> pets,
+                                                                    Optional<String> keyword,
+                                                                    Optional<Integer> page,
+                                                                    Optional<SortBy> sortBy,
+                                                                    CategoryType categoryType) {
+        Sort sort = getSortBy(sortBy.orElse(SortBy.ID_DESC));
+        Pageable pageable = PageRequest.of(page.orElse(0), DEFAULT_PAGE_SIZE, sort);
+
+        long days = (long) Duration.between(startDay.atStartOfDay(), endDay.atStartOfDay()).toDays();
+
+        return roomRepository.findAllDescByFilterAndCategory(pageable,
+                        startDay, endDay, days,
+                        people.orElse(0), pets.orElse(0),
+                        keyword.orElse(""),
+                        categoryType.getCategoryId()).stream()
+                .map(RoomListResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
     public Sort getSortBy(SortBy sortBy) {
         if (sortBy.getOrderType().equals("ASC")) {
             return Sort.by(sortBy.getSortType()).ascending().and(Sort.by("id").descending());
