@@ -5,6 +5,7 @@ import com.petspace.dev.domain.image.RoomImage;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
+import com.petspace.dev.dto.admin.RoomCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomImageAddRequestDto;
 import com.petspace.dev.repository.*;
 import com.petspace.dev.util.s3.AwsS3Uploader;
@@ -15,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -45,6 +48,95 @@ public class AdminService {
         log.info("@@ findUserById");
         // 있는 유저 기준으로 출력하고, 해당 유저 id 로 받아오는 것이므로, null 없다 가정
         return userRepository.findById(userId).get();
+    }
+
+    /** Room 생성 */
+    public void createRoom(Long userId, List<Long> facilitiesId, List<Long> categoriesId, RoomCreateRequestDto roomCreateRequestDto) {
+
+        // 유저
+        User user = findUserById(userId);
+
+        // 주소
+        Address address = new Address(roomCreateRequestDto.getRegion(), roomCreateRequestDto.getCity(), roomCreateRequestDto.getDistrict(), roomCreateRequestDto.getAddressDetail(),
+                roomCreateRequestDto.getLatitude(), roomCreateRequestDto.getLongitude());
+
+        // 상세설명
+        String roomName = roomCreateRequestDto.getRoomName();
+
+        // 가격
+        int price = roomCreateRequestDto.getPrice();
+
+        // 최대 인원수
+        int maxGuest = roomCreateRequestDto.getMaxGuest();
+
+        // 최대 반려동물수
+        int maxPet = roomCreateRequestDto.getMaxPet();
+
+        // 숙소 상세
+        String description = roomCreateRequestDto.getDescription();
+
+        // 체크인, 체크아웃 시간 2012-01-03T13:30:02
+        // LocalDateTime 으로 바로 받아올 수 없어서 String 으로 받아온 후 parsing HH:mm type To LocalDateTime with Default 2023-01-01
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(DateTimeFormatter.ofPattern("HH:mm"))
+                .parseDefaulting(ChronoField.YEAR, 2023)
+                .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
+                .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+                // TODO 초가 0 일때는, 2023-01-01THH:mm 로 ss 출력 안되는데, 주언 쪽에서는 괜찮은지 ?
+                .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                .toFormatter();
+
+        LocalDateTime checkinTime = LocalDateTime.parse(roomCreateRequestDto.getCheckinTime(), formatter);
+        LocalDateTime checkoutTime = LocalDateTime.parse(roomCreateRequestDto.getCheckoutTime(), formatter);
+        log.info("checkinTime {}", checkinTime);
+        log.info("checkoutTime {}", checkoutTime);
+
+        Room room = Room.builder()
+                .user(user)
+                .address(address)
+                .roomName(roomName)
+                .price(price)
+                .maxGuest(maxGuest)
+                .maxPet(maxPet)
+                .description(description)
+                .checkinTime(checkinTime)
+                .checkoutTime(checkoutTime)
+                .status(Status.ACTIVE)
+                .build();
+
+        // 편의시설 중간테이블 RoomFacility save
+        List<Facility> facilities = facilitiesId.stream()
+                .map(facilityId -> findFacility(facilityId))
+                .collect(Collectors.toList());
+
+        for(Facility facility : facilities){
+            RoomFacility roomFacility = RoomFacility.builder()
+                    .room(room)
+                    .facility(facility)
+                    .build();
+            log.info("roomFacility id : {}", roomFacility.getId());
+            log.info("roomFacility room name : {}", roomFacility.getRoom().getRoomName());
+            log.info("roomFacility facility name : {}", roomFacility.getFacility().getFacilityName());
+            saveRoomFacility(roomFacility);
+            log.info("저장 성공");
+        }
+
+        // 카테고리 중간테이블 RoomCategory save
+        List<Category> categories = categoriesId.stream()
+                .map(categoryId -> findCategory(categoryId))
+                .collect(Collectors.toList());
+
+        for(Category category : categories){
+            RoomCategory roomCategory = RoomCategory.builder()
+                    .room(room)
+                    .category(category)
+                    .build();
+            log.info("roomCategory id : {}", roomCategory.getId());
+            log.info("roomCategory room name : {}", roomCategory.getRoom().getRoomName());
+            log.info("roomCategory category name : {}", roomCategory.getCategory().getCategoryName());
+            saveRoomCategory(roomCategory);
+            log.info("저장 성공");
+        }
+
     }
 
     /** 편의시설 */
@@ -159,15 +251,11 @@ public class AdminService {
 
     public void addRoomImage(Long roomId, RoomImageAddRequestDto roomImageAddRequestDto) {
 
-        log.info("@@@@@ 1");
         Room room = roomRepository.findById(roomId).get();
 
-        log.info("@@@@@ 2");
         // 이미지를 S3 에 추가
         MultipartFile image = roomImageAddRequestDto.getRoomImage();
-        log.info("@@@@@ 3");
         String imageUrl = awsS3Uploader.upload(image, "rooms/"+roomId);
-        log.info("@@@@@ 4");
 
         RoomImage roomImage = RoomImage.builder()
                 .room(room)
@@ -176,4 +264,5 @@ public class AdminService {
 
         roomImageRepository.save(roomImage);
     }
+
 }
