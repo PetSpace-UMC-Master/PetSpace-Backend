@@ -63,8 +63,8 @@ public class ReviewController {
     })
     @GetMapping("/reviews")
     public BaseResponse<ReviewsSliceResponseDto> getAllReviews(@RequestParam Long roomId,
-                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                                      @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+                                                               @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                                               @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
         log.info("리뷰 받기 통신 시작");
         PageRequest pageRequest = PageRequest.of(page, size);
         ReviewsSliceResponseDto responseDto = reviewService.findAllReviewsByPage(roomId, pageRequest);
