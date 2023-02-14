@@ -53,9 +53,10 @@ public class RoomDetailResponseDto {
         // 리뷰 평점 가져오기
         this.roomAverageScore = getRoomAverageScore(room);
         // 리뷰 개수 가져오기
-        this.reviewCount = room.getReservation()
-                .stream().map(Reservation::getReview)
-                .count();
+        this.reviewCount = room.getReviews().stream()
+                .filter(Objects::nonNull)
+                .filter(r -> r.getStatus().equals(Status.ACTIVE))
+                .collect(Collectors.toList()).size();
         // Room 의 Image 리스트에서 URL 만을 List<String> 으로 받아오기
         // TODO 추후 RoomImage Entity List 로 변경. 순환참조 문제 해결. Room Entity 내 List<String> 으로 갖는 것과 다를 바 없다.
         this.roomImageUrls = room.getRoomImages()
@@ -71,9 +72,10 @@ public class RoomDetailResponseDto {
      * 리뷰 평점 구하기
      */
     private double getRoomAverageScore(Room room){
-        double roomAverageScore = room.getReservation()
-                .stream().map(Reservation::getReview)
-                .filter(Objects::nonNull) // Review 가 nonNull 인 경우만
+        double roomAverageScore = room.getReviews()
+                .stream()
+                .filter(Objects::nonNull)
+                .filter(r -> r.getStatus().equals(Status.ACTIVE))
                 .map(Review::getScore)
                 .mapToDouble(n -> n)
                 .average()
