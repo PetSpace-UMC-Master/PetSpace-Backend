@@ -97,6 +97,7 @@ public class RoomDetailResponseDto {
                     Reservation reservation = review.getReservation();
                     RoomDetailReview roomDetailReviews = RoomDetailReview.builder()
                             .userId(reservation.getUser().getId())
+                            .profileImage(reservation.getUser().getProfileImage())
                             .nickname(reservation.getUser().getNickname())
                             .score(review.getScore())
                             .createdAt(calculateCreatedDateFromNow(review.getCreatedAt()))
