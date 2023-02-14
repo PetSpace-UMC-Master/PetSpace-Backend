@@ -1,7 +1,6 @@
 package com.petspace.dev.controller;
 
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.dto.favorite.FavoriteClickResponseDto;
 import com.petspace.dev.dto.room.RoomDetailResponseDto;
 import com.petspace.dev.dto.room.RoomFacilityResponseDto;
 import com.petspace.dev.dto.room.RoomListResponseDto;
@@ -19,7 +18,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,15 +65,6 @@ public class RoomController {
             return new BaseResponse<>(roomService.findAllDescByFilterAndCategory(startDay, endDay, people, pets, keyword, page, sortBy, categoryType.get()));
         }
         return new BaseResponse<>(roomService.findAllDescByFilter(startDay, endDay, people, pets, keyword, page, sortBy));
-    }
-
-    @PostMapping("/rooms/{roomId}/favorites")
-    public BaseResponse<FavoriteClickResponseDto> addFavorite(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                              @PathVariable Long roomId) {
-        Long userId = principalDetails.getId();
-        log.info("user=[{}][{}]", principalDetails.getId(), principalDetails.getUsername());
-        FavoriteClickResponseDto roomResponseDto = favoriteService.clickFavorite(userId, roomId);
-        return new BaseResponse<>(roomResponseDto);
     }
 
     @Operation(summary = "RoomDetail Get", description = "RoomDetail Get API Doc")
