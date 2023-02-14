@@ -39,7 +39,7 @@ public class AdminService {
     private final RoomImageRepository roomImageRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public List<User> findUsers() {
+    public List<User> findAllUsers() {
         log.info("@@ findUsers");
         return userRepository.findAll();
     }

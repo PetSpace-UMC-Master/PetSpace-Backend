@@ -57,8 +57,8 @@ public class AdminController {
 
     /** 회원 조회 **/
     @GetMapping("/users")
-    public String list(Model model){
-        List<User> users = adminService.findUsers();
+    public String userCheck(Model model){
+        List<User> users = adminService.findAllUsers();
         model.addAttribute("users", users);
         return "users/userList";
     }
@@ -67,26 +67,9 @@ public class AdminController {
     @GetMapping("/rooms/new")
     public String createRoomReq(Model model){
 
-        /**
-         * 유저 선택해야하고, -> 완
-         * 카테고리 -> 완
-         * 편의시설 -> 완
-         *
-         * TODO 룸 이미지
-         *
-         * 주소 Address 타입 -> 완
-         * 숙소 이름 -> 완
-         * 가격 -> 완
-         * 최대게스트 -> 완
-         * 최대펫 -> 완
-         * 상세설명 -> 완
-         * 체크인타임 -> 완
-         * 체크아웃타임 -> 완
-         * 상태 -> Active
-         */
         log.info("@@ createRoomReq");
         // 유저
-        List<User> users = adminService.findUsers();
+        List<User> users = adminService.findAllUsers();
         List<Facility> facilities = adminService.findAllFacilities();
         List<Category> categories = adminService.findAllCategories();
         model.addAttribute("users", users);
@@ -104,6 +87,17 @@ public class AdminController {
 
         return "redirect:/admin";
     }
+
+    /** 숙소 조회 **/
+    @GetMapping("/rooms")
+    public String roomCheck(Model model){
+
+        List<Room> rooms = adminService.findAllRooms();
+        model.addAttribute("rooms", rooms);
+
+        return "rooms/roomList";
+    }
+
 
     /** 편의시설 추가 */
     @GetMapping("/facilities/new")

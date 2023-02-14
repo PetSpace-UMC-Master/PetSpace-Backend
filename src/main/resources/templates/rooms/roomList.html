@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader" />
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>호스트 이름</th>
+                <th>방이름</th>
+                <th>가격</th>
+                <th>최대 인원수</th>
+                <th>최대 반려동물수</th>
+                <th>Status</th>
+                <th>상세</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.id}"></td>
+                <td th:text="${room.user.username}"></td>
+                <td th:text="${room.roomName}"></td>
+                <td th:text="${room.price}"></td>
+                <td th:text="${room.maxGuest}"></td>
+                <td th:text="${room.maxPet}"></td>
+                <td th:text="${room.status}"></td>
+                <td th:text="${room.description}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>
