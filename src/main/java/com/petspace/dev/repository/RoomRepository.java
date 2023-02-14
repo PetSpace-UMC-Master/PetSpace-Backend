@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -31,4 +32,24 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Query("SELECT r From Room r where r.user.id = :id")
     List<Room> findAllDescByUserId(Pageable pageable, @Param("id") Long userId);
+
+    @Query("SELECT r, count(rv.id) as review_count, avg(rv.score) as average_review_score From Room r " +
+            "left outer join fetch r.reviews rv " +
+            "where (SELECT count(ra.room.id) FROM r.roomAvailables ra where ra.availableDay >= :startDay and ra.availableDay < :endDay) = :days " +
+            "and r.maxGuest >= :people and r.maxPet >= :pets " +
+            "and (r.address.city LIKE %:keyword% or r.address.district LIKE %:keyword%) " +
+            "group by r.id")
+    List<Room> findAllDescByFilter(Pageable pageable, @Param("startDay") LocalDate startDay, @Param("endDay") LocalDate endDay,
+                                   @Param("days") long days, @Param("people") Integer people, @Param("pets") Integer pets, @Param("keyword") String keyword);
+
+    @Query("SELECT r, count(rv.id) as review_count, avg(rv.score) as average_review_score From Room r " +
+            "left outer join fetch r.reviews rv " +
+            "left outer join fetch RoomCategory rc on (r.id = rc.room.id) " +
+            "where (SELECT count(ra.room.id) FROM r.roomAvailables ra where ra.availableDay >= :startDay and ra.availableDay < :endDay) = :days " +
+            "and r.maxGuest >= :people and r.maxPet >= :pets " +
+            "and (r.address.city LIKE %:keyword% or r.address.district LIKE %:keyword%) " +
+            "and rc.category.id = :id " +
+            "group by r.id")
+    List<Room> findAllDescByFilterAndCategory(Pageable pageable, @Param("startDay") LocalDate startDay, @Param("endDay") LocalDate endDay,
+                                   @Param("days") long days, @Param("people") Integer people, @Param("pets") Integer pets, @Param("keyword") String keyword, @Param("id") Long categoryId);
 }

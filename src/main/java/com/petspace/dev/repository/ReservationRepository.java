@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -23,9 +24,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "left join fetch rs.review " +
             "where rs.status = 'ACTIVE' " +
             "and rs.user.id = :userId " +
-            "and DATE_FORMAT(rs.startDate, '%Y-%m-%d') >= current_date " +
+            "and rs.startDate >= current_date " +
             "order by rs.startDate asc ")
-    Slice<Reservation> findAllReservationsSliceByStartDateAfter(Long userId, Pageable pageable);
+    Slice<Reservation> findAllReservationsSliceByStartDateAfter(@Param("userId") Long userId, Pageable pageable);
 
     @Query("select rs from Reservation rs " +
             "join fetch rs.user " +
@@ -33,7 +34,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "left join fetch rs.review " +
             "where rs.status = 'ACTIVE'" +
             "and rs.user.id = :userId " +
-            "and DATE_FORMAT(rs.startDate, '%Y-%m-%d') < current_date " +
+            "and rs.startDate < current_date " +
             "order by rs.startDate desc ")
-    Slice<Reservation> findAllReservationsSliceByStartDateBefore(Long userId, Pageable pageable);
+    Slice<Reservation> findAllReservationsSliceByStartDateBefore(@Param("userId") Long userId, Pageable pageable);
 }

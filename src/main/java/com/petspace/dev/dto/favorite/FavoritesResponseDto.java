@@ -3,11 +3,13 @@ package com.petspace.dev.dto.favorite;
 import com.petspace.dev.domain.Favorite;
 import com.petspace.dev.domain.Review;
 import com.petspace.dev.domain.Room;
+import com.petspace.dev.domain.RoomAvailable;
 import com.petspace.dev.domain.image.RoomImage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ public class FavoritesResponseDto {
     private int price;
     private double averageReviewScore;
     private int numberOfReview;
+    private List<LocalDate> availableDays;
 
     public static FavoritesResponseDto of(Favorite favorite) {
 
@@ -39,6 +42,11 @@ public class FavoritesResponseDto {
                 .mapToInt(Review::getScore)
                 .average()
                 .orElse(0);
+
+        List<LocalDate> availableDays = room.getRoomAvailables().stream()
+                .filter(roomAvailable -> roomAvailable.getStatus().equals(ACTIVE))
+                .map(RoomAvailable::getAvailableDay)
+                .collect(Collectors.toList());
 
         return FavoritesResponseDto.builder()
                 .id(room.getId())
