@@ -19,9 +19,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -39,11 +41,13 @@ public class AdminService {
     private final RoomImageRepository roomImageRepository;
     private final AwsS3Uploader awsS3Uploader;
 
+    @Transactional(readOnly = true)
     public List<User> findAllUsers() {
         log.info("@@ findUsers");
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public User findUserById(Long userId){
         log.info("@@ findUserById");
         // 있는 유저 기준으로 출력하고, 해당 유저 id 로 받아오는 것이므로, null 없다 가정
@@ -117,6 +121,7 @@ public class AdminService {
             log.info("roomFacility room name : {}", roomFacility.getRoom().getRoomName());
             log.info("roomFacility facility name : {}", roomFacility.getFacility().getFacilityName());
             saveRoomFacility(roomFacility);
+            room.getRoomFacilities().add(roomFacility);
             log.info("저장 성공");
         }
 
@@ -134,12 +139,14 @@ public class AdminService {
             log.info("roomCategory room name : {}", roomCategory.getRoom().getRoomName());
             log.info("roomCategory category name : {}", roomCategory.getCategory().getCategoryName());
             saveRoomCategory(roomCategory);
+            room.getRoomCategories().add(roomCategory);
             log.info("저장 성공");
         }
 
     }
 
     /** 편의시설 */
+    @Transactional(readOnly = true)
     public List<Facility> findAllFacilities(){
         log.info("@@ findAllFacilities");
         return facilityRepository.findAll();
@@ -172,6 +179,7 @@ public class AdminService {
         return "redirect:/admin";
     }
 
+    @Transactional(readOnly = true)
     public Facility findFacility(Long facilityId) {
         // 있는 facility 기준으로 출력하고, 해당 facility id 로 받아오는 것이므로, null 없다 가정
         return facilityRepository.findById(facilityId).get();
@@ -182,6 +190,7 @@ public class AdminService {
     }
 
     /** 카테고리 */
+    @Transactional(readOnly = true)
     public List<Category> findAllCategories(){
         log.info("@@ findAllCategories");
         return categoryRepository.findAll();
@@ -203,7 +212,7 @@ public class AdminService {
         MultipartFile image = categoryCreateRequestDto.getCategoryImage();
         String imageUrl = awsS3Uploader.upload(image, "category");
 
-        // Category 저장 TODO 따로 뺄까
+        // Category 저장
         Category category = Category.builder()
                 .categoryName(categoryCreateRequestDto.getCategoryName())
                 .categoryImageUrl(imageUrl)
@@ -213,6 +222,7 @@ public class AdminService {
         return "redirect:/admin";
     }
 
+    @Transactional(readOnly = true)
     public Category findCategory(Long categoryId) {
         // 있는 category 기준으로 출력하고, 해당 category id 로 받아오는 것이므로, null 없다 가정
         return categoryRepository.findById(categoryId).get();
@@ -223,6 +233,7 @@ public class AdminService {
         roomCategoryRepository.save(roomCategory);
     }
 
+    @Transactional(readOnly = true)
     public List<Room> findAllRooms(){
         return roomRepository.findAll();
     }
