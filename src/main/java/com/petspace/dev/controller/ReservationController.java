@@ -1,8 +1,10 @@
 package com.petspace.dev.controller;
 
-import com.petspace.dev.domain.user.User;
 import com.petspace.dev.domain.user.auth.PrincipalDetails;
-import com.petspace.dev.dto.reservation.*;
+import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
+import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
+import com.petspace.dev.dto.reservation.ReservationDeleteResponseDto;
+import com.petspace.dev.dto.reservation.ReservationSliceResponseDto;
 import com.petspace.dev.service.ReservationService;
 import com.petspace.dev.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,9 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,9 +33,9 @@ public class ReservationController {
 
     @Operation(summary = "Reservation 생성", description = "ReservationCreateRequestDto 와 roomId, principalDetail 를 이용해 reservation 레코드를 생성합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "400", description = "1.해당 사용자가 존재하지 않습니다.\n\n2.해당 숙소가 존재하지 않습니다.\n\n3.숙소이용 정원이 초과 되었습니다.\n\n4.숙소 동반 가능한 반려동물 수가 초과 되었습니다.\n\n5.예약 불가능한 날짜 입니다.")
-
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PostMapping("/app/reservations")
     public BaseResponse<ReservationCreateResponseDto> createReservation(@AuthenticationPrincipal PrincipalDetails principalDetail,
@@ -42,9 +48,9 @@ public class ReservationController {
 
     @Operation(summary = "Reservation 삭제", description = "Soft Delete Reservation API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "200", description = "유효하지 않은 예약입니다."),
-            @ApiResponse(responseCode = "200", description = "존재하지 않는 예약입니다."),
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @PatchMapping("app/reservations/{reservationId}/delete")
     public BaseResponse<ReservationDeleteResponseDto> deleteReservation(@AuthenticationPrincipal PrincipalDetails principalDetail, @PathVariable Long reservationId) {
@@ -55,8 +61,9 @@ public class ReservationController {
 
     @Operation(summary = "Reservation 조회", description = "principalDetail 을 이용해 현재날짜를 기준으로 다가오는 reservation 을 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2230", description = "해당 사용자가 존재하지 않습니다."),
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("app/reservations")
     public BaseResponse readAllUpcomingReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,
@@ -71,8 +78,9 @@ public class ReservationController {
 
     @Operation(summary = "Reservation 조회", description = "principalDetail 을 이용해 현재날짜를 기준으로 완료된 reservation 을 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2230", description = "해당 사용자가 존재하지 않습니다."),
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("app/reservations/terminate")
     public BaseResponse readAllTerminateReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,

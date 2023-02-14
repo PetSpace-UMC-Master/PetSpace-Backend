@@ -34,6 +34,11 @@ public class RoomController {
     private final FavoriteService favoriteService;
     private final RoomService roomService;
 
+    @Operation(summary = "All Rooms Get", description = "All Rooms Get API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/rooms")
     public BaseResponse<List<RoomListResponseDto>> get(@RequestParam Optional<Integer> page,
                                                        @RequestParam Optional<SortBy> sortBy,
@@ -44,6 +49,11 @@ public class RoomController {
         return new BaseResponse<>(roomService.findAllDesc(page, sortBy));
     }
 
+    @Operation(summary = "Room Host Get", description = "Room Host Get API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/rooms/host/{userId}")
     public BaseResponse<List<RoomListResponseDto>> getById(@PathVariable Long userId,
                                                            @RequestParam Optional<Integer> page) {
@@ -51,6 +61,11 @@ public class RoomController {
         return new BaseResponse<>(roomService.findAllDescByUserId(userId, page));
     }
 
+    @Operation(summary = "Room Filtering", description = "Room Filtering Get API Doc")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
     @GetMapping("/rooms/filtering")
     public BaseResponse<List<RoomListResponseDto>> getByFilter(@RequestParam("startDay") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDay,
                                                          @RequestParam("endDay") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDay,
@@ -69,8 +84,8 @@ public class RoomController {
 
     @Operation(summary = "RoomDetail Get", description = "RoomDetail Get API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소 정보입니다.")
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/rooms/{roomId}")
     public BaseResponse<RoomDetailResponseDto> getRoomDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("roomId") Long roomId){
@@ -90,8 +105,8 @@ public class RoomController {
 
     @Operation(summary = "AllFacilities Get", description = "AllFacilities Get API Doc")
     @ApiResponses({
-            @ApiResponse(responseCode = "1000", description = "요청에 성공하였습니다."),
-            @ApiResponse(responseCode = "2030", description = "존재하지 않는 숙소 정보입니다.")
+            @ApiResponse(responseCode = "200", description = "요청 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     @GetMapping("/rooms/{roomId}/facilities")
     public BaseResponse<RoomFacilityResponseDto> getRoomFacilities(@PathVariable("roomId") Long roomId){
