@@ -61,11 +61,11 @@ public class ReviewController {
             @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("/reviews/{roomId}")
-    public BaseResponse getAllReviews(@PathVariable Long roomId,
-                                            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                                            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-
+    @GetMapping("/reviews")
+    public BaseResponse<ReviewsSliceResponseDto> getAllReviews(@RequestParam Long roomId,
+                                      @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                      @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        log.info("리뷰 받기 통신 시작");
         PageRequest pageRequest = PageRequest.of(page, size);
         ReviewsSliceResponseDto responseDto = reviewService.findAllReviewsByPage(roomId, pageRequest);
         return new BaseResponse<>(responseDto);
@@ -79,8 +79,8 @@ public class ReviewController {
     })
     @PatchMapping("/reviews/{reviewId}")
     public BaseResponse<ReviewResponseDto> updateReview(@AuthenticationPrincipal PrincipalDetails principalDetail,
-                                     @PathVariable Long reviewId,
-                                     @ModelAttribute ReviewRequestDto reviewUpdateRequestDto) {
+                                                        @PathVariable Long reviewId,
+                                                        @ModelAttribute ReviewRequestDto reviewUpdateRequestDto) {
         Long userId = principalDetail.getId();
         ReviewResponseDto responseDto = reviewService.updateReview(userId, reviewId, reviewUpdateRequestDto);
 
