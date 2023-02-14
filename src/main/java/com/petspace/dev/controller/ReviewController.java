@@ -88,7 +88,7 @@ public class ReviewController {
     }
 
 
-    @Operation(summary = "Updating Review", description = "Review Update API Doc")
+    @Operation(summary = "Delete Review", description = "Review Delete API Doc")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "요청 성공"),
             @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
