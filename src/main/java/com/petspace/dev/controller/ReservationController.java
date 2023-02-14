@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
 public class ReservationController {
@@ -37,7 +39,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PostMapping("/app/reservations")
+    @PostMapping("/reservations")
     public BaseResponse<ReservationCreateResponseDto> createReservation(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                                                         @Parameter(name = "roomId", description = "room 의 id", in = ParameterIn.QUERY) @RequestParam("roomId") Long roomId,
                                                                         @RequestBody ReservationCreateRequestDto dto) {
@@ -52,7 +54,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @PatchMapping("app/reservations/{reservationId}/delete")
+    @PatchMapping("/reservations/{reservationId}/delete")
     public BaseResponse<ReservationDeleteResponseDto> deleteReservation(@AuthenticationPrincipal PrincipalDetails principalDetail, @PathVariable Long reservationId) {
         Long userId = principalDetail.getId();
         ReservationDeleteResponseDto dto = reservationService.deleteReservation(userId, reservationId);
@@ -65,7 +67,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("app/reservations")
+    @GetMapping("/reservations")
     public BaseResponse readAllUpcomingReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                             @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
@@ -82,7 +84,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "401", description = "회원 인증 실패 - 잘못된 토큰, 혹은 만료된 토큰을 통해 호출된 경우"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    @GetMapping("app/reservations/terminate")
+    @GetMapping("/reservations/terminate")
     public BaseResponse readAllTerminateReservations(@AuthenticationPrincipal PrincipalDetails principalDetail,
                                             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                             @RequestParam(value = "size", required = false, defaultValue = "3") int size) {
