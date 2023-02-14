@@ -56,20 +56,21 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ReviewsSliceResponseDto findAllReviewsByPage(Long roomId, Pageable pageable) {
-        Slice<Review> allReviewsSliceBy = reviewRepository.findAllReviewsSliceBy(roomId, pageable);
+        List<Review> reviews = reviewRepository.findByRoomId(roomId);
 
-        List<ReviewsResponseDto> reviews = allReviewsSliceBy.getContent().stream()
+        Slice<Review> allReviewsSliceBy = reviewRepository.findAllReviewsSliceBy(roomId, pageable);
+        List<ReviewsResponseDto> reviewsResponseDtos = allReviewsSliceBy.getContent().stream()
                 .map((ReviewsResponseDto::of))
                 .collect(Collectors.toList());
 
         int numberOfReview = reviews.size();
         double averageReviewScore = reviews.stream()
-                .mapToInt(ReviewsResponseDto::getScore)
+                .mapToInt(Review::getScore)
                 .average()
                 .orElse(0);
 
         return ReviewsSliceResponseDto.builder()
-                .reviews(reviews)
+                .reviews(reviewsResponseDtos)
                 .numberOfReview(numberOfReview)
                 .averageReviewScore(Double.parseDouble(String.format("%.2f", averageReviewScore)))
                 .page(allReviewsSliceBy.getPageable().getPageNumber())
