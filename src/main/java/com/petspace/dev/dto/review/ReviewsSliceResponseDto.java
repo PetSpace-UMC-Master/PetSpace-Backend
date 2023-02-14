@@ -11,6 +11,9 @@ import java.util.List;
 public class ReviewsSliceResponseDto {
     List<ReviewsResponseDto> reviews;
 
+    private double averageReviewScore;
+    private int numberOfReview;
+
     private long page;
     @JsonProperty(value = "isLast")
     private Boolean isLast;

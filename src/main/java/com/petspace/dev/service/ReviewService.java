@@ -62,8 +62,16 @@ public class ReviewService {
                 .map((ReviewsResponseDto::of))
                 .collect(Collectors.toList());
 
+        int numberOfReview = reviews.size();
+        double averageReviewScore = reviews.stream()
+                .mapToInt(ReviewsResponseDto::getScore)
+                .average()
+                .orElse(0);
+
         return ReviewsSliceResponseDto.builder()
                 .reviews(reviews)
+                .numberOfReview(numberOfReview)
+                .averageReviewScore(Double.parseDouble(String.format("%.2f", averageReviewScore)))
                 .page(allReviewsSliceBy.getPageable().getPageNumber())
                 .isLast(allReviewsSliceBy.isLast())
                 .build();
