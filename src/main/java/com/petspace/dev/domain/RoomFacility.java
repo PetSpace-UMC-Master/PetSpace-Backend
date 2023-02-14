@@ -16,11 +16,18 @@ public class RoomFacility {
     @Column(name = "room_facility_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id")
     private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facility_id")
     private Facility facility;
+
+    @Builder
+    public RoomFacility(Room room, Facility facility){
+        this.room = room;
+        this.facility = facility;
+    }
+
 }

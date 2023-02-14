@@ -1,10 +1,6 @@
 package com.petspace.dev.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,4 +41,10 @@ public class RoomAvailable {
         this.status = status;
     }
 
+    @Builder
+    public RoomAvailable(Room room, LocalDate availableDay, Status status){
+        this.room = room;
+        this.availableDay = availableDay;
+        this.status = status;
+    }
 }

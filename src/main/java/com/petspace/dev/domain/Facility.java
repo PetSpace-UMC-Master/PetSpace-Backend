@@ -1,10 +1,6 @@
 package com.petspace.dev.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,4 +33,11 @@ public class Facility {
 
     @OneToMany(mappedBy = "facility")
     private List<RoomFacility> roomFacilities;
+
+    @Builder
+    public Facility(String facilityName, String facilityImageUrl, String category) {
+        this.facilityName = facilityName;
+        this.facilityImageUrl = facilityImageUrl;
+        this.category = category;
+    }
 }

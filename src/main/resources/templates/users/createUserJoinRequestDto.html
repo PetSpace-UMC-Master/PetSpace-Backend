@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+ .fieldError {
+ border-color: #bd2130;
+ }
+</style>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form role="form" action="/admin/users/new" th:object="${userJoinRequestDto}"
+          method="post">
+        <div class="form-group">
+            <label th:for="email">이메일</label>
+            <input type="text" th:field="*{email}" class="form-control"
+                   placeholder="이메일을 입력하세요"
+                   th:class="${#fields.hasErrors('email')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('email')}"
+               th:errors="*{email}">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="password">비밀번호</label>
+            <input type="text" th:field="*{password}" class="form-control"
+                   placeholder="비밀번호을 입력하세요"
+                   th:class="${#fields.hasErrors('password')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('password')}"
+               th:errors="*{password}">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="checkedPassword">비밀번호 확인</label>
+            <input type="text" th:field="*{checkedPassword}" class="form-control"
+                   placeholder="비밀번호을 확인해주세요"
+                   th:class="${#fields.hasErrors('checkedPassword')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('checkedPassword')}"
+               th:errors="*{checkedPassword}">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="username">이름</label>
+            <input type="text" th:field="*{username}" class="form-control"
+                   placeholder="이름을 입력해주세요"
+                   th:class="${#fields.hasErrors('username')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('username')}"
+               th:errors="*{username}">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="nickname">닉네임</label>
+            <input type="text" th:field="*{nickname}" class="form-control"
+                   placeholder="닉네임을 입력해주세요"
+                   th:class="${#fields.hasErrors('nickname')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('nickname')}"
+               th:errors="*{nickname}">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="birth">생일</label>
+            <input type="text" th:field="*{birth}" class="form-control"
+                   placeholder="생일을 입력해주세요 (ex. 19970307)"
+                   th:class="${#fields.hasErrors('birth')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('birth')}"
+               th:errors="*{birth}">Incorrect data</p>
+        </div>
+        <div class="form-group">
+            <label th:for="marketingAgreement">마케팅 수신여부</label>
+            <input type="checkbox" th:field="*{marketingAgreement}" class="form-control"
+                   th:class="${#fields.hasErrors('marketingAgreement')}? 'form-control
+fieldError' : 'form-control'">
+            <p th:if="${#fields.hasErrors('marketingAgreement')}"
+               th:errors="*{marketingAgreement}">Incorrect data</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>

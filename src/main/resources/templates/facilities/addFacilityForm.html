@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+ .fieldError {
+ border-color: #bd2130;
+ }
+</style>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"/>
+    <form role="form" action="/admin/facilities/new" th:object="${facilityCreateRequestDto}"
+          method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label th:for="category">편의시설 카테고리명</label>
+            <input type="text" th:field="*{category}" class="form-control"
+                   placeholder="편의시설 카테고리명 을 입력하세요">
+        </div>
+        <div class="form-group">
+            <label th:for="facilityName">편의시설명</label>
+            <input type="text" th:field="*{facilityName}" class="form-control"
+                   placeholder="편의시설명 을 입력하세요">
+        </div>
+        <div class="form-group">
+            <label th:for="facilityImage">편의시설 이미지</label><br/>
+            <!-- JPEG|JPG|HEIC|PNG|-->
+            <input type="file" th:field="*{facilityImage}" accept="image/jpeg, image/jpg, image/heic, image/png" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer" />
+</div> <!-- /container -->
+</body>
+</html>

@@ -3,11 +3,7 @@ package com.petspace.dev.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.petspace.dev.domain.image.RoomImage;
 import com.petspace.dev.domain.user.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -76,19 +72,19 @@ public class Room extends BaseTimeEntity{
 
     @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<Reservation> reservation = new ArrayList<>();
+    private List<Reservation> reservation;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomCategory> roomCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomFacility> roomFacilities = new ArrayList<>();
 
     @OneToMany(mappedBy = "room")
     private List<RoomAvailable> roomAvailables = new ArrayList<>();
 
     @OneToMany(mappedBy = "room")
-    private List<Favorite> favorites = new ArrayList<>();
+    List<Favorite> favorites = new ArrayList<>();
 
     @JsonManagedReference //Json 순환참조 해결할 때 추가, 정확히 모르고 썼기 때문에 문제 발생시 다른 해결법 찾아야함
     @OneToMany(mappedBy = "room")
@@ -96,5 +92,19 @@ public class Room extends BaseTimeEntity{
 
     public void addReview(Review review) {
         this.reviews.add(review);
+    }
+
+    @Builder
+    public Room(User user, Address address, String roomName, int price, int maxGuest, int maxPet, String description, LocalDateTime checkinTime, LocalDateTime checkoutTime, Status status) {
+        this.user = user;
+        this.address = address;
+        this.roomName = roomName;
+        this.price = price;
+        this.maxGuest = maxGuest;
+        this.maxPet = maxPet;
+        this.description = description;
+        this.checkinTime = checkinTime;
+        this.checkoutTime = checkoutTime;
+        this.status = status;
     }
 }
