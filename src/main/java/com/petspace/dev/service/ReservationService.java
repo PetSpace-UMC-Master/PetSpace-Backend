@@ -5,7 +5,11 @@ import com.petspace.dev.domain.Room;
 import com.petspace.dev.domain.RoomAvailable;
 import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.user.User;
-import com.petspace.dev.dto.reservation.*;
+import com.petspace.dev.dto.reservation.ReservationCreateRequestDto;
+import com.petspace.dev.dto.reservation.ReservationCreateResponseDto;
+import com.petspace.dev.dto.reservation.ReservationDeleteResponseDto;
+import com.petspace.dev.dto.reservation.ReservationReadResponseDto;
+import com.petspace.dev.dto.reservation.ReservationSliceResponseDto;
 import com.petspace.dev.repository.ReservationRepository;
 import com.petspace.dev.repository.RoomRepository;
 import com.petspace.dev.repository.UserRepository;
@@ -18,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,9 +51,11 @@ public class ReservationService {
         if(dto.getTotalPet() > room.getMaxPet()) {
             throw new ReservationException(POST_RESERVATION_OVERCAPACITY_TOTAL_PET);
         }
-        if(LocalDate.parse(dto.getStartDate(), DateTimeFormatter.ISO_LOCAL_DATE).isBefore(LocalDate.now())) {
-            throw  new ReservationException((POST_RESERVATION_INVALID_STARTDATE));
-        }
+
+
+//        if(LocalDate.parse(dto.getStartDate(), DateTimeFormatter.ISO_LOCAL_DATE).isBefore(LocalDate.now())) {
+//            throw  new ReservationException((POST_RESERVATION_INVALID_STARTDATE));
+//        }
 
         //Reservation 생성
         Reservation reservation = dto.toEntity(user, room);
