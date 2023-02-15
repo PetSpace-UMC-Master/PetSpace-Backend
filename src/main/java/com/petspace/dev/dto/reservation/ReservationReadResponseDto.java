@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ReservationReadResponseDto implements Comparable<ReservationReadResponseDto>{
+public class ReservationReadResponseDto {
 
     @Schema(description = "reservation 코드", example = "3d51258e-0584-4a55-8ee1-057fa4e30bde")
     private String reservationCode;
@@ -48,12 +48,7 @@ public class ReservationReadResponseDto implements Comparable<ReservationReadRes
         }
         startDate = reservation.getStartDate().toLocalDate();
         endDate = reservation.getEndDate().toLocalDate();
-        remainingDays = Period.between(LocalDate.now(), startDate).getDays();
-    }
-
-    @Override
-    public int compareTo(ReservationReadResponseDto dto) {
-        return ((Integer)(this.remainingDays)).compareTo(dto.remainingDays);
+        remainingDays = (int) Duration.between(LocalDate.now().atStartOfDay(), startDate.atStartOfDay()).toDays();
     }
 }
 
