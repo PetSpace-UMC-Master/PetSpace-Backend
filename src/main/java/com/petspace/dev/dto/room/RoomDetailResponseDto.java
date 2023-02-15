@@ -40,7 +40,7 @@ public class RoomDetailResponseDto {
         this.hostName = room.getUser().getUsername();
         // Room 의 주소 받아오기.
         Address address = room.getAddress();
-        this.address = address.getCity() + " " + address.getAddressDetail();
+        this.address = address.getCity() + " " + address.getDistrict() + " " + address.getAddressDetail();
         this.latitude = address.getLatitude();
         this.longitude = address.getLongitude();
         this.roomName = room.getRoomName();
