@@ -1,13 +1,27 @@
 package com.petspace.dev.service;
 
-import com.petspace.dev.domain.*;
+import com.petspace.dev.domain.Address;
+import com.petspace.dev.domain.Category;
+import com.petspace.dev.domain.Facility;
+import com.petspace.dev.domain.Room;
+import com.petspace.dev.domain.RoomAvailable;
+import com.petspace.dev.domain.RoomCategory;
+import com.petspace.dev.domain.RoomFacility;
+import com.petspace.dev.domain.Status;
 import com.petspace.dev.domain.image.RoomImage;
 import com.petspace.dev.domain.user.User;
 import com.petspace.dev.dto.admin.CategoryCreateRequestDto;
 import com.petspace.dev.dto.admin.FacilityCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomCreateRequestDto;
 import com.petspace.dev.dto.admin.RoomImageAddRequestDto;
-import com.petspace.dev.repository.*;
+import com.petspace.dev.repository.CategoryRepository;
+import com.petspace.dev.repository.FacilityRepository;
+import com.petspace.dev.repository.RoomAvailableRepository;
+import com.petspace.dev.repository.RoomCategoryRepository;
+import com.petspace.dev.repository.RoomFacilityRepository;
+import com.petspace.dev.repository.RoomImageRepository;
+import com.petspace.dev.repository.RoomRepository;
+import com.petspace.dev.repository.UserRepository;
 import com.petspace.dev.util.s3.AwsS3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +34,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -156,25 +168,27 @@ public class AdminService {
     public String addFacility(FacilityCreateRequestDto facilityCreateRequestDto) {
 
         // 이미 존재하는 카테고리라면 추가 X // TODO nonNull 적절한 위치인지 체크 필요
-        List<String> currentCategories = findAllFacilities().stream()
+        List<String> currentFacilities = findAllFacilities().stream()
                 .filter(Objects::nonNull)
-                .map(Facility::getCategory)
+                .map(Facility::getFacilityName)
                 .distinct()
                 .collect(Collectors.toList());
-        if(currentCategories.contains(facilityCreateRequestDto.getCategory())){
+
+        if(currentFacilities.contains(facilityCreateRequestDto.getFacilityName())){
             return "redirect:/admin";
         }
 
         // 이미지를 S3 에 추가
         MultipartFile image = facilityCreateRequestDto.getFacilityImage();
         String imageUrl = awsS3Uploader.upload(image, "facility");
-
+        log.info("추가 저장 성공");
         // Facility 저장
         Facility facility = Facility.builder()
                 .facilityName(facilityCreateRequestDto.getFacilityName())
                 .facilityImageUrl(imageUrl)
                 .category(facilityCreateRequestDto.getCategory())
                 .build();
+
         facilityRepository.save(facility);
 
         return "redirect:/admin";
